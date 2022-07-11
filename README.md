@@ -32,7 +32,7 @@ These commands are what you need to set up a Coalesce development environment
 
 ### 2. Add a simple class called Game
   1. Open the Solution file in Visual Studio
-  2. In the `src` folder in the `\CoalesceSampe.Data` project in the `Models` folder add a new class file called `Game.cs`
+  2. In the `src` folder in the `\CoalesceSample.Data` project in the `Models` folder add a new class file called `Game.cs`
   3. Make class `public`
   4. Add a primary key property `GameId` as an int
   
@@ -53,7 +53,7 @@ These commands are what you need to set up a Coalesce development environment
   6. Add a DbSet to the AppDbContext
   
 ```
-    public DbSet\&lt;Game\&gt; Games =\&gt; Set\&lt;Game\&gt;();
+    public DbSet<Game>; Games => Set<Game>();
 ```
 
   7. Open the Developer PowerShell terminal window
