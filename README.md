@@ -1,10 +1,12 @@
 # Coalesce Tutorial
 
-Learn Coalesce by creating a Board Gme Mnagement Sstem. (BGMS)
+Learn Coalesce by creating a Board Game Management System. (BGMS)
 
 ## Prerequisites
 * Visual Studio 2022 or later (is it possible with VS Code as well, but the instructions are for Visual Studio)
 * SQL Server Local DB (it is possible to use another database by modifying the connection string and NuGet packages)
+* Node installed
+* Understanding of C#, ASP.NET, EF Core, etc.
 
 ## Steps
 
