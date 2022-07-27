@@ -31,6 +31,7 @@ export interface GameViewModel extends $models.Game {
   maxPlayers: number | null;
   minPlayers: number | null;
   genreId: number | null;
+  gameTags: $models.Tag[] | null;
 }
 export class GameViewModel extends ViewModel<$models.Game, $apiClients.GameApiClient, number> implements $models.Game  {
   

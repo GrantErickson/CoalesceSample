@@ -86,6 +86,20 @@ export const Game = domain.types.Game = {
       type: "number",
       role: "value",
     },
+    gameTags: {
+      name: "gameTags",
+      displayName: "Game Tags",
+      type: "collection",
+      itemType: {
+        name: "$collectionItem",
+        displayName: "",
+        role: "value",
+        type: "object",
+        get typeDef() { return (domain.types.Tag as ObjectType) },
+      },
+      role: "value",
+      dontSerialize: true,
+    },
   },
   methods: {
   },
@@ -140,6 +154,46 @@ export const Genre = domain.types.Genre = {
   dataSources: {
   },
 }
+export const Tag = domain.types.Tag = {
+  name: "Tag",
+  displayName: "Tag",
+  get displayProp() { return this.props.name }, 
+  type: "object",
+  props: {
+    tagId: {
+      name: "tagId",
+      displayName: "Tag Id",
+      type: "number",
+      role: "value",
+    },
+    name: {
+      name: "name",
+      displayName: "Name",
+      type: "string",
+      role: "value",
+    },
+    description: {
+      name: "description",
+      displayName: "Description",
+      type: "string",
+      role: "value",
+    },
+    games: {
+      name: "games",
+      displayName: "Games",
+      type: "collection",
+      itemType: {
+        name: "$collectionItem",
+        displayName: "",
+        role: "value",
+        type: "model",
+        get typeDef() { return (domain.types.Game as ModelType) },
+      },
+      role: "value",
+      dontSerialize: true,
+    },
+  },
+}
 
 interface AppDomain extends Domain {
   enums: {
@@ -148,6 +202,7 @@ interface AppDomain extends Domain {
     ApplicationUser: typeof ApplicationUser
     Game: typeof Game
     Genre: typeof Genre
+    Tag: typeof Tag
   }
   services: {
   }

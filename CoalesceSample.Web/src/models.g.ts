@@ -32,6 +32,7 @@ export interface Game extends Model<typeof metadata.Game> {
   maxPlayers: number | null
   minPlayers: number | null
   genreId: number | null
+  gameTags: Tag[] | null
 }
 export class Game {
   
@@ -73,6 +74,31 @@ export class Genre {
   /** Instantiate a new Genre, optionally basing it on the given data. */
   constructor(data?: Partial<Genre> | {[k: string]: any}) {
       Object.assign(this, Genre.map(data || {}));
+  }
+}
+
+
+export interface Tag extends Model<typeof metadata.Tag> {
+  tagId: number | null
+  name: string | null
+  description: string | null
+  games: Game[] | null
+}
+export class Tag {
+  
+  /** Mutates the input object and its descendents into a valid Tag implementation. */
+  static convert(data?: Partial<Tag>): Tag {
+    return convertToModel(data || {}, metadata.Tag) 
+  }
+  
+  /** Maps the input object and its descendents to a new, valid Tag implementation. */
+  static map(data?: Partial<Tag>): Tag {
+    return mapToModel(data || {}, metadata.Tag) 
+  }
+  
+  /** Instantiate a new Tag, optionally basing it on the given data. */
+  constructor(data?: Partial<Tag> | {[k: string]: any}) {
+      Object.assign(this, Tag.map(data || {}));
   }
 }
 
