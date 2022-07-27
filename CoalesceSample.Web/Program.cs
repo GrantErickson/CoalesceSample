@@ -17,6 +17,8 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
     WebRootPath = "wwwroot"
 });
 
+builder.Services.AddSwaggerGen();
+
 builder.Logging
     .AddConsole()
     // Filter out Request Starting/Request Finished noise:
@@ -60,6 +62,11 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+
+    app.UseSwagger();
+    app.UseSwaggerUI();
+
+
     app.UseDeveloperExceptionPage();
 
     app.UseViteDevelopmentServer(c =>
