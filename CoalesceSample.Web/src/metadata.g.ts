@@ -80,6 +80,60 @@ export const Game = domain.types.Game = {
       type: "number",
       role: "value",
     },
+    genreId: {
+      name: "genreId",
+      displayName: "Genre Id",
+      type: "number",
+      role: "value",
+    },
+  },
+  methods: {
+  },
+  dataSources: {
+  },
+}
+export const Genre = domain.types.Genre = {
+  name: "Genre",
+  displayName: "Genre",
+  get displayProp() { return this.props.name }, 
+  type: "model",
+  controllerRoute: "Genre",
+  get keyProp() { return this.props.genreId }, 
+  behaviorFlags: 7,
+  props: {
+    genreId: {
+      name: "genreId",
+      displayName: "Genre Id",
+      type: "number",
+      role: "primaryKey",
+      hidden: 3,
+    },
+    name: {
+      name: "name",
+      displayName: "Name",
+      type: "string",
+      role: "value",
+    },
+    description: {
+      name: "description",
+      displayName: "Description",
+      type: "string",
+      role: "value",
+    },
+    games: {
+      name: "games",
+      displayName: "Games",
+      type: "collection",
+      itemType: {
+        name: "$collectionItem",
+        displayName: "",
+        role: "value",
+        type: "model",
+        get typeDef() { return (domain.types.Game as ModelType) },
+      },
+      role: "value",
+      dontSerialize: true,
+    },
   },
   methods: {
   },
@@ -93,6 +147,7 @@ interface AppDomain extends Domain {
   types: {
     ApplicationUser: typeof ApplicationUser
     Game: typeof Game
+    Genre: typeof Genre
   }
   services: {
   }

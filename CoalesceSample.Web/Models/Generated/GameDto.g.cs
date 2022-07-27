@@ -18,6 +18,7 @@ namespace CoalesceSample.Web.Models
         private double? _AverageDurationInHours;
         private int? _MaxPlayers;
         private int? _MinPlayers;
+        private int? _GenreId;
 
         public int? GameId
         {
@@ -49,6 +50,11 @@ namespace CoalesceSample.Web.Models
             get => _MinPlayers;
             set { _MinPlayers = value; Changed(nameof(MinPlayers)); }
         }
+        public int? GenreId
+        {
+            get => _GenreId;
+            set { _GenreId = value; Changed(nameof(GenreId)); }
+        }
 
         /// <summary>
         /// Map from the domain object to the properties of the current DTO instance.
@@ -66,6 +72,7 @@ namespace CoalesceSample.Web.Models
             this.AverageDurationInHours = obj.AverageDurationInHours;
             this.MaxPlayers = obj.MaxPlayers;
             this.MinPlayers = obj.MinPlayers;
+            this.GenreId = obj.GenreId;
         }
 
         /// <summary>
@@ -83,6 +90,7 @@ namespace CoalesceSample.Web.Models
             if (ShouldMapTo(nameof(AverageDurationInHours))) entity.AverageDurationInHours = (AverageDurationInHours ?? entity.AverageDurationInHours);
             if (ShouldMapTo(nameof(MaxPlayers))) entity.MaxPlayers = (MaxPlayers ?? entity.MaxPlayers);
             if (ShouldMapTo(nameof(MinPlayers))) entity.MinPlayers = (MinPlayers ?? entity.MinPlayers);
+            if (ShouldMapTo(nameof(GenreId))) entity.GenreId = (GenreId ?? entity.GenreId);
         }
     }
 }

@@ -30,6 +30,7 @@ export interface GameViewModel extends $models.Game {
   averageDurationInHours: number | null;
   maxPlayers: number | null;
   minPlayers: number | null;
+  genreId: number | null;
 }
 export class GameViewModel extends ViewModel<$models.Game, $apiClients.GameApiClient, number> implements $models.Game  {
   
@@ -47,13 +48,37 @@ export class GameListViewModel extends ListViewModel<$models.Game, $apiClients.G
 }
 
 
+export interface GenreViewModel extends $models.Genre {
+  genreId: number | null;
+  name: string | null;
+  description: string | null;
+  games: GameViewModel[] | null;
+}
+export class GenreViewModel extends ViewModel<$models.Genre, $apiClients.GenreApiClient, number> implements $models.Genre  {
+  
+  constructor(initialData?: DeepPartial<$models.Genre> | null) {
+    super($metadata.Genre, new $apiClients.GenreApiClient(), initialData)
+  }
+}
+defineProps(GenreViewModel, $metadata.Genre)
+
+export class GenreListViewModel extends ListViewModel<$models.Genre, $apiClients.GenreApiClient, GenreViewModel> {
+  
+  constructor() {
+    super($metadata.Genre, new $apiClients.GenreApiClient())
+  }
+}
+
+
 const viewModelTypeLookup = ViewModel.typeLookup = {
   ApplicationUser: ApplicationUserViewModel,
   Game: GameViewModel,
+  Genre: GenreViewModel,
 }
 const listViewModelTypeLookup = ListViewModel.typeLookup = {
   ApplicationUser: ApplicationUserListViewModel,
   Game: GameListViewModel,
+  Genre: GenreListViewModel,
 }
 const serviceViewModelTypeLookup = ServiceViewModel.typeLookup = {
 }

@@ -13,3 +13,8 @@ export class GameApiClient extends ModelApiClient<$models.Game> {
 }
 
 
+export class GenreApiClient extends ModelApiClient<$models.Genre> {
+  constructor() { super($metadata.Genre) }
+}
+
+
