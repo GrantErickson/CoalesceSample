@@ -19,6 +19,15 @@
             <v-list-item-title>Coalesce Example</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+
+        <v-list-item link to="/gamelist">
+          <v-list-item-action>
+            <v-icon>fas fa-dice</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Game List</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 

@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using CoalesceSample.Data;
+using CoalesceSample.Data.Services;
 
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
@@ -16,6 +17,8 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
     // Explicit declaration prevents ASP.NET Core from erroring if wwwroot doesn't exist at startup:
     WebRootPath = "wwwroot"
 });
+
+builder.Services.AddSwaggerGen();
 
 builder.Logging
     .AddConsole()
@@ -27,7 +30,6 @@ builder.Configuration
     .AddEnvironmentVariables();
 
 #region Configure Services
-
 var services = builder.Services;
 
 services.AddDbContext<AppDbContext>(options =>
@@ -35,6 +37,7 @@ services.AddDbContext<AppDbContext>(options =>
         .EnableRetryOnFailure()
         .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
     ));
+services.AddScoped<GameService>();
 
 services.AddCoalesce<AppDbContext>();
 
@@ -60,6 +63,11 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+
+    app.UseSwagger();
+    app.UseSwaggerUI();
+
+
     app.UseDeveloperExceptionPage();
 
     app.UseViteDevelopmentServer(c =>

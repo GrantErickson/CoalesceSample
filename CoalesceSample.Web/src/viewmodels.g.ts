@@ -30,6 +30,8 @@ export interface GameViewModel extends $models.Game {
   averageDurationInHours: number | null;
   maxPlayers: number | null;
   minPlayers: number | null;
+  genreId: number | null;
+  gameTags: $models.Tag[] | null;
 }
 export class GameViewModel extends ViewModel<$models.Game, $apiClients.GameApiClient, number> implements $models.Game  {
   
@@ -47,14 +49,58 @@ export class GameListViewModel extends ListViewModel<$models.Game, $apiClients.G
 }
 
 
+export interface GenreViewModel extends $models.Genre {
+  genreId: number | null;
+  name: string | null;
+  description: string | null;
+  games: GameViewModel[] | null;
+}
+export class GenreViewModel extends ViewModel<$models.Genre, $apiClients.GenreApiClient, number> implements $models.Genre  {
+  
+  constructor(initialData?: DeepPartial<$models.Genre> | null) {
+    super($metadata.Genre, new $apiClients.GenreApiClient(), initialData)
+  }
+}
+defineProps(GenreViewModel, $metadata.Genre)
+
+export class GenreListViewModel extends ListViewModel<$models.Genre, $apiClients.GenreApiClient, GenreViewModel> {
+  
+  constructor() {
+    super($metadata.Genre, new $apiClients.GenreApiClient())
+  }
+}
+
+
+export class GameServiceViewModel extends ServiceViewModel<typeof $metadata.GameService, $apiClients.GameServiceApiClient> {
+  
+  public get getGames() {
+    const getGames = this.$apiClient.$makeCaller(
+      this.$metadata.methods.getGames,
+      (c) => c.getGames(),
+      () => ({}),
+      (c, args) => c.getGames())
+    
+    Object.defineProperty(this, 'getGames', {value: getGames});
+    return getGames
+  }
+  
+  constructor() {
+    super($metadata.GameService, new $apiClients.GameServiceApiClient())
+  }
+}
+
+
 const viewModelTypeLookup = ViewModel.typeLookup = {
   ApplicationUser: ApplicationUserViewModel,
   Game: GameViewModel,
+  Genre: GenreViewModel,
 }
 const listViewModelTypeLookup = ListViewModel.typeLookup = {
   ApplicationUser: ApplicationUserListViewModel,
   Game: GameListViewModel,
+  Genre: GenreListViewModel,
 }
 const serviceViewModelTypeLookup = ServiceViewModel.typeLookup = {
+  GameService: GameServiceViewModel,
 }
 

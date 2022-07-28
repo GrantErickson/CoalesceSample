@@ -3,6 +3,7 @@ using CoalesceSample.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoalesceSample.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220727222709_Genre")]
+    partial class Genre
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,61 +94,11 @@ namespace CoalesceSample.Data.Migrations
                     b.ToTable("Genres");
                 });
 
-            modelBuilder.Entity("CoalesceSample.Data.Models.Tag", b =>
-                {
-                    b.Property<int>("TagId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TagId"), 1L, 1);
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("TagId");
-
-                    b.ToTable("Tag");
-                });
-
-            modelBuilder.Entity("GameTag", b =>
-                {
-                    b.Property<int>("GameTagsTagId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GamesGameId")
-                        .HasColumnType("int");
-
-                    b.HasKey("GameTagsTagId", "GamesGameId");
-
-                    b.HasIndex("GamesGameId");
-
-                    b.ToTable("GameTag");
-                });
-
             modelBuilder.Entity("CoalesceSample.Data.Models.Game", b =>
                 {
                     b.HasOne("CoalesceSample.Data.Models.Genre", null)
                         .WithMany("Games")
                         .HasForeignKey("GenreId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("GameTag", b =>
-                {
-                    b.HasOne("CoalesceSample.Data.Models.Tag", null)
-                        .WithMany()
-                        .HasForeignKey("GameTagsTagId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CoalesceSample.Data.Models.Game", null)
-                        .WithMany()
-                        .HasForeignKey("GamesGameId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

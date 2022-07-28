@@ -80,10 +80,147 @@ export const Game = domain.types.Game = {
       type: "number",
       role: "value",
     },
+    genreId: {
+      name: "genreId",
+      displayName: "Genre Id",
+      type: "number",
+      role: "value",
+    },
+    gameTags: {
+      name: "gameTags",
+      displayName: "Game Tags",
+      type: "collection",
+      itemType: {
+        name: "$collectionItem",
+        displayName: "",
+        role: "value",
+        type: "object",
+        get typeDef() { return (domain.types.Tag as ObjectType) },
+      },
+      role: "value",
+      dontSerialize: true,
+    },
   },
   methods: {
   },
   dataSources: {
+  },
+}
+export const Genre = domain.types.Genre = {
+  name: "Genre",
+  displayName: "Genre",
+  get displayProp() { return this.props.name }, 
+  type: "model",
+  controllerRoute: "Genre",
+  get keyProp() { return this.props.genreId }, 
+  behaviorFlags: 7,
+  props: {
+    genreId: {
+      name: "genreId",
+      displayName: "Genre Id",
+      type: "number",
+      role: "primaryKey",
+      hidden: 3,
+    },
+    name: {
+      name: "name",
+      displayName: "Name",
+      type: "string",
+      role: "value",
+    },
+    description: {
+      name: "description",
+      displayName: "Description",
+      type: "string",
+      role: "value",
+    },
+    games: {
+      name: "games",
+      displayName: "Games",
+      type: "collection",
+      itemType: {
+        name: "$collectionItem",
+        displayName: "",
+        role: "value",
+        type: "model",
+        get typeDef() { return (domain.types.Game as ModelType) },
+      },
+      role: "value",
+      dontSerialize: true,
+    },
+  },
+  methods: {
+  },
+  dataSources: {
+  },
+}
+export const Tag = domain.types.Tag = {
+  name: "Tag",
+  displayName: "Tag",
+  get displayProp() { return this.props.name }, 
+  type: "object",
+  props: {
+    tagId: {
+      name: "tagId",
+      displayName: "Tag Id",
+      type: "number",
+      role: "value",
+    },
+    name: {
+      name: "name",
+      displayName: "Name",
+      type: "string",
+      role: "value",
+    },
+    description: {
+      name: "description",
+      displayName: "Description",
+      type: "string",
+      role: "value",
+    },
+    games: {
+      name: "games",
+      displayName: "Games",
+      type: "collection",
+      itemType: {
+        name: "$collectionItem",
+        displayName: "",
+        role: "value",
+        type: "model",
+        get typeDef() { return (domain.types.Game as ModelType) },
+      },
+      role: "value",
+      dontSerialize: true,
+    },
+  },
+}
+export const GameService = domain.services.GameService = {
+  name: "GameService",
+  displayName: "Game Service",
+  type: "service",
+  controllerRoute: "GameService",
+  methods: {
+    getGames: {
+      name: "getGames",
+      displayName: "Get Games",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        type: "collection",
+        itemType: {
+          name: "$collectionItem",
+          displayName: "",
+          role: "value",
+          type: "model",
+          get typeDef() { return (domain.types.Game as ModelType) },
+        },
+        role: "value",
+      },
+    },
   },
 }
 
@@ -93,8 +230,11 @@ interface AppDomain extends Domain {
   types: {
     ApplicationUser: typeof ApplicationUser
     Game: typeof Game
+    Genre: typeof Genre
+    Tag: typeof Tag
   }
   services: {
+    GameService: typeof GameService
   }
 }
 

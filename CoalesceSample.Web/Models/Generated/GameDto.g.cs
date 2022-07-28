@@ -18,6 +18,8 @@ namespace CoalesceSample.Web.Models
         private double? _AverageDurationInHours;
         private int? _MaxPlayers;
         private int? _MinPlayers;
+        private int? _GenreId;
+        private System.Collections.Generic.ICollection<CoalesceSample.Web.Models.TagDtoGen> _GameTags;
 
         public int? GameId
         {
@@ -49,6 +51,16 @@ namespace CoalesceSample.Web.Models
             get => _MinPlayers;
             set { _MinPlayers = value; Changed(nameof(MinPlayers)); }
         }
+        public int? GenreId
+        {
+            get => _GenreId;
+            set { _GenreId = value; Changed(nameof(GenreId)); }
+        }
+        public System.Collections.Generic.ICollection<CoalesceSample.Web.Models.TagDtoGen> GameTags
+        {
+            get => _GameTags;
+            set { _GameTags = value; Changed(nameof(GameTags)); }
+        }
 
         /// <summary>
         /// Map from the domain object to the properties of the current DTO instance.
@@ -66,6 +78,15 @@ namespace CoalesceSample.Web.Models
             this.AverageDurationInHours = obj.AverageDurationInHours;
             this.MaxPlayers = obj.MaxPlayers;
             this.MinPlayers = obj.MinPlayers;
+            this.GenreId = obj.GenreId;
+            var propValGameTags = obj.GameTags;
+            if (propValGameTags != null)
+            {
+                this.GameTags = propValGameTags
+                    .OrderBy(f => f.Name)
+                    .Select(f => f.MapToDto<CoalesceSample.Data.Models.Tag, TagDtoGen>(context, tree?[nameof(this.GameTags)])).ToList();
+            }
+
         }
 
         /// <summary>
@@ -83,6 +104,7 @@ namespace CoalesceSample.Web.Models
             if (ShouldMapTo(nameof(AverageDurationInHours))) entity.AverageDurationInHours = (AverageDurationInHours ?? entity.AverageDurationInHours);
             if (ShouldMapTo(nameof(MaxPlayers))) entity.MaxPlayers = (MaxPlayers ?? entity.MaxPlayers);
             if (ShouldMapTo(nameof(MinPlayers))) entity.MinPlayers = (MinPlayers ?? entity.MinPlayers);
+            if (ShouldMapTo(nameof(GenreId))) entity.GenreId = (GenreId ?? entity.GenreId);
         }
     }
 }

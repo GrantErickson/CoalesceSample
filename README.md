@@ -24,7 +24,7 @@ These commands are what you need to set up a Coalesce development environment
   6. If EF tooling is not installed run: `dotnet tool install --global dotnet-ef`
   7. `dotnet ef migrations add Initial`
   8. `cd ..\*.web`
-  9. `npm i`
+  9. `npm ci`
   10. `dotnet restore`
   11. `dotnet coalesce`
   12. `dotnet run`
@@ -53,7 +53,7 @@ These commands are what you need to set up a Coalesce development environment
   6. Add a DbSet to the AppDbContext
   
 ```
-    public DbSet<Game>; Games => Set<Game>();
+    public DbSet<Game> Games => Set<Game>();
 ```
 
   7. Open the Developer PowerShell terminal window
@@ -62,22 +62,124 @@ These commands are what you need to set up a Coalesce development environment
   10. `cd ..\*.web`
   11. `dotnet coalesce`
   12. Run the app with Kestral
-  13. Note that there is now an editor for the Game class
+  13. Note that there is now an editor for the Game class in the Application User Admin Table.
+  14. Manually create your first game in the database. Notice the autosave will produce an error until the nullable fields have data.
 
-### Add Swagger
+### 3. Add Swagger
+  1. Add the `Swashbuckle.AspNetCore` package to the project.
 
-### Add a class with a parent: Genre
+  3. In the `\CoalesceSample.Web\program.cs` file, add the SwaggerGen service to the builder:
+```
+    builder.Services.AddSwaggerGen();
+```
+  4. Further down in the HTTP Pipelines region, add the Swagger middleware to the development environment:
+```
+    app.UseSwagger()
+    app.UseSwaggerUI();    
+```
+  5. Visit the Swagger endpoint at `localhost:5001/swagger`
 
-### Add many to many with Tags
+### 4. Add a class with a parent: Genre
+  1. Add a primary key property `GenreId` as an int
+```
+    public int GenreId { get; set; }
+```
+  2. Add Other Properties
+```
+    public string Name { get; set; } = null!;
+    public string? Description { get; set; }
+    public ICollection<Game> Games { get; set; } = new List<Game>();
+```
+  3. Add a DbSet to the AppDbContext
+```
+    public DbSet<GameGenre> GameGenres => Set<GameGenre>();
+```
+### 5. Add many to many with Tags
+  1. Add a primary key property `TagId` as an int
+```
+    public int TagId { get; set; }
+```
+  2. Add Other Properties
+```
+    public string Name { get; set; } = null!;
+    public string? Description { get; set; }
+    public ICollection<Game> Games { get; set; } = new List<Game>();
+```
+  3. Complete the many-to-many relationship by adding to `Game.cs`
+```
+    public ICollection<Tag> Tags { get; set; } = new List<Tag>();
+```
+  4. Add a DbSet to the AppDbContext
+```
+    public DbSet<GameTag> GameTags => Set<GameTag>();
+```
 
-### Create a read-only game list page
+### 6. Create a read-only game list page
+  1. Create a new folder in `\CoalesceSameple.Data` called `services`
+  2. Create a new public class called `GameService` in the `services` folder annotated with `[Coalesce, Service]`
+  3. Add an AppDbContext property to the class and assign it in the constructor
+```
+    private AppDbContext Db { get; set; }
 
-### Add authentication with database accounts
+    public GameService(AppDbContext db)
+    {
+        Db = db;
+    }
+```
+  4. Add the service as scoped to `Program.cs` in the `ConfigureServices` region
+```
+    services.AddScoped<GameService>();
+```
+  5. Add a method to get the list of games from the database annotated with `[Coalesce]`
+```
+    public async Task<ItemResult<List<Game>>> GetGames()
+    {
+        List<Game> games = await Db.Games.ToListAsync();
+        if(!games.Any())
+        {
+            return "No games currently exist.";
+        }
+        return games;
+    }
+```
+  6. In `\CoalesceSample.Web\Pages` create a new file called `GameList.vue`
+  7. In the `<template>` section, wrap your game list in a `c-loader-status` element to allow your page to wait for the game service to return success before it loads the data.
+```
+    <c-loader-status
+        v-slot
+        :loaders="{
+          'no-secondary-progress no-initial-content no-error-content': [
+            gameService.getGames,
+          ],
+        }"
+      >
+      <--List of games components here-->
+      </c-loader-status>
+```
+  8. Create an instance of the `GameServiceViewModel` class to get access to the methods in `GameService.cs`
+```
+  gameService = new GameServiceViewModel();
+```
+  9. Use the `created` method to get the list of games from the `GameService`
+```
+  async created() {
+    await this.gameService.getGames();
+  }
+```
+  10. Create a getter to get the list of game objects to use in the HTML section of the page
+```
+  get games() {
+    return this.gameService.getGames.result;
+  }
+```
+  11. When designing your list, use a `v-if` with the condition `gameService.getGames.wasSuccessful` to determine if you have data to display, and display an alternate message as appropriate.
 
-### Make the read-only page public
+### 7. Add authentication with database accounts
 
-### Anonymous Game viewing and liking
+### 8. Make the read-only page public
 
-### User login: Database accounts
+### 9. Anonymous Game viewing and liking
 
-### User login: OAuth
+### 10. User login: Database accounts
+
+### 11. User login: OAuth

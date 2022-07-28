@@ -13,3 +13,20 @@ export class GameApiClient extends ModelApiClient<$models.Game> {
 }
 
 
+export class GenreApiClient extends ModelApiClient<$models.Genre> {
+  constructor() { super($metadata.Genre) }
+}
+
+
+export class GameServiceApiClient extends ServiceApiClient<typeof $metadata.GameService> {
+  constructor() { super($metadata.GameService) }
+  public getGames($config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Game[]>> {
+    const $method = this.$metadata.methods.getGames
+    const $params =  {
+    }
+    return this.$invoke($method, $params, $config)
+  }
+  
+}
+
+

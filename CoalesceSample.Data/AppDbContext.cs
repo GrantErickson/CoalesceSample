@@ -9,6 +9,9 @@ public class AppDbContext : DbContext
 {
     public DbSet<ApplicationUser> ApplicationUsers => Set<ApplicationUser>();
     public DbSet<Game> Games => Set<Game>();
+    public DbSet<Genre> Genres => Set<Genre>();
+    public DbSet<Tag> Tags => Set<Tag>();
+    public DbSet<GameTag> GameTags => Set<GameTag>();
 
     public AppDbContext()
     {
