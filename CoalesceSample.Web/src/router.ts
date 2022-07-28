@@ -18,6 +18,12 @@ export default new Router({
       component: () => import("./views/CoalesceExample.vue"),
       props: { title: "Coalesce Example" },
     },
+    {
+      path: "/gamelist",
+      name: "game-list",
+      component: () => import("./views/GameList.vue"),
+      props: { title: "Example Games List" },
+    },
 
     // Coalesce admin routes
     {
