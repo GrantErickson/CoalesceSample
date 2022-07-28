@@ -194,6 +194,35 @@ export const Tag = domain.types.Tag = {
     },
   },
 }
+export const GameService = domain.services.GameService = {
+  name: "GameService",
+  displayName: "Game Service",
+  type: "service",
+  controllerRoute: "GameService",
+  methods: {
+    getGames: {
+      name: "getGames",
+      displayName: "Get Games",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        type: "collection",
+        itemType: {
+          name: "$collectionItem",
+          displayName: "",
+          role: "value",
+          type: "model",
+          get typeDef() { return (domain.types.Game as ModelType) },
+        },
+        role: "value",
+      },
+    },
+  },
+}
 
 interface AppDomain extends Domain {
   enums: {
@@ -205,6 +234,7 @@ interface AppDomain extends Domain {
     Tag: typeof Tag
   }
   services: {
+    GameService: typeof GameService
   }
 }
 

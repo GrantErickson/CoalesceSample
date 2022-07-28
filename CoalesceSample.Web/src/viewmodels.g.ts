@@ -71,6 +71,25 @@ export class GenreListViewModel extends ListViewModel<$models.Genre, $apiClients
 }
 
 
+export class GameServiceViewModel extends ServiceViewModel<typeof $metadata.GameService, $apiClients.GameServiceApiClient> {
+  
+  public get getGames() {
+    const getGames = this.$apiClient.$makeCaller(
+      this.$metadata.methods.getGames,
+      (c) => c.getGames(),
+      () => ({}),
+      (c, args) => c.getGames())
+    
+    Object.defineProperty(this, 'getGames', {value: getGames});
+    return getGames
+  }
+  
+  constructor() {
+    super($metadata.GameService, new $apiClients.GameServiceApiClient())
+  }
+}
+
+
 const viewModelTypeLookup = ViewModel.typeLookup = {
   ApplicationUser: ApplicationUserViewModel,
   Game: GameViewModel,
@@ -82,5 +101,6 @@ const listViewModelTypeLookup = ListViewModel.typeLookup = {
   Genre: GenreListViewModel,
 }
 const serviceViewModelTypeLookup = ServiceViewModel.typeLookup = {
+  GameService: GameServiceViewModel,
 }
 

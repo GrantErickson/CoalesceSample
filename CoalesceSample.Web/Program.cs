@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using CoalesceSample.Data;
+using CoalesceSample.Data.Services;
 
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
@@ -29,7 +30,6 @@ builder.Configuration
     .AddEnvironmentVariables();
 
 #region Configure Services
-
 var services = builder.Services;
 
 services.AddDbContext<AppDbContext>(options =>
@@ -37,6 +37,7 @@ services.AddDbContext<AppDbContext>(options =>
         .EnableRetryOnFailure()
         .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
     ));
+builder.Services.AddScoped<GameService>();
 
 services.AddCoalesce<AppDbContext>();
 
