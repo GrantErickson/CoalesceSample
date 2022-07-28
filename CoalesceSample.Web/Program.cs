@@ -37,7 +37,7 @@ services.AddDbContext<AppDbContext>(options =>
         .EnableRetryOnFailure()
         .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
     ));
-builder.Services.AddScoped<GameService>();
+services.AddScoped<GameService>();
 
 services.AddCoalesce<AppDbContext>();
 

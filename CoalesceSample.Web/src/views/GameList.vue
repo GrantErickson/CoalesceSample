@@ -36,7 +36,6 @@
 <script lang="ts">
 import { Vue, Component, Prop } from "vue-property-decorator";
 import { GameServiceViewModel } from "@/viewmodels.g";
-import { Game } from "@/models.g";
 
 @Component
 export default class GameList extends Vue {
@@ -47,10 +46,6 @@ export default class GameList extends Vue {
 
   async created() {
     await this.gameService.getGames();
-    if (this.gameService.getGames.wasSuccessful) {
-      console.log("success");
-      console.log(this.gameService.getGames.result);
-    }
   }
 
   get games() {

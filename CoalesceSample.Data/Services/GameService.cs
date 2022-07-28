@@ -22,12 +22,12 @@ public class GameService
     [Coalesce]
     public async Task<ItemResult<List<Game>>> GetGames()
     {
-        ICollection<Game> games = await Db.Games.ToListAsync();
+        List<Game> games = await Db.Games.ToListAsync();
         if(!games.Any())
         {
             return "No games currently exist.";
         }
-        return games.ToList();
+        return games;
     }
 
 }
