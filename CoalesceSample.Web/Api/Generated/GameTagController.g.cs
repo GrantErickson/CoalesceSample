@@ -20,54 +20,54 @@ using System.Threading.Tasks;
 
 namespace CoalesceSample.Web.Api
 {
-    [Route("api/ApplicationUser")]
+    [Route("api/GameTag")]
     [Authorize]
     [ServiceFilter(typeof(IApiActionFilter))]
-    public partial class ApplicationUserController
-        : BaseApiController<CoalesceSample.Data.Models.ApplicationUser, ApplicationUserDtoGen, CoalesceSample.Data.AppDbContext>
+    public partial class GameTagController
+        : BaseApiController<CoalesceSample.Data.Models.GameTag, GameTagDtoGen, CoalesceSample.Data.AppDbContext>
     {
-        public ApplicationUserController(CoalesceSample.Data.AppDbContext db) : base(db)
+        public GameTagController(CoalesceSample.Data.AppDbContext db) : base(db)
         {
-            GeneratedForClassViewModel = ReflectionRepository.Global.GetClassViewModel<CoalesceSample.Data.Models.ApplicationUser>();
+            GeneratedForClassViewModel = ReflectionRepository.Global.GetClassViewModel<CoalesceSample.Data.Models.GameTag>();
         }
 
         [HttpGet("get/{id}")]
         [Authorize]
-        public virtual Task<ItemResult<ApplicationUserDtoGen>> Get(
+        public virtual Task<ItemResult<GameTagDtoGen>> Get(
             int id,
             DataSourceParameters parameters,
-            IDataSource<CoalesceSample.Data.Models.ApplicationUser> dataSource)
+            IDataSource<CoalesceSample.Data.Models.GameTag> dataSource)
             => GetImplementation(id, parameters, dataSource);
 
         [HttpGet("list")]
         [Authorize]
-        public virtual Task<ListResult<ApplicationUserDtoGen>> List(
+        public virtual Task<ListResult<GameTagDtoGen>> List(
             ListParameters parameters,
-            IDataSource<CoalesceSample.Data.Models.ApplicationUser> dataSource)
+            IDataSource<CoalesceSample.Data.Models.GameTag> dataSource)
             => ListImplementation(parameters, dataSource);
 
         [HttpGet("count")]
         [Authorize]
         public virtual Task<ItemResult<int>> Count(
             FilterParameters parameters,
-            IDataSource<CoalesceSample.Data.Models.ApplicationUser> dataSource)
+            IDataSource<CoalesceSample.Data.Models.GameTag> dataSource)
             => CountImplementation(parameters, dataSource);
 
         [HttpPost("save")]
         [Authorize]
-        public virtual Task<ItemResult<ApplicationUserDtoGen>> Save(
-            ApplicationUserDtoGen dto,
+        public virtual Task<ItemResult<GameTagDtoGen>> Save(
+            GameTagDtoGen dto,
             [FromQuery] DataSourceParameters parameters,
-            IDataSource<CoalesceSample.Data.Models.ApplicationUser> dataSource,
-            IBehaviors<CoalesceSample.Data.Models.ApplicationUser> behaviors)
+            IDataSource<CoalesceSample.Data.Models.GameTag> dataSource,
+            IBehaviors<CoalesceSample.Data.Models.GameTag> behaviors)
             => SaveImplementation(dto, parameters, dataSource, behaviors);
 
         [HttpPost("delete/{id}")]
         [Authorize]
-        public virtual Task<ItemResult<ApplicationUserDtoGen>> Delete(
+        public virtual Task<ItemResult<GameTagDtoGen>> Delete(
             int id,
-            IBehaviors<CoalesceSample.Data.Models.ApplicationUser> behaviors,
-            IDataSource<CoalesceSample.Data.Models.ApplicationUser> dataSource)
+            IBehaviors<CoalesceSample.Data.Models.GameTag> behaviors,
+            IDataSource<CoalesceSample.Data.Models.GameTag> dataSource)
             => DeleteImplementation(id, new DataSourceParameters(), dataSource, behaviors);
     }
 }

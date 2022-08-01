@@ -1,13 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using CoalesceSample.Data.Models;
 using IntelliTect.Coalesce;
+using System.Security.Claims;
+using CoalesceSample.Data.Services;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace CoalesceSample.Data;
 
 [Coalesce]
-public class AppDbContext : DbContext
+public class AppDbContext : IdentityDbContext<ApplicationUser>
 {
-    public DbSet<ApplicationUser> ApplicationUsers => Set<ApplicationUser>();
     public DbSet<Game> Games => Set<Game>();
     public DbSet<Genre> Genres => Set<Genre>();
     public DbSet<Tag> Tags => Set<Tag>();
@@ -15,6 +17,14 @@ public class AppDbContext : DbContext
 
     public AppDbContext()
     {
+    }
+
+    public IScopedOperationContext OperationContext { get; set; }
+    public ClaimsPrincipal? User => OperationContext.User;
+
+    public AppDbContext(IScopedOperationContext operationContext, DbContextOptions<AppDbContext> options) : base(options)
+    {
+        OperationContext = operationContext;
     }
 
     public AppDbContext(DbContextOptions options) : base(options)
@@ -40,7 +50,6 @@ public class AppDbContext : DbContext
         try
         {
             this.Database.Migrate();
-            
             // TODO: Or, use Database.EnsureCreated() instead:
             // this.Database.EnsureCreated();
         }

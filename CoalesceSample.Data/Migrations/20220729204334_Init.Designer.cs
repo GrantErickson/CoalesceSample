@@ -4,6 +4,7 @@ using CoalesceSample.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoalesceSample.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220729204334_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -141,10 +143,6 @@ namespace CoalesceSample.Data.Migrations
 
                     b.HasKey("GameTagId");
 
-                    b.HasIndex("GameId");
-
-                    b.HasIndex("TagId");
-
                     b.ToTable("GameTags");
                 });
 
@@ -186,6 +184,21 @@ namespace CoalesceSample.Data.Migrations
                     b.HasKey("TagId");
 
                     b.ToTable("Tags");
+                });
+
+            modelBuilder.Entity("GameTag", b =>
+                {
+                    b.Property<int>("GameTagsTagId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GamesGameId")
+                        .HasColumnType("int");
+
+                    b.HasKey("GameTagsTagId", "GamesGameId");
+
+                    b.HasIndex("GamesGameId");
+
+                    b.ToTable("GameTag");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -323,32 +336,26 @@ namespace CoalesceSample.Data.Migrations
 
             modelBuilder.Entity("CoalesceSample.Data.Models.Game", b =>
                 {
-                    b.HasOne("CoalesceSample.Data.Models.Genre", "Genre")
+                    b.HasOne("CoalesceSample.Data.Models.Genre", null)
                         .WithMany("Games")
                         .HasForeignKey("GenreId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Genre");
                 });
 
-            modelBuilder.Entity("CoalesceSample.Data.Models.GameTag", b =>
+            modelBuilder.Entity("GameTag", b =>
                 {
-                    b.HasOne("CoalesceSample.Data.Models.Game", "Game")
-                        .WithMany("GameTags")
-                        .HasForeignKey("GameId")
+                    b.HasOne("CoalesceSample.Data.Models.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("GameTagsTagId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("CoalesceSample.Data.Models.Tag", "Tag")
-                        .WithMany("Games")
-                        .HasForeignKey("TagId")
+                    b.HasOne("CoalesceSample.Data.Models.Game", null)
+                        .WithMany()
+                        .HasForeignKey("GamesGameId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Game");
-
-                    b.Navigation("Tag");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -402,17 +409,7 @@ namespace CoalesceSample.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CoalesceSample.Data.Models.Game", b =>
-                {
-                    b.Navigation("GameTags");
-                });
-
             modelBuilder.Entity("CoalesceSample.Data.Models.Genre", b =>
-                {
-                    b.Navigation("Games");
-                });
-
-            modelBuilder.Entity("CoalesceSample.Data.Models.Tag", b =>
                 {
                     b.Navigation("Games");
                 });

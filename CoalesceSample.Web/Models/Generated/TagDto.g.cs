@@ -15,7 +15,7 @@ namespace CoalesceSample.Web.Models
         private int? _TagId;
         private string _Name;
         private string _Description;
-        private System.Collections.Generic.ICollection<CoalesceSample.Web.Models.GameDtoGen> _Games;
+        private System.Collections.Generic.ICollection<CoalesceSample.Web.Models.GameTagDtoGen> _Games;
 
         public int? TagId
         {
@@ -32,7 +32,7 @@ namespace CoalesceSample.Web.Models
             get => _Description;
             set { _Description = value; Changed(nameof(Description)); }
         }
-        public System.Collections.Generic.ICollection<CoalesceSample.Web.Models.GameDtoGen> Games
+        public System.Collections.Generic.ICollection<CoalesceSample.Web.Models.GameTagDtoGen> Games
         {
             get => _Games;
             set { _Games = value; Changed(nameof(Games)); }
@@ -55,12 +55,12 @@ namespace CoalesceSample.Web.Models
             if (propValGames != null && (tree == null || tree[nameof(this.Games)] != null))
             {
                 this.Games = propValGames
-                    .OrderBy(f => f.Name)
-                    .Select(f => f.MapToDto<CoalesceSample.Data.Models.Game, GameDtoGen>(context, tree?[nameof(this.Games)])).ToList();
+                    .OrderBy(f => f.GameTagId)
+                    .Select(f => f.MapToDto<CoalesceSample.Data.Models.GameTag, GameTagDtoGen>(context, tree?[nameof(this.Games)])).ToList();
             }
             else if (propValGames == null && tree?[nameof(this.Games)] != null)
             {
-                this.Games = new GameDtoGen[0];
+                this.Games = new GameTagDtoGen[0];
             }
 
         }

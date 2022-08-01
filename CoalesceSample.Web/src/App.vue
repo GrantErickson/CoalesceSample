@@ -1,6 +1,11 @@
 <template>
   <v-app id="vue-app">
     <v-navigation-drawer v-model="drawer" app clipped>
+      <v-row class="py-5 justify-center">
+        <v-card class="">
+          <v-btn outlined to="/login" exact> Login </v-btn>
+        </v-card>
+      </v-row>
       <v-list>
         <v-list-item link to="/">
           <v-list-item-action>
@@ -8,15 +13,6 @@
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>Home</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-list-item link to="/coalesce-example">
-          <v-list-item-action>
-            <v-icon>fas fa-palette</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Coalesce Example</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 

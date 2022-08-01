@@ -99,15 +99,23 @@ These commands are what you need to set up a Coalesce development environment
 ```
     public int TagId { get; set; }
 ```
-  2. Add Other Properties
+  2. Add Other Properties, you can find more information about the ManyToMany tag here on [the Coalesce docs](https://intellitect.github.io/Coalesce/modeling/model-components/attributes/many-to-many.html)
 ```
     public string Name { get; set; } = null!;
     public string? Description { get; set; }
-    public ICollection<Game> Games { get; set; } = new List<Game>();
+    [ManyToMany("Game")]
+    public ICollection<GameTag> Games { get; set; } = new List<GameTag>();
 ```
-  3. Complete the many-to-many relationship by adding to `Game.cs`
+  3. Add the many-to-many relationship to the Game class
 ```
-    public ICollection<Tag> Tags { get; set; } = new List<Tag>();
+    [ManyToMany("Tag")]
+    public ICollection<GameTag> Tags { get; set; } = new List<GameTag>();
+```
+  4. Complete the many-to-many relationship by adding a class for the inner table called `GameTags` with the following properties
+```
+    public int GameTagId { get; set; }
+    public int TagId { get; set; }
+    public int GameId { get; set; }
 ```
   4. Add a DbSet to the AppDbContext
 ```
@@ -175,6 +183,20 @@ These commands are what you need to set up a Coalesce development environment
   11. When designing your list, use a `v-if` with the condition `gameService.getGames.wasSuccessful` to determine if you have data to display, and display an alternate message as appropriate.
 
 ### 7. Add authentication with database accounts
+  1. In the `\CoalesceSample.Data` folder, create a new static class called `Roles`
+  2. Add static constants for SuperAdmin and User roles and a static array to track all roles
+```
+    public const string SuperAdmin = nameof(SuperAdmin);
+    public const string User = nameof(User);
+
+    public static readonly string[] AllRoles = new[]
+    {
+        SuperAdmin,
+        User,
+    };
+```
+  3. In the `\CoalesceSample.Data\Services` folder, create a new interface called `ILoginService` annotated with `[Coalesce, Service]`
+  4. 
 
 ### 8. Make the read-only page public
 
