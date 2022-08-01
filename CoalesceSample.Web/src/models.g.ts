@@ -1,29 +1,6 @@
 import * as metadata from './metadata.g'
 import { Model, DataSource, convertToModel, mapToModel } from 'coalesce-vue/lib/model'
 
-export interface ApplicationUser extends Model<typeof metadata.ApplicationUser> {
-  applicationUserId: number | null
-  name: string | null
-}
-export class ApplicationUser {
-  
-  /** Mutates the input object and its descendents into a valid ApplicationUser implementation. */
-  static convert(data?: Partial<ApplicationUser>): ApplicationUser {
-    return convertToModel(data || {}, metadata.ApplicationUser) 
-  }
-  
-  /** Maps the input object and its descendents to a new, valid ApplicationUser implementation. */
-  static map(data?: Partial<ApplicationUser>): ApplicationUser {
-    return mapToModel(data || {}, metadata.ApplicationUser) 
-  }
-  
-  /** Instantiate a new ApplicationUser, optionally basing it on the given data. */
-  constructor(data?: Partial<ApplicationUser> | {[k: string]: any}) {
-      Object.assign(this, ApplicationUser.map(data || {}));
-  }
-}
-
-
 export interface Game extends Model<typeof metadata.Game> {
   gameId: number | null
   name: string | null
@@ -32,7 +9,8 @@ export interface Game extends Model<typeof metadata.Game> {
   maxPlayers: number | null
   minPlayers: number | null
   genreId: number | null
-  gameTags: Tag[] | null
+  genre: Genre | null
+  gameTags: GameTag[] | null
 }
 export class Game {
   
@@ -49,6 +27,32 @@ export class Game {
   /** Instantiate a new Game, optionally basing it on the given data. */
   constructor(data?: Partial<Game> | {[k: string]: any}) {
       Object.assign(this, Game.map(data || {}));
+  }
+}
+
+
+export interface GameTag extends Model<typeof metadata.GameTag> {
+  gameTagId: number | null
+  tagId: number | null
+  tag: Tag | null
+  gameId: number | null
+  game: Game | null
+}
+export class GameTag {
+  
+  /** Mutates the input object and its descendents into a valid GameTag implementation. */
+  static convert(data?: Partial<GameTag>): GameTag {
+    return convertToModel(data || {}, metadata.GameTag) 
+  }
+  
+  /** Maps the input object and its descendents to a new, valid GameTag implementation. */
+  static map(data?: Partial<GameTag>): GameTag {
+    return mapToModel(data || {}, metadata.GameTag) 
+  }
+  
+  /** Instantiate a new GameTag, optionally basing it on the given data. */
+  constructor(data?: Partial<GameTag> | {[k: string]: any}) {
+      Object.assign(this, GameTag.map(data || {}));
   }
 }
 
@@ -82,7 +86,7 @@ export interface Tag extends Model<typeof metadata.Tag> {
   tagId: number | null
   name: string | null
   description: string | null
-  games: Game[] | null
+  games: GameTag[] | null
 }
 export class Tag {
   

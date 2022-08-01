@@ -19,7 +19,8 @@ namespace CoalesceSample.Web.Models
         private int? _MaxPlayers;
         private int? _MinPlayers;
         private int? _GenreId;
-        private System.Collections.Generic.ICollection<CoalesceSample.Web.Models.TagDtoGen> _GameTags;
+        private CoalesceSample.Web.Models.GenreDtoGen _Genre;
+        private System.Collections.Generic.ICollection<CoalesceSample.Web.Models.GameTagDtoGen> _GameTags;
 
         public int? GameId
         {
@@ -56,7 +57,12 @@ namespace CoalesceSample.Web.Models
             get => _GenreId;
             set { _GenreId = value; Changed(nameof(GenreId)); }
         }
-        public System.Collections.Generic.ICollection<CoalesceSample.Web.Models.TagDtoGen> GameTags
+        public CoalesceSample.Web.Models.GenreDtoGen Genre
+        {
+            get => _Genre;
+            set { _Genre = value; Changed(nameof(Genre)); }
+        }
+        public System.Collections.Generic.ICollection<CoalesceSample.Web.Models.GameTagDtoGen> GameTags
         {
             get => _GameTags;
             set { _GameTags = value; Changed(nameof(GameTags)); }
@@ -79,12 +85,19 @@ namespace CoalesceSample.Web.Models
             this.MaxPlayers = obj.MaxPlayers;
             this.MinPlayers = obj.MinPlayers;
             this.GenreId = obj.GenreId;
+            if (tree == null || tree[nameof(this.Genre)] != null)
+                this.Genre = obj.Genre.MapToDto<CoalesceSample.Data.Models.Genre, GenreDtoGen>(context, tree?[nameof(this.Genre)]);
+
             var propValGameTags = obj.GameTags;
-            if (propValGameTags != null)
+            if (propValGameTags != null && (tree == null || tree[nameof(this.GameTags)] != null))
             {
                 this.GameTags = propValGameTags
-                    .OrderBy(f => f.Name)
-                    .Select(f => f.MapToDto<CoalesceSample.Data.Models.Tag, TagDtoGen>(context, tree?[nameof(this.GameTags)])).ToList();
+                    .OrderBy(f => f.GameTagId)
+                    .Select(f => f.MapToDto<CoalesceSample.Data.Models.GameTag, GameTagDtoGen>(context, tree?[nameof(this.GameTags)])).ToList();
+            }
+            else if (propValGameTags == null && tree?[nameof(this.GameTags)] != null)
+            {
+                this.GameTags = new GameTagDtoGen[0];
             }
 
         }

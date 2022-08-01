@@ -13,16 +13,15 @@ export default new Router({
       component: () => import("./views/Home.vue"),
     },
     {
-      path: "/coalesce-example",
-      name: "coalesce-example",
-      component: () => import("./views/CoalesceExample.vue"),
-      props: { title: "Coalesce Example" },
-    },
-    {
       path: "/gamelist",
       name: "game-list",
       component: () => import("./views/GameList.vue"),
       props: { title: "Example Games List" },
+    },
+    {
+      path: "/login",
+      name: "login",
+      component: () => import("./views/Login.vue"),
     },
 
     // Coalesce admin routes
