@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using CoalesceSample.Data.Identity;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
@@ -25,7 +26,31 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
     WebRootPath = "wwwroot"
 });
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(config=>
+{
+    config.SwaggerDoc("v1", new OpenApiInfo { Title = "Coalesce Sample", Version = "v1" });
+    config.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type=SecuritySchemeType.Http,
+        Scheme="Bearer"
+    });
+    config.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            new List<string>()
+        }
+    });
+});
 
 builder.Logging
     .AddConsole()
@@ -71,7 +96,7 @@ services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             options.LogoutPath = "/";
             options.AccessDeniedPath = "Login";
         });
-var jwtConfiguration = builder.Configuration.GetSection("JwtConfig").Get<JwtConfiguration>();
+JwtConfiguration jwtConfiguration = builder.Configuration.GetSection("JwtConfig").Get<JwtConfiguration>();
 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -86,6 +111,7 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.SigningKey)),
         };
     });
+services.AddSingleton(jwtConfiguration);
 services.AddControllersWithViews();
 
 #endregion

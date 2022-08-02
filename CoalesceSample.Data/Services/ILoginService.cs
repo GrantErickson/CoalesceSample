@@ -1,4 +1,5 @@
-﻿using IntelliTect.Coalesce;
+﻿using CoalesceSample.Data.Identity;
+using IntelliTect.Coalesce;
 using IntelliTect.Coalesce.DataAnnotations;
 using IntelliTect.Coalesce.Models;
 using System.Security.Claims;
@@ -11,7 +12,7 @@ public interface ILoginService
     Task<ItemResult> Login(string email, string password);
 
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
-    Task<ItemResult> GetToken(string email, string password);
+    Task<ItemResult<dynamic>> GetToken(string email, string password);
 
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
     Task<ItemResult> Logout();

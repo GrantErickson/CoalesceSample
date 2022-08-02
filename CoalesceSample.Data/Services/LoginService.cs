@@ -1,8 +1,11 @@
-﻿using CoalesceSample.Data.Models;
+﻿using CoalesceSample.Data.Identity;
+using CoalesceSample.Data.Models;
 using IntelliTect.Coalesce.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -14,17 +17,19 @@ public class LoginService : ILoginService
     private AppDbContext Db { get; set; }
     private SignInManager<ApplicationUser> SignInManager { get; }
     private UserManager<ApplicationUser> UserManager { get; }
+    private JwtConfiguration JwtConfiguration { get; }
 
-    public LoginService(AppDbContext db, SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager)
+    public LoginService(AppDbContext db, SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, JwtConfiguration jwtConfiguration)
     {
         Db = db;
         SignInManager = signInManager;
         UserManager = userManager;
+        JwtConfiguration = jwtConfiguration;
     }
     public async Task<ItemResult> Login(string email, string password)
     {
         SignInResult? result = await SignInManager.PasswordSignInAsync(email, password, false, false);
-        
+
         if (result.Succeeded)
         {
             return true;
@@ -34,10 +39,39 @@ public class LoginService : ILoginService
             return "Unable to log in, please check your credentials.";
         }
     }
-    public async Task<ItemResult> GetToken(string email, string password)
+    public async Task<ItemResult<dynamic>> GetToken(string email, string password)
     {
-        //TODO put real token stuff here instead of using cookie auth
-        return await Login(email, password);
+        ApplicationUser? user = Db.Users.FirstOrDefault(u => u.Email == email);
+        if (user != null)
+        {
+            if (await UserManager.CheckPasswordAsync(user, password))
+            {
+                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtConfiguration.SigningKey));
+                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+                var claims = new List<Claim>
+                {
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Email)
+                };
+
+                var userRoles = await UserManager.GetRolesAsync(user);
+                foreach(var role in userRoles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                }
+
+                var token = new JwtSecurityToken(
+                    issuer: JwtConfiguration.Issuer,
+                    audience: JwtConfiguration.Audience,
+                    claims: claims,
+                    expires: DateTime.Now.AddMinutes(JwtConfiguration.ExpirationInMinutes),
+                    signingCredentials: credentials
+                    );
+                string jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
+                return new { token = jwtToken };
+            }
+        }
+        return "Unable to log in, please check your credentials.";
     }
 
     public async Task<ItemResult> Logout()
@@ -54,7 +88,7 @@ public class LoginService : ILoginService
         }
         else
         {
-            ApplicationUser newUser = new ApplicationUser(name, email) { UserName = email};
+            ApplicationUser newUser = new ApplicationUser(name, email) { UserName = email };
             IdentityResult? createUserResult = await UserManager.CreateAsync(newUser, password);
             if (createUserResult.Succeeded)
             {

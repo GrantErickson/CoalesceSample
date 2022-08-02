@@ -48,10 +48,11 @@ namespace CoalesceSample.Web.Api
         /// </summary>
         [HttpPost("GetToken")]
         [AllowAnonymous]
-        public virtual async Task<ItemResult> GetToken(string email, string password)
+        public virtual async Task<ItemResult<dynamic>> GetToken(string email, string password)
         {
             var _methodResult = await Service.GetToken(email, password);
-            var _result = new ItemResult(_methodResult);
+            var _result = new ItemResult<dynamic>(_methodResult);
+            _result.Object = _methodResult.Object;
             return _result;
         }
 

@@ -369,7 +369,8 @@ export const LoginService = domain.services.LoginService = {
       return: {
         name: "$return",
         displayName: "Result",
-        type: "void",
+        // Type not supported natively by Coalesce - falling back to unknown.
+        type: "unknown",
         role: "value",
       },
     },

@@ -46,7 +46,7 @@ export class LoginServiceApiClient extends ServiceApiClient<typeof $metadata.Log
     return this.$invoke($method, $params, $config)
   }
   
-  public getToken(email: string | null, password: string | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<void>> {
+  public getToken(email: string | null, password: string | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<unknown>> {
     const $method = this.$metadata.methods.getToken
     const $params =  {
       email,
