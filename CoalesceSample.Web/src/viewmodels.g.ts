@@ -7,12 +7,17 @@ export interface GameViewModel extends $models.Game {
   gameId: number | null;
   name: string | null;
   description: string | null;
+  releaseDate: Date | null;
+  likes: number | null;
+  numberOfRatings: number | null;
+  averageRating: number | null;
   averageDurationInHours: number | null;
   maxPlayers: number | null;
   minPlayers: number | null;
   genreId: number | null;
   genre: GenreViewModel | null;
   gameTags: GameTagViewModel[] | null;
+  reviews: ReviewViewModel[] | null;
 }
 export class GameViewModel extends ViewModel<$models.Game, $apiClients.GameApiClient, number> implements $models.Game  {
   
@@ -89,21 +94,45 @@ export class GenreListViewModel extends ListViewModel<$models.Genre, $apiClients
 }
 
 
+export interface ReviewViewModel extends $models.Review {
+  reviewId: string | null;
+  rating: number | null;
+  reviewDate: Date | null;
+  reviewerName: string | null;
+  reviewTitle: string | null;
+  reviewBody: string | null;
+}
+export class ReviewViewModel extends ViewModel<$models.Review, $apiClients.ReviewApiClient, string> implements $models.Review  {
+  
+  constructor(initialData?: DeepPartial<$models.Review> | null) {
+    super($metadata.Review, new $apiClients.ReviewApiClient(), initialData)
+  }
+}
+defineProps(ReviewViewModel, $metadata.Review)
+
+export class ReviewListViewModel extends ListViewModel<$models.Review, $apiClients.ReviewApiClient, ReviewViewModel> {
+  
+  constructor() {
+    super($metadata.Review, new $apiClients.ReviewApiClient())
+  }
+}
+
+
 export interface TagViewModel extends $models.Tag {
   tagId: number | null;
   name: string | null;
   description: string | null;
-  games: GameTagViewModel[] | null;
+  gameTags: GameTagViewModel[] | null;
 }
 export class TagViewModel extends ViewModel<$models.Tag, $apiClients.TagApiClient, number> implements $models.Tag  {
   
   
-  public addToGames() {
-    return this.$addChild('games') as GameTagViewModel
+  public addToGameTags() {
+    return this.$addChild('gameTags') as GameTagViewModel
   }
   
   get game(): ReadonlyArray<GameViewModel> {
-    return (this.games || []).map($ => $.game!).filter($ => $)
+    return (this.gameTags || []).map($ => $.game!).filter($ => $)
   }
   
   constructor(initialData?: DeepPartial<$models.Tag> | null) {
@@ -131,6 +160,39 @@ export class GameServiceViewModel extends ServiceViewModel<typeof $metadata.Game
     
     Object.defineProperty(this, 'getGames', {value: getGames});
     return getGames
+  }
+  
+  public get getGameDetails() {
+    const getGameDetails = this.$apiClient.$makeCaller(
+      this.$metadata.methods.getGameDetails,
+      (c, gameId: number | null) => c.getGameDetails(gameId),
+      () => ({gameId: null as number | null, }),
+      (c, args) => c.getGameDetails(args.gameId))
+    
+    Object.defineProperty(this, 'getGameDetails', {value: getGameDetails});
+    return getGameDetails
+  }
+  
+  public get likeGame() {
+    const likeGame = this.$apiClient.$makeCaller(
+      this.$metadata.methods.likeGame,
+      (c, gameId: number | null) => c.likeGame(gameId),
+      () => ({gameId: null as number | null, }),
+      (c, args) => c.likeGame(args.gameId))
+    
+    Object.defineProperty(this, 'likeGame', {value: likeGame});
+    return likeGame
+  }
+  
+  public get getGameImage() {
+    const getGameImage = this.$apiClient.$makeCaller(
+      this.$metadata.methods.getGameImage,
+      (c, gameId: number | null) => c.getGameImage(gameId),
+      () => ({gameId: null as number | null, }),
+      (c, args) => c.getGameImage(args.gameId))
+    
+    Object.defineProperty(this, 'getGameImage', {value: getGameImage});
+    return getGameImage
   }
   
   constructor() {
@@ -213,20 +275,53 @@ export class LoginServiceViewModel extends ServiceViewModel<typeof $metadata.Log
 }
 
 
+export class ReviewServiceViewModel extends ServiceViewModel<typeof $metadata.ReviewService, $apiClients.ReviewServiceApiClient> {
+  
+  public get getReviews() {
+    const getReviews = this.$apiClient.$makeCaller(
+      this.$metadata.methods.getReviews,
+      (c, gameId: number | null) => c.getReviews(gameId),
+      () => ({gameId: null as number | null, }),
+      (c, args) => c.getReviews(args.gameId))
+    
+    Object.defineProperty(this, 'getReviews', {value: getReviews});
+    return getReviews
+  }
+  
+  public get addReview() {
+    const addReview = this.$apiClient.$makeCaller(
+      this.$metadata.methods.addReview,
+      (c, gameId: number | null, reviewTitle: string | null, reviewBody: string | null, rating: number | null) => c.addReview(gameId, reviewTitle, reviewBody, rating),
+      () => ({gameId: null as number | null, reviewTitle: null as string | null, reviewBody: null as string | null, rating: null as number | null, }),
+      (c, args) => c.addReview(args.gameId, args.reviewTitle, args.reviewBody, args.rating))
+    
+    Object.defineProperty(this, 'addReview', {value: addReview});
+    return addReview
+  }
+  
+  constructor() {
+    super($metadata.ReviewService, new $apiClients.ReviewServiceApiClient())
+  }
+}
+
+
 const viewModelTypeLookup = ViewModel.typeLookup = {
   Game: GameViewModel,
   GameTag: GameTagViewModel,
   Genre: GenreViewModel,
+  Review: ReviewViewModel,
   Tag: TagViewModel,
 }
 const listViewModelTypeLookup = ListViewModel.typeLookup = {
   Game: GameListViewModel,
   GameTag: GameTagListViewModel,
   Genre: GenreListViewModel,
+  Review: ReviewListViewModel,
   Tag: TagListViewModel,
 }
 const serviceViewModelTypeLookup = ServiceViewModel.typeLookup = {
   GameService: GameServiceViewModel,
   LoginService: LoginServiceViewModel,
+  ReviewService: ReviewServiceViewModel,
 }
 

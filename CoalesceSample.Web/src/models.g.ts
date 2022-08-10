@@ -5,12 +5,17 @@ export interface Game extends Model<typeof metadata.Game> {
   gameId: number | null
   name: string | null
   description: string | null
+  releaseDate: Date | null
+  likes: number | null
+  numberOfRatings: number | null
+  averageRating: number | null
   averageDurationInHours: number | null
   maxPlayers: number | null
   minPlayers: number | null
   genreId: number | null
   genre: Genre | null
   gameTags: GameTag[] | null
+  reviews: Review[] | null
 }
 export class Game {
   
@@ -82,11 +87,38 @@ export class Genre {
 }
 
 
+export interface Review extends Model<typeof metadata.Review> {
+  reviewId: string | null
+  rating: number | null
+  reviewDate: Date | null
+  reviewerName: string | null
+  reviewTitle: string | null
+  reviewBody: string | null
+}
+export class Review {
+  
+  /** Mutates the input object and its descendents into a valid Review implementation. */
+  static convert(data?: Partial<Review>): Review {
+    return convertToModel(data || {}, metadata.Review) 
+  }
+  
+  /** Maps the input object and its descendents to a new, valid Review implementation. */
+  static map(data?: Partial<Review>): Review {
+    return mapToModel(data || {}, metadata.Review) 
+  }
+  
+  /** Instantiate a new Review, optionally basing it on the given data. */
+  constructor(data?: Partial<Review> | {[k: string]: any}) {
+      Object.assign(this, Review.map(data || {}));
+  }
+}
+
+
 export interface Tag extends Model<typeof metadata.Tag> {
   tagId: number | null
   name: string | null
   description: string | null
-  games: GameTag[] | null
+  gameTags: GameTag[] | null
 }
 export class Tag {
   

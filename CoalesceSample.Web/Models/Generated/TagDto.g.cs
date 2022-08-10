@@ -15,7 +15,7 @@ namespace CoalesceSample.Web.Models
         private int? _TagId;
         private string _Name;
         private string _Description;
-        private System.Collections.Generic.ICollection<CoalesceSample.Web.Models.GameTagDtoGen> _Games;
+        private System.Collections.Generic.ICollection<CoalesceSample.Web.Models.GameTagDtoGen> _GameTags;
 
         public int? TagId
         {
@@ -32,10 +32,10 @@ namespace CoalesceSample.Web.Models
             get => _Description;
             set { _Description = value; Changed(nameof(Description)); }
         }
-        public System.Collections.Generic.ICollection<CoalesceSample.Web.Models.GameTagDtoGen> Games
+        public System.Collections.Generic.ICollection<CoalesceSample.Web.Models.GameTagDtoGen> GameTags
         {
-            get => _Games;
-            set { _Games = value; Changed(nameof(Games)); }
+            get => _GameTags;
+            set { _GameTags = value; Changed(nameof(GameTags)); }
         }
 
         /// <summary>
@@ -51,16 +51,16 @@ namespace CoalesceSample.Web.Models
             this.TagId = obj.TagId;
             this.Name = obj.Name;
             this.Description = obj.Description;
-            var propValGames = obj.Games;
-            if (propValGames != null && (tree == null || tree[nameof(this.Games)] != null))
+            var propValGameTags = obj.GameTags;
+            if (propValGameTags != null && (tree == null || tree[nameof(this.GameTags)] != null))
             {
-                this.Games = propValGames
+                this.GameTags = propValGameTags
                     .OrderBy(f => f.GameTagId)
-                    .Select(f => f.MapToDto<CoalesceSample.Data.Models.GameTag, GameTagDtoGen>(context, tree?[nameof(this.Games)])).ToList();
+                    .Select(f => f.MapToDto<CoalesceSample.Data.Models.GameTag, GameTagDtoGen>(context, tree?[nameof(this.GameTags)])).ToList();
             }
-            else if (propValGames == null && tree?[nameof(this.Games)] != null)
+            else if (propValGameTags == null && tree?[nameof(this.GameTags)] != null)
             {
-                this.Games = new GameTagDtoGen[0];
+                this.GameTags = new GameTagDtoGen[0];
             }
 
         }

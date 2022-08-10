@@ -18,6 +18,8 @@ public class ApplicationUser : IdentityUser
         Email = email;
     }
 
+    public ICollection<Review> Reviews { get; set; } = new List<Review>();
+
 #nullable restore
 
 

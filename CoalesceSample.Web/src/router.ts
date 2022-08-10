@@ -15,8 +15,14 @@ export default new Router({
     {
       path: "/gamelist",
       name: "game-list",
-      component: () => import("./views/GameList.vue"),
+      component: () => import("./views/Games.vue"),
       props: { title: "Example Games List" },
+    },
+    {
+      path: "/gamedetails/:gameId",
+      name: "game-details",
+      component: () => import("./views/GameDetails.vue"),
+      props: ({ params }) => ({ gameId: Number.parseInt(params.gameId) }),
     },
     {
       path: "/login",

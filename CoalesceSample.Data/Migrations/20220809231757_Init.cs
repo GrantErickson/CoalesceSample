@@ -50,20 +50,6 @@ namespace CoalesceSample.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GameTags",
-                columns: table => new
-                {
-                    GameTagId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TagId = table.Column<int>(type: "int", nullable: false),
-                    GameId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GameTags", x => x.GameTagId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Genres",
                 columns: table => new
                 {
@@ -205,6 +191,10 @@ namespace CoalesceSample.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReleaseDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Likes = table.Column<int>(type: "int", nullable: false),
+                    TotalRating = table.Column<double>(type: "float", nullable: false),
+                    NumberOfRatings = table.Column<int>(type: "int", nullable: false),
                     AverageDurationInHours = table.Column<double>(type: "float", nullable: false),
                     MaxPlayers = table.Column<int>(type: "int", nullable: false),
                     MinPlayers = table.Column<int>(type: "int", nullable: false),
@@ -222,26 +212,58 @@ namespace CoalesceSample.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GameTag",
+                name: "GameTags",
                 columns: table => new
                 {
-                    GameTagsTagId = table.Column<int>(type: "int", nullable: false),
-                    GamesGameId = table.Column<int>(type: "int", nullable: false)
+                    GameTagId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TagId = table.Column<int>(type: "int", nullable: false),
+                    GameId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GameTag", x => new { x.GameTagsTagId, x.GamesGameId });
+                    table.PrimaryKey("PK_GameTags", x => x.GameTagId);
                     table.ForeignKey(
-                        name: "FK_GameTag_Games_GamesGameId",
-                        column: x => x.GamesGameId,
+                        name: "FK_GameTags_Games_GameId",
+                        column: x => x.GameId,
                         principalTable: "Games",
                         principalColumn: "GameId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_GameTag_Tags_GameTagsTagId",
-                        column: x => x.GameTagsTagId,
+                        name: "FK_GameTags_Tags_TagId",
+                        column: x => x.TagId,
                         principalTable: "Tags",
                         principalColumn: "TagId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Reviews",
+                columns: table => new
+                {
+                    ReviewId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Rating = table.Column<double>(type: "float", nullable: false),
+                    ReviewDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ReviewerId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ReviewerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReviewTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReviewBody = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    GameId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reviews", x => x.ReviewId);
+                    table.ForeignKey(
+                        name: "FK_Reviews_AspNetUsers_ReviewerId",
+                        column: x => x.ReviewerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Reviews_Games_GameId",
+                        column: x => x.GameId,
+                        principalTable: "Games",
+                        principalColumn: "GameId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -290,9 +312,24 @@ namespace CoalesceSample.Data.Migrations
                 column: "GenreId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GameTag_GamesGameId",
-                table: "GameTag",
-                column: "GamesGameId");
+                name: "IX_GameTags_GameId",
+                table: "GameTags",
+                column: "GameId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GameTags_TagId",
+                table: "GameTags",
+                column: "TagId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_GameId",
+                table: "Reviews",
+                column: "GameId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_ReviewerId",
+                table: "Reviews",
+                column: "ReviewerId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -313,22 +350,22 @@ namespace CoalesceSample.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "GameTag");
-
-            migrationBuilder.DropTable(
                 name: "GameTags");
 
             migrationBuilder.DropTable(
+                name: "Reviews");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Tags");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Games");
-
-            migrationBuilder.DropTable(
-                name: "Tags");
 
             migrationBuilder.DropTable(
                 name: "Genres");

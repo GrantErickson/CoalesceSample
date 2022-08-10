@@ -15,12 +15,17 @@ namespace CoalesceSample.Web.Models
         private int? _GameId;
         private string _Name;
         private string _Description;
+        private System.DateTime? _ReleaseDate;
+        private int? _Likes;
+        private int? _NumberOfRatings;
+        private double? _AverageRating;
         private double? _AverageDurationInHours;
         private int? _MaxPlayers;
         private int? _MinPlayers;
         private int? _GenreId;
         private CoalesceSample.Web.Models.GenreDtoGen _Genre;
         private System.Collections.Generic.ICollection<CoalesceSample.Web.Models.GameTagDtoGen> _GameTags;
+        private System.Collections.Generic.ICollection<CoalesceSample.Web.Models.ReviewDtoGen> _Reviews;
 
         public int? GameId
         {
@@ -36,6 +41,26 @@ namespace CoalesceSample.Web.Models
         {
             get => _Description;
             set { _Description = value; Changed(nameof(Description)); }
+        }
+        public System.DateTime? ReleaseDate
+        {
+            get => _ReleaseDate;
+            set { _ReleaseDate = value; Changed(nameof(ReleaseDate)); }
+        }
+        public int? Likes
+        {
+            get => _Likes;
+            set { _Likes = value; Changed(nameof(Likes)); }
+        }
+        public int? NumberOfRatings
+        {
+            get => _NumberOfRatings;
+            set { _NumberOfRatings = value; Changed(nameof(NumberOfRatings)); }
+        }
+        public double? AverageRating
+        {
+            get => _AverageRating;
+            set { _AverageRating = value; Changed(nameof(AverageRating)); }
         }
         public double? AverageDurationInHours
         {
@@ -67,6 +92,11 @@ namespace CoalesceSample.Web.Models
             get => _GameTags;
             set { _GameTags = value; Changed(nameof(GameTags)); }
         }
+        public System.Collections.Generic.ICollection<CoalesceSample.Web.Models.ReviewDtoGen> Reviews
+        {
+            get => _Reviews;
+            set { _Reviews = value; Changed(nameof(Reviews)); }
+        }
 
         /// <summary>
         /// Map from the domain object to the properties of the current DTO instance.
@@ -81,6 +111,10 @@ namespace CoalesceSample.Web.Models
             this.GameId = obj.GameId;
             this.Name = obj.Name;
             this.Description = obj.Description;
+            this.ReleaseDate = obj.ReleaseDate;
+            this.Likes = obj.Likes;
+            this.NumberOfRatings = obj.NumberOfRatings;
+            this.AverageRating = obj.AverageRating;
             this.AverageDurationInHours = obj.AverageDurationInHours;
             this.MaxPlayers = obj.MaxPlayers;
             this.MinPlayers = obj.MinPlayers;
@@ -100,6 +134,18 @@ namespace CoalesceSample.Web.Models
                 this.GameTags = new GameTagDtoGen[0];
             }
 
+            var propValReviews = obj.Reviews;
+            if (propValReviews != null && (tree == null || tree[nameof(this.Reviews)] != null))
+            {
+                this.Reviews = propValReviews
+                    .OrderBy(f => f.ReviewId)
+                    .Select(f => f.MapToDto<CoalesceSample.Data.Models.Review, ReviewDtoGen>(context, tree?[nameof(this.Reviews)])).ToList();
+            }
+            else if (propValReviews == null && tree?[nameof(this.Reviews)] != null)
+            {
+                this.Reviews = new ReviewDtoGen[0];
+            }
+
         }
 
         /// <summary>
@@ -114,6 +160,9 @@ namespace CoalesceSample.Web.Models
             if (ShouldMapTo(nameof(GameId))) entity.GameId = (GameId ?? entity.GameId);
             if (ShouldMapTo(nameof(Name))) entity.Name = Name;
             if (ShouldMapTo(nameof(Description))) entity.Description = Description;
+            if (ShouldMapTo(nameof(ReleaseDate))) entity.ReleaseDate = ReleaseDate;
+            if (ShouldMapTo(nameof(Likes))) entity.Likes = (Likes ?? entity.Likes);
+            if (ShouldMapTo(nameof(NumberOfRatings))) entity.NumberOfRatings = (NumberOfRatings ?? entity.NumberOfRatings);
             if (ShouldMapTo(nameof(AverageDurationInHours))) entity.AverageDurationInHours = (AverageDurationInHours ?? entity.AverageDurationInHours);
             if (ShouldMapTo(nameof(MaxPlayers))) entity.MaxPlayers = (MaxPlayers ?? entity.MaxPlayers);
             if (ShouldMapTo(nameof(MinPlayers))) entity.MinPlayers = (MinPlayers ?? entity.MinPlayers);

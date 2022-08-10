@@ -14,6 +14,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Genre> Genres => Set<Genre>();
     public DbSet<Tag> Tags => Set<Tag>();
     public DbSet<GameTag> GameTags => Set<GameTag>();
+    public DbSet<Review> Reviews => Set<Review>();
 
     public AppDbContext()
     {
@@ -50,6 +51,11 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
         try
         {
             this.Database.Migrate();
+            SeedTags();
+            SeedGeneres();
+            SeedGames();
+            SeedGameTags();
+
             // TODO: Or, use Database.EnsureCreated() instead:
             // this.Database.EnsureCreated();
         }
@@ -57,5 +63,139 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
         {
             // this exception is expected when using an InMemory database
         }
+    }
+
+    public void SeedTags()
+    {
+        List<Tag> addTags = new();
+        if (!Tags.Any(t => t.Name == "Multiplayer"))
+        {
+            addTags.Add(
+            new Tag()
+            {
+                Name = "Multiplayer",
+                Description = "Play with friends"
+            });
+        }
+        if (!Tags.Any(t => t.Name == "Singleplayer"))
+        {
+            addTags.Add(
+            new Tag()
+            {
+                Name = "Singleplayer",
+                Description = "Play alone"
+            });
+        }
+        if (!Tags.Any(t => t.Name == "Online"))
+        {
+            addTags.Add(
+            new Tag()
+            {
+                Name = "Online",
+                Description = "Play online"
+            });
+        }
+        this.Tags.AddRange(addTags);
+        SaveChanges();
+    }
+
+    public void SeedGeneres()
+    {
+        Genre testGenre = new Genre()
+        {
+            Name = "Test Genre",
+            Description = "A genre for testing",
+        };
+        Genres.Add(testGenre);
+        SaveChanges();
+    }
+
+    public void SeedGames()
+    {
+        Genre testGenre = Genres.First(g => g.Name == "Test Genre");
+
+        if (!Games.Any(t => t.Name == "Test Game 1"))
+        {
+            Game game = new()
+            {
+                Name = "Test Game 1",
+                Description = "The first testing game",
+                AverageDurationInHours = 5,
+                Genre = testGenre,
+                TotalRating = 4.5,
+                NumberOfRatings = 1,
+                MinPlayers = 1,
+                MaxPlayers = 2,
+                ReleaseDate = DateTime.Now,
+                Likes = 50,
+            };
+            Games.Add(game);
+        }
+
+        if (!Games.Any(t => t.Name == "Test Game Number 2"))
+        { 
+            Game game = new()
+            {
+                Name = "Test Game Number 2",
+                Description = "Another Testing Game 123 123 123",
+                AverageDurationInHours = 5,
+                Genre = testGenre,
+                TotalRating = 50,
+                NumberOfRatings = 10,
+                MinPlayers = 1,
+                MaxPlayers = 42,
+                ReleaseDate = DateTime.Now.AddDays(-50),
+                Likes = 250,
+            };
+            Games.Add(game);
+        }
+
+        SaveChanges();
+    }
+
+    public void SeedGameTags()
+    {
+
+        List<GameTag> addGameTags = new();
+        Game game1 = Games.First(g => g.Name == "Test Game 1");
+        Game game2 = Games.First(g => g.Name == "Test Game Number 2");
+
+        Tag singleplayer = Tags.First(t => t.Name == "Singleplayer");
+        Tag multiplayer = Tags.First(t => t.Name == "Multiplayer");
+        Tag online = Tags.First(t => t.Name == "Online");
+
+        List<GameTag> existingTags = GameTags.Where(gt => gt.GameId == game1.GameId).ToList();
+        RemoveRange(existingTags);
+        existingTags = GameTags.Where(gt => gt.GameId == game2.GameId).ToList();
+        RemoveRange(existingTags);
+
+        addGameTags.Add(new GameTag()
+        {
+            GameId = game1.GameId,
+            TagId = singleplayer.TagId
+        });
+        addGameTags.Add(new GameTag()
+        {
+            GameId = game1.GameId,
+            TagId = multiplayer.TagId
+        }); 
+        addGameTags.Add(new GameTag()
+        {
+            GameId = game2.GameId,
+            TagId = singleplayer.TagId
+        });
+        addGameTags.Add(new GameTag()
+        {
+            GameId = game2.GameId,
+            TagId = multiplayer.TagId
+        });
+        addGameTags.Add(new GameTag()
+        {
+            GameId = game2.GameId,
+            TagId = online.TagId
+        });
+
+        GameTags.AddRange(addGameTags);
+
     }
 }

@@ -34,6 +34,33 @@ export const Game = domain.types.Game = {
       type: "string",
       role: "value",
     },
+    releaseDate: {
+      name: "releaseDate",
+      displayName: "Release Date",
+      type: "date",
+      dateKind: "datetime",
+      noOffset: true,
+      role: "value",
+    },
+    likes: {
+      name: "likes",
+      displayName: "Likes",
+      type: "number",
+      role: "value",
+    },
+    numberOfRatings: {
+      name: "numberOfRatings",
+      displayName: "Number Of Ratings",
+      type: "number",
+      role: "value",
+    },
+    averageRating: {
+      name: "averageRating",
+      displayName: "Average Rating",
+      type: "number",
+      role: "value",
+      dontSerialize: true,
+    },
     averageDurationInHours: {
       name: "averageDurationInHours",
       displayName: "Average Duration In Hours",
@@ -101,6 +128,20 @@ export const Game = domain.types.Game = {
       },
       dontSerialize: true,
     },
+    reviews: {
+      name: "reviews",
+      displayName: "Reviews",
+      type: "collection",
+      itemType: {
+        name: "$collectionItem",
+        displayName: "",
+        role: "value",
+        type: "model",
+        get typeDef() { return (domain.types.Review as ModelType) },
+      },
+      role: "value",
+      dontSerialize: true,
+    },
   },
   methods: {
   },
@@ -144,7 +185,7 @@ export const GameTag = domain.types.GameTag = {
       role: "referenceNavigation",
       get foreignKey() { return (domain.types.GameTag as ModelType).props.tagId as ForeignKeyProperty },
       get principalKey() { return (domain.types.Tag as ModelType).props.tagId as PrimaryKeyProperty },
-      get inverseNavigation() { return (domain.types.Tag as ModelType).props.games as ModelCollectionNavigationProperty },
+      get inverseNavigation() { return (domain.types.Tag as ModelType).props.gameTags as ModelCollectionNavigationProperty },
       dontSerialize: true,
     },
     gameId: {
@@ -227,6 +268,60 @@ export const Genre = domain.types.Genre = {
   dataSources: {
   },
 }
+export const Review = domain.types.Review = {
+  name: "Review",
+  displayName: "Review",
+  get displayProp() { return this.props.reviewId }, 
+  type: "model",
+  controllerRoute: "Review",
+  get keyProp() { return this.props.reviewId }, 
+  behaviorFlags: 7,
+  props: {
+    reviewId: {
+      name: "reviewId",
+      displayName: "Review Id",
+      type: "string",
+      role: "primaryKey",
+      hidden: 3,
+    },
+    rating: {
+      name: "rating",
+      displayName: "Rating",
+      type: "number",
+      role: "value",
+    },
+    reviewDate: {
+      name: "reviewDate",
+      displayName: "Review Date",
+      type: "date",
+      dateKind: "datetime",
+      noOffset: true,
+      role: "value",
+    },
+    reviewerName: {
+      name: "reviewerName",
+      displayName: "Reviewer Name",
+      type: "string",
+      role: "value",
+    },
+    reviewTitle: {
+      name: "reviewTitle",
+      displayName: "Review Title",
+      type: "string",
+      role: "value",
+    },
+    reviewBody: {
+      name: "reviewBody",
+      displayName: "Review Body",
+      type: "string",
+      role: "value",
+    },
+  },
+  methods: {
+  },
+  dataSources: {
+  },
+}
 export const Tag = domain.types.Tag = {
   name: "Tag",
   displayName: "Tag",
@@ -255,9 +350,9 @@ export const Tag = domain.types.Tag = {
       type: "string",
       role: "value",
     },
-    games: {
-      name: "games",
-      displayName: "Games",
+    gameTags: {
+      name: "gameTags",
+      displayName: "Game Tags",
       type: "collection",
       itemType: {
         name: "$collectionItem",
@@ -310,6 +405,68 @@ export const GameService = domain.services.GameService = {
           type: "model",
           get typeDef() { return (domain.types.Game as ModelType) },
         },
+        role: "value",
+      },
+    },
+    getGameDetails: {
+      name: "getGameDetails",
+      displayName: "Get Game Details",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+        gameId: {
+          name: "gameId",
+          displayName: "Game Id",
+          type: "number",
+          role: "value",
+        },
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        type: "model",
+        get typeDef() { return (domain.types.Game as ModelType) },
+        role: "value",
+      },
+    },
+    likeGame: {
+      name: "likeGame",
+      displayName: "Like Game",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+        gameId: {
+          name: "gameId",
+          displayName: "Game Id",
+          type: "number",
+          role: "value",
+        },
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        type: "void",
+        role: "value",
+      },
+    },
+    getGameImage: {
+      name: "getGameImage",
+      displayName: "Get Game Image",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+        gameId: {
+          name: "gameId",
+          displayName: "Game Id",
+          type: "number",
+          role: "value",
+        },
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        // Type not supported natively by Coalesce - falling back to unknown.
+        type: "unknown",
         role: "value",
       },
     },
@@ -462,6 +619,79 @@ export const LoginService = domain.services.LoginService = {
     },
   },
 }
+export const ReviewService = domain.services.ReviewService = {
+  name: "ReviewService",
+  displayName: "Review Service",
+  type: "service",
+  controllerRoute: "ReviewService",
+  methods: {
+    getReviews: {
+      name: "getReviews",
+      displayName: "Get Reviews",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+        gameId: {
+          name: "gameId",
+          displayName: "Game Id",
+          type: "number",
+          role: "value",
+        },
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        type: "collection",
+        itemType: {
+          name: "$collectionItem",
+          displayName: "",
+          role: "value",
+          type: "model",
+          get typeDef() { return (domain.types.Review as ModelType) },
+        },
+        role: "value",
+      },
+    },
+    addReview: {
+      name: "addReview",
+      displayName: "Add Review",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+        gameId: {
+          name: "gameId",
+          displayName: "Game Id",
+          type: "number",
+          role: "value",
+        },
+        reviewTitle: {
+          name: "reviewTitle",
+          displayName: "Review Title",
+          type: "string",
+          role: "value",
+        },
+        reviewBody: {
+          name: "reviewBody",
+          displayName: "Review Body",
+          type: "string",
+          role: "value",
+        },
+        rating: {
+          name: "rating",
+          displayName: "Rating",
+          type: "number",
+          role: "value",
+        },
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        type: "void",
+        role: "value",
+      },
+    },
+  },
+}
 
 interface AppDomain extends Domain {
   enums: {
@@ -470,11 +700,13 @@ interface AppDomain extends Domain {
     Game: typeof Game
     GameTag: typeof GameTag
     Genre: typeof Genre
+    Review: typeof Review
     Tag: typeof Tag
   }
   services: {
     GameService: typeof GameService
     LoginService: typeof LoginService
+    ReviewService: typeof ReviewService
   }
 }
 

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoalesceSample.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220729204334_Init")]
+    [Migration("20220809231757_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -110,6 +110,9 @@ namespace CoalesceSample.Data.Migrations
                     b.Property<int>("GenreId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Likes")
+                        .HasColumnType("int");
+
                     b.Property<int>("MaxPlayers")
                         .HasColumnType("int");
 
@@ -119,6 +122,15 @@ namespace CoalesceSample.Data.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NumberOfRatings")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ReleaseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("TotalRating")
+                        .HasColumnType("float");
 
                     b.HasKey("GameId");
 
@@ -143,6 +155,10 @@ namespace CoalesceSample.Data.Migrations
 
                     b.HasKey("GameTagId");
 
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("TagId");
+
                     b.ToTable("GameTags");
                 });
 
@@ -166,6 +182,45 @@ namespace CoalesceSample.Data.Migrations
                     b.ToTable("Genres");
                 });
 
+            modelBuilder.Entity("CoalesceSample.Data.Models.Review", b =>
+                {
+                    b.Property<Guid>("ReviewId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("GameId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Rating")
+                        .HasColumnType("float");
+
+                    b.Property<string>("ReviewBody")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ReviewDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReviewTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReviewerId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ReviewerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ReviewId");
+
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("ReviewerId");
+
+                    b.ToTable("Reviews");
+                });
+
             modelBuilder.Entity("CoalesceSample.Data.Models.Tag", b =>
                 {
                     b.Property<int>("TagId")
@@ -184,21 +239,6 @@ namespace CoalesceSample.Data.Migrations
                     b.HasKey("TagId");
 
                     b.ToTable("Tags");
-                });
-
-            modelBuilder.Entity("GameTag", b =>
-                {
-                    b.Property<int>("GameTagsTagId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GamesGameId")
-                        .HasColumnType("int");
-
-                    b.HasKey("GameTagsTagId", "GamesGameId");
-
-                    b.HasIndex("GamesGameId");
-
-                    b.ToTable("GameTag");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -336,26 +376,47 @@ namespace CoalesceSample.Data.Migrations
 
             modelBuilder.Entity("CoalesceSample.Data.Models.Game", b =>
                 {
-                    b.HasOne("CoalesceSample.Data.Models.Genre", null)
+                    b.HasOne("CoalesceSample.Data.Models.Genre", "Genre")
                         .WithMany("Games")
                         .HasForeignKey("GenreId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Genre");
                 });
 
-            modelBuilder.Entity("GameTag", b =>
+            modelBuilder.Entity("CoalesceSample.Data.Models.GameTag", b =>
                 {
-                    b.HasOne("CoalesceSample.Data.Models.Tag", null)
-                        .WithMany()
-                        .HasForeignKey("GameTagsTagId")
+                    b.HasOne("CoalesceSample.Data.Models.Game", "Game")
+                        .WithMany("GameTags")
+                        .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("CoalesceSample.Data.Models.Game", null)
-                        .WithMany()
-                        .HasForeignKey("GamesGameId")
+                    b.HasOne("CoalesceSample.Data.Models.Tag", "Tag")
+                        .WithMany("GameTags")
+                        .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Game");
+
+                    b.Navigation("Tag");
+                });
+
+            modelBuilder.Entity("CoalesceSample.Data.Models.Review", b =>
+                {
+                    b.HasOne("CoalesceSample.Data.Models.Game", null)
+                        .WithMany("Reviews")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CoalesceSample.Data.Models.ApplicationUser", "Reviewer")
+                        .WithMany("Reviews")
+                        .HasForeignKey("ReviewerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Reviewer");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -409,9 +470,26 @@ namespace CoalesceSample.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("CoalesceSample.Data.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("CoalesceSample.Data.Models.Game", b =>
+                {
+                    b.Navigation("GameTags");
+
+                    b.Navigation("Reviews");
+                });
+
             modelBuilder.Entity("CoalesceSample.Data.Models.Genre", b =>
                 {
                     b.Navigation("Games");
+                });
+
+            modelBuilder.Entity("CoalesceSample.Data.Models.Tag", b =>
+                {
+                    b.Navigation("GameTags");
                 });
 #pragma warning restore 612, 618
         }
