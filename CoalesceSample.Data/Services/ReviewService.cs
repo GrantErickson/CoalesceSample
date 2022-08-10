@@ -24,7 +24,7 @@ public class ReviewService : IReviewService
         }
         return game.Reviews.ToList();
     }
-    public async Task<ItemResult> addReview(ClaimsPrincipal user, int gameId, string reviewTitle, string reviewBody, double rating)
+    public async Task<ItemResult<Review>> AddReview(ClaimsPrincipal user, int gameId, string reviewTitle, string reviewBody, double rating)
     {
         Claim? claim = user.FindFirst(ClaimTypes.NameIdentifier);
         if (claim == null)
@@ -57,6 +57,6 @@ public class ReviewService : IReviewService
         game.TotalRating += rating;
         game.NumberOfRatings++;
         await Db.SaveChangesAsync();
-        return true;
+        return newReview;
     }
 }

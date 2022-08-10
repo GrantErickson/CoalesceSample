@@ -35,7 +35,7 @@
             </v-card-text>
             <v-card-actions>
               <v-chip-group>
-                <v-tooltip v-for="tag in tags" :key="tag.name" bottom>
+                <v-tooltip v-for="tag in tags" :key="tag.tag.name" bottom>
                   <template #activator="{ on, attrs }">
                     <v-chip
                       class="pa-2 ma-0"
@@ -67,10 +67,12 @@
               <v-spacer />
               <v-sheet>
                 <v-row class="align-center">
-                  <span> Total Reviews: {{ numberOfRatings }} </span>
+                  <span :key="'noRatings' + game.numberOfRatings">
+                    Total Reviews: {{ numberOfRatings }}
+                  </span>
                   <span class="pl-8 pr-2"> Average rating: </span>
                   <v-rating
-                    :key="game.averageRating"
+                    :key="'avgRatings' + game.averageRating"
                     v-model="game.averageRating"
                     dense
                     class="mr-4"
@@ -88,10 +90,7 @@
                 ],
               }"
             >
-              <game-review-list
-                :key="gameReviews.length"
-                :reviews="gameReviews"
-              ></game-review-list>
+              <game-review-list :key="'revList' + game.numberOfRatings" :reviews="game.reviews"></game-review-list>
             </c-loader-status>
           </v-card>
         </v-col>
@@ -137,7 +136,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { Game, Review } from "@/models.g";
+import { Game } from "@/models.g";
 import { GameServiceViewModel, ReviewServiceViewModel } from "@/viewmodels.g";
 import GameReviewList from "@/components/game/GameReviewList.vue";
 
@@ -149,7 +148,6 @@ export default class GameDetails extends Vue {
   gameId!: number;
 
   game!: Game;
-  gameReviews!: Review[];
   gameService = new GameServiceViewModel();
   reviewService = new ReviewServiceViewModel();
 
@@ -165,11 +163,11 @@ export default class GameDetails extends Vue {
       this.gameService.getGameDetails.result
     ) {
       this.game = this.gameService.getGameDetails.result;
-      this.gameReviews = this.gameService.getGameDetails.result.reviews ?? [];
       await this.gameService.getGameImage(this.game.gameId).catch((x) => {
         console.table(x);
       });
     }
+    console.table(this.game.reviews);
   }
 
   get numberOfRatings() {
@@ -202,9 +200,15 @@ export default class GameDetails extends Vue {
       this.reviewBody,
       this.reviewRating
     );
-    await this.reviewService.getReviews(this.gameId);
-    this.gameReviews = this.reviewService.getReviews.result ?? [];
-    this.game.reviews = this.gameReviews;
+    if (this.reviewService.addReview.wasSuccessful) {
+      this.game.reviews!.push(this.reviewService.addReview.result!);
+      this.game.numberOfRatings!++;
+      this.game.averageRating =
+        (this.game.averageRating! + this.reviewRating) / 2;
+      this.clearReview();
+    }
+    // await this.reviewService.getReviews(this.gameId);
+    // this.game.reviews = this.reviewService.getReviews.result ?? [];
     this.clearReview();
   }
 }

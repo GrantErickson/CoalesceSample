@@ -2,7 +2,7 @@
   <v-card>
     <v-card-text>
       <v-list>
-        <v-list-item v-for="(game, i) in games" :key="i" class="py-3">
+        <v-list-item v-for="game in games" :key="game.name" class="py-3">
           <game-card :game="game"></game-card>
         </v-list-item>
       </v-list>
@@ -27,5 +27,3 @@ export default class GameCardList extends Vue {
   gameService = new GameServiceViewModel();
 }
 </script>
-
-<style scoped></style>

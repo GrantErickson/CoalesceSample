@@ -101,13 +101,16 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
 
     public void SeedGeneres()
     {
-        Genre testGenre = new Genre()
+        if (!Genres.Any(g => g.Name == "Test Genre"))
         {
-            Name = "Test Genre",
-            Description = "A genre for testing",
-        };
-        Genres.Add(testGenre);
-        SaveChanges();
+            Genre testGenre = new Genre()
+            {
+                Name = "Test Genre",
+                Description = "A genre for testing",
+            };
+            Genres.Add(testGenre);
+            SaveChanges();
+        }
     }
 
     public void SeedGames()
@@ -122,8 +125,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                 Description = "The first testing game",
                 AverageDurationInHours = 5,
                 Genre = testGenre,
-                TotalRating = 4.5,
-                NumberOfRatings = 1,
+                TotalRating = 0,
+                NumberOfRatings = 0,
                 MinPlayers = 1,
                 MaxPlayers = 2,
                 ReleaseDate = DateTime.Now,
@@ -140,8 +143,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                 Description = "Another Testing Game 123 123 123",
                 AverageDurationInHours = 5,
                 Genre = testGenre,
-                TotalRating = 50,
-                NumberOfRatings = 10,
+                TotalRating = 0,
+                NumberOfRatings = 0,
                 MinPlayers = 1,
                 MaxPlayers = 42,
                 ReleaseDate = DateTime.Now.AddDays(-50),
@@ -196,6 +199,6 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
         });
 
         GameTags.AddRange(addGameTags);
-
+        SaveChanges();
     }
 }

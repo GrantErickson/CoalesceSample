@@ -72,6 +72,7 @@ services.AddDbContext<AppDbContext>(options =>
 
 services.AddScoped<GameService>();
 services.AddScoped<ILoginService, LoginService>();
+services.AddScoped<IReviewService, ReviewService>();
 
 services.AddCoalesce<AppDbContext>();
 

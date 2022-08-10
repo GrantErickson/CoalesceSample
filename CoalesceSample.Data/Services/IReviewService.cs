@@ -12,5 +12,5 @@ public interface IReviewService
     public Task<ItemResult<List<Review>>> GetReviews(int gameId);
 
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAuthorized)]
-    public Task<ItemResult> addReview(ClaimsPrincipal user, int gameId, string reviewTitle, string reviewBody, double rating);
+    public Task<ItemResult<Review>> AddReview(ClaimsPrincipal user, int gameId, string reviewTitle, string reviewBody, double rating);
 }

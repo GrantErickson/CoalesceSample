@@ -686,7 +686,8 @@ export const ReviewService = domain.services.ReviewService = {
       return: {
         name: "$return",
         displayName: "Result",
-        type: "void",
+        type: "model",
+        get typeDef() { return (domain.types.Review as ModelType) },
         role: "value",
       },
     },

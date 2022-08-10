@@ -130,7 +130,7 @@ export class ReviewServiceApiClient extends ServiceApiClient<typeof $metadata.Re
     return this.$invoke($method, $params, $config)
   }
   
-  public addReview(gameId: number | null, reviewTitle: string | null, reviewBody: string | null, rating: number | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<void>> {
+  public addReview(gameId: number | null, reviewTitle: string | null, reviewBody: string | null, rating: number | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Review>> {
     const $method = this.$metadata.methods.addReview
     const $params =  {
       gameId,

@@ -47,14 +47,17 @@ namespace CoalesceSample.Web.Api
         }
 
         /// <summary>
-        /// Method: addReview
+        /// Method: AddReview
         /// </summary>
-        [HttpPost("addReview")]
+        [HttpPost("AddReview")]
         [Authorize]
-        public virtual async Task<ItemResult> addReview(int gameId, string reviewTitle, string reviewBody, double rating)
+        public virtual async Task<ItemResult<ReviewDtoGen>> AddReview(int gameId, string reviewTitle, string reviewBody, double rating)
         {
-            var _methodResult = await Service.addReview(User, gameId, reviewTitle, reviewBody, rating);
-            var _result = new ItemResult(_methodResult);
+            IncludeTree includeTree = null;
+            var _mappingContext = new MappingContext(User);
+            var _methodResult = await Service.AddReview(User, gameId, reviewTitle, reviewBody, rating);
+            var _result = new ItemResult<ReviewDtoGen>(_methodResult);
+            _result.Object = Mapper.MapToDto<CoalesceSample.Data.Models.Review, ReviewDtoGen>(_methodResult.Object, _mappingContext, includeTree);
             return _result;
         }
     }
