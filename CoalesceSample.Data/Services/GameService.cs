@@ -11,7 +11,7 @@ public class GameService
 
     public GameService(AppDbContext db)
     {
-        Db = db; 
+        Db = db;
     }
 
     [Coalesce]
@@ -37,6 +37,7 @@ public class GameService
             .Include(g => g.GameTags)
                 .ThenInclude(gt => gt.Tag)
             .Include(g => g.Genre)
+            .Include(g => g.Reviews)
             .FirstOrDefault();
         if (game == null)
         {
