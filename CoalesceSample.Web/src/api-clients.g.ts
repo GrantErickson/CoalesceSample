@@ -18,6 +18,11 @@ export class GenreApiClient extends ModelApiClient<$models.Genre> {
 }
 
 
+export class ImageApiClient extends ModelApiClient<$models.Image> {
+  constructor() { super($metadata.Image) }
+}
+
+
 export class ReviewApiClient extends ModelApiClient<$models.Review> {
   constructor() { super($metadata.Review) }
 }
@@ -53,10 +58,19 @@ export class GameServiceApiClient extends ServiceApiClient<typeof $metadata.Game
     return this.$invoke($method, $params, $config)
   }
   
-  public getGameImage(gameId: number | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<unknown>> {
+  public getGameImage(gameId: number | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<string>> {
     const $method = this.$metadata.methods.getGameImage
     const $params =  {
       gameId,
+    }
+    return this.$invoke($method, $params, $config)
+  }
+  
+  public uploadGameImage(gameId: number | null, image: File | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<void>> {
+    const $method = this.$metadata.methods.uploadGameImage
+    const $params =  {
+      gameId,
+      image,
     }
     return this.$invoke($method, $params, $config)
   }

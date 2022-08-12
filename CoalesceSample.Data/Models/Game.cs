@@ -1,12 +1,12 @@
 ﻿using IntelliTect.Coalesce.DataAnnotations;
+using IntelliTect.Coalesce.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace CoalesceSample.Data.Models;
 public class Game
 {
-    [Range(1, int.MaxValue)]
     public int GameId { get; set; }
-    public string Name { get; set; } = null!;
+    public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = null!;
     public DateTime? ReleaseDate { get; set; }
     public int Likes { get; set; } = 0;
@@ -19,6 +19,8 @@ public class Game
     public int MinPlayers { get; set; } = 1;
     public int GenreId { get; set; }
     public Genre Genre { get; set; } = null!;
+    public int ImageId { get; set; }
+    public Image Image { get; set; } = new Image();
     [ManyToMany("Tag")]
     public ICollection<GameTag> GameTags { get; set; } = new List<GameTag>();
     public ICollection<Review> Reviews { get; set; } = new List<Review>();

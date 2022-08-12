@@ -97,9 +97,9 @@ namespace CoalesceSample.Web.Api
         /// </summary>
         [HttpPost("IsLoggedIn")]
         [AllowAnonymous]
-        public virtual ItemResult IsLoggedIn()
+        public virtual async Task<ItemResult> IsLoggedIn()
         {
-            var _methodResult = Service.IsLoggedIn(User);
+            var _methodResult = await Service.IsLoggedIn(User);
             var _result = new ItemResult(_methodResult);
             return _result;
         }

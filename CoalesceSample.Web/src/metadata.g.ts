@@ -103,6 +103,29 @@ export const Game = domain.types.Game = {
       get inverseNavigation() { return (domain.types.Genre as ModelType).props.games as ModelCollectionNavigationProperty },
       dontSerialize: true,
     },
+    imageId: {
+      name: "imageId",
+      displayName: "Image Id",
+      type: "number",
+      role: "foreignKey",
+      get principalKey() { return (domain.types.Image as ModelType).props.imageId as PrimaryKeyProperty },
+      get principalType() { return (domain.types.Image as ModelType) },
+      get navigationProp() { return (domain.types.Game as ModelType).props.image as ModelReferenceNavigationProperty },
+      hidden: 3,
+      rules: {
+        required: val => val != null || "Image is required.",
+      }
+    },
+    image: {
+      name: "image",
+      displayName: "Image",
+      type: "model",
+      get typeDef() { return (domain.types.Image as ModelType) },
+      role: "referenceNavigation",
+      get foreignKey() { return (domain.types.Game as ModelType).props.imageId as ForeignKeyProperty },
+      get principalKey() { return (domain.types.Image as ModelType).props.imageId as PrimaryKeyProperty },
+      dontSerialize: true,
+    },
     gameTags: {
       name: "gameTags",
       displayName: "Game Tags",
@@ -261,6 +284,34 @@ export const Genre = domain.types.Genre = {
       get foreignKey() { return (domain.types.Game as ModelType).props.genreId as ForeignKeyProperty },
       get inverseNavigation() { return (domain.types.Game as ModelType).props.genre as ModelReferenceNavigationProperty },
       dontSerialize: true,
+    },
+  },
+  methods: {
+  },
+  dataSources: {
+  },
+}
+export const Image = domain.types.Image = {
+  name: "Image",
+  displayName: "Image",
+  get displayProp() { return this.props.imageId }, 
+  type: "model",
+  controllerRoute: "Image",
+  get keyProp() { return this.props.imageId }, 
+  behaviorFlags: 7,
+  props: {
+    imageId: {
+      name: "imageId",
+      displayName: "Image Id",
+      type: "number",
+      role: "primaryKey",
+      hidden: 3,
+    },
+    base64Image: {
+      name: "base64Image",
+      displayName: "Base64 Image",
+      type: "string",
+      role: "value",
     },
   },
   methods: {
@@ -465,8 +516,33 @@ export const GameService = domain.services.GameService = {
       return: {
         name: "$return",
         displayName: "Result",
-        // Type not supported natively by Coalesce - falling back to unknown.
-        type: "unknown",
+        type: "string",
+        role: "value",
+      },
+    },
+    uploadGameImage: {
+      name: "uploadGameImage",
+      displayName: "Upload Game Image",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+        gameId: {
+          name: "gameId",
+          displayName: "Game Id",
+          type: "number",
+          role: "value",
+        },
+        image: {
+          name: "image",
+          displayName: "Image",
+          type: "file",
+          role: "value",
+        },
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        type: "void",
         role: "value",
       },
     },
@@ -701,6 +777,7 @@ interface AppDomain extends Domain {
     Game: typeof Game
     GameTag: typeof GameTag
     Genre: typeof Genre
+    Image: typeof Image
     Review: typeof Review
     Tag: typeof Tag
   }

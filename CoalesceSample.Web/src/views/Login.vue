@@ -134,7 +134,7 @@ export default class Login extends Vue {
   password = "";
   password2 = "";
 
-  signInType = "jwt";
+  signInType = "cookie";
 
   async created() {
     await this.loginService.isLoggedIn();

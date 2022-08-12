@@ -126,7 +126,7 @@ public class LoginService : ILoginService
         }
     }
 
-    public ItemResult IsLoggedIn(ClaimsPrincipal user)
+    public async Task<ItemResult> IsLoggedIn(ClaimsPrincipal user)
     {
         if (SignInManager.IsSignedIn(user))
         {

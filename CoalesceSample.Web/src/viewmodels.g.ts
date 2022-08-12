@@ -16,6 +16,8 @@ export interface GameViewModel extends $models.Game {
   minPlayers: number | null;
   genreId: number | null;
   genre: GenreViewModel | null;
+  imageId: number | null;
+  image: ImageViewModel | null;
   gameTags: GameTagViewModel[] | null;
   reviews: ReviewViewModel[] | null;
 }
@@ -90,6 +92,26 @@ export class GenreListViewModel extends ListViewModel<$models.Genre, $apiClients
   
   constructor() {
     super($metadata.Genre, new $apiClients.GenreApiClient())
+  }
+}
+
+
+export interface ImageViewModel extends $models.Image {
+  imageId: number | null;
+  base64Image: string | null;
+}
+export class ImageViewModel extends ViewModel<$models.Image, $apiClients.ImageApiClient, number> implements $models.Image  {
+  
+  constructor(initialData?: DeepPartial<$models.Image> | null) {
+    super($metadata.Image, new $apiClients.ImageApiClient(), initialData)
+  }
+}
+defineProps(ImageViewModel, $metadata.Image)
+
+export class ImageListViewModel extends ListViewModel<$models.Image, $apiClients.ImageApiClient, ImageViewModel> {
+  
+  constructor() {
+    super($metadata.Image, new $apiClients.ImageApiClient())
   }
 }
 
@@ -193,6 +215,17 @@ export class GameServiceViewModel extends ServiceViewModel<typeof $metadata.Game
     
     Object.defineProperty(this, 'getGameImage', {value: getGameImage});
     return getGameImage
+  }
+  
+  public get uploadGameImage() {
+    const uploadGameImage = this.$apiClient.$makeCaller(
+      this.$metadata.methods.uploadGameImage,
+      (c, gameId: number | null, image: File | null) => c.uploadGameImage(gameId, image),
+      () => ({gameId: null as number | null, image: null as File | null, }),
+      (c, args) => c.uploadGameImage(args.gameId, args.image))
+    
+    Object.defineProperty(this, 'uploadGameImage', {value: uploadGameImage});
+    return uploadGameImage
   }
   
   constructor() {
@@ -309,6 +342,7 @@ const viewModelTypeLookup = ViewModel.typeLookup = {
   Game: GameViewModel,
   GameTag: GameTagViewModel,
   Genre: GenreViewModel,
+  Image: ImageViewModel,
   Review: ReviewViewModel,
   Tag: TagViewModel,
 }
@@ -316,6 +350,7 @@ const listViewModelTypeLookup = ListViewModel.typeLookup = {
   Game: GameListViewModel,
   GameTag: GameTagListViewModel,
   Genre: GenreListViewModel,
+  Image: ImageListViewModel,
   Review: ReviewListViewModel,
   Tag: TagListViewModel,
 }

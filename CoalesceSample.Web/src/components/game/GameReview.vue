@@ -1,6 +1,5 @@
 <template>
-  <v-card width="100%">
-    <v-card-title>{{ review.reviewTitle }}</v-card-title>
+  <v-card width="100%" class="pa-3">
     <v-row>
       <v-col cols="3">
         <v-card-title>
@@ -8,11 +7,12 @@
             {{ review.reviewerName }}
           </v-row>
           <v-row>
-            <v-rating></v-rating>
+            <star-rating class="mr-4" :rating="review.rating" />
           </v-row>
         </v-card-title>
       </v-col>
       <v-col cols="8">
+        <v-card-title class="pa-1">{{ review.reviewTitle }}</v-card-title>
         <v-card-text>{{ review.reviewBody }}</v-card-text>
       </v-col>
     </v-row>
@@ -22,9 +22,10 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { Review } from "@/models.g";
+import StarRating from "@/components/StarRating.vue";
 
 @Component({
-  components: {},
+  components: { StarRating },
 })
 export default class GameReview extends Vue {
   @Prop({ required: true })

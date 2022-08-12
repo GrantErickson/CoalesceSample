@@ -18,38 +18,35 @@
         </c-loader-status>
       </v-col>
       <v-col cols="10">
-        <v-row>
-          <v-card flat>
-            <v-card-title>
-              {{ game.name }}
-            </v-card-title>
-            <v-card-subtitle class="py-0 pb-4">
-              {{ game.genre.name }}
-            </v-card-subtitle>
-            <v-card-text class="black--text">
-              {{ game.description }}
-            </v-card-text>
-          </v-card>
-        </v-row>
-        <v-row dense>
-          <v-chip-group v-for="tag in tags" :key="tag.tag.name">
-            <v-tooltip bottom>
-              <template #activator="{ on, attrs }">
-                <v-chip
-                  class="pa-2 ma-0"
-                  color="primary"
-                  small
-                  dark
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  {{ tag.tag.name }}
-                </v-chip>
-              </template>
-              <span>{{ tag.tag.description }}</span>
-            </v-tooltip>
-          </v-chip-group>
-        </v-row>
+        <v-card-title>
+          {{ game.name }}
+        </v-card-title>
+        <v-card-subtitle>
+          {{ game.genre.name }}
+        </v-card-subtitle>
+        <v-card-text class="black--text">
+          {{ game.description }}
+
+          <v-row dense class="pt-4">
+            <v-chip-group v-for="tag in tags" :key="tag.tag.name">
+              <v-tooltip bottom>
+                <template #activator="{ on, attrs }">
+                  <v-chip
+                    class="pa-2 ma-0"
+                    color="primary"
+                    small
+                    dark
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    {{ tag.tag.name }}
+                  </v-chip>
+                </template>
+                <span>{{ tag.tag.description }}</span>
+              </v-tooltip>
+            </v-chip-group>
+          </v-row>
+        </v-card-text>
       </v-col>
     </v-row>
   </v-card>
@@ -64,7 +61,8 @@ import { GameServiceViewModel } from "@/viewmodels.g";
 export default class GameCard extends Vue {
   @Prop({ required: true })
   game!: Game;
-  gameService = new GameServiceViewModel();
+
+  gameService: GameServiceViewModel = new GameServiceViewModel();
 
   created() {
     this.gameService.getGameImage(this.game.gameId);
@@ -83,11 +81,17 @@ export default class GameCard extends Vue {
     return this.game.gameTags;
   }
 
-  gameDetails(gameId: number) {
-    this.$router.push({
+  async gameDetails(gameId: number) {
+    //await this.gameService.getGameDetails(gameId);
+    // if (
+    //   this.gameService.getGameDetails.wasSuccessful &&
+    //   this.gameService.getGameDetails.result
+    // ) {
+    await this.$router.push({
       name: "game-details",
       params: { gameId: gameId.toString() },
     });
+    //  }
   }
 }
 </script>

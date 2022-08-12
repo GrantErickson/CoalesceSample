@@ -24,6 +24,8 @@ namespace CoalesceSample.Web.Models
         private int? _MinPlayers;
         private int? _GenreId;
         private CoalesceSample.Web.Models.GenreDtoGen _Genre;
+        private int? _ImageId;
+        private CoalesceSample.Web.Models.ImageDtoGen _Image;
         private System.Collections.Generic.ICollection<CoalesceSample.Web.Models.GameTagDtoGen> _GameTags;
         private System.Collections.Generic.ICollection<CoalesceSample.Web.Models.ReviewDtoGen> _Reviews;
 
@@ -87,6 +89,16 @@ namespace CoalesceSample.Web.Models
             get => _Genre;
             set { _Genre = value; Changed(nameof(Genre)); }
         }
+        public int? ImageId
+        {
+            get => _ImageId;
+            set { _ImageId = value; Changed(nameof(ImageId)); }
+        }
+        public CoalesceSample.Web.Models.ImageDtoGen Image
+        {
+            get => _Image;
+            set { _Image = value; Changed(nameof(Image)); }
+        }
         public System.Collections.Generic.ICollection<CoalesceSample.Web.Models.GameTagDtoGen> GameTags
         {
             get => _GameTags;
@@ -119,8 +131,12 @@ namespace CoalesceSample.Web.Models
             this.MaxPlayers = obj.MaxPlayers;
             this.MinPlayers = obj.MinPlayers;
             this.GenreId = obj.GenreId;
+            this.ImageId = obj.ImageId;
             if (tree == null || tree[nameof(this.Genre)] != null)
                 this.Genre = obj.Genre.MapToDto<CoalesceSample.Data.Models.Genre, GenreDtoGen>(context, tree?[nameof(this.Genre)]);
+
+            if (tree == null || tree[nameof(this.Image)] != null)
+                this.Image = obj.Image.MapToDto<CoalesceSample.Data.Models.Image, ImageDtoGen>(context, tree?[nameof(this.Image)]);
 
             var propValGameTags = obj.GameTags;
             if (propValGameTags != null && (tree == null || tree[nameof(this.GameTags)] != null))
@@ -167,6 +183,7 @@ namespace CoalesceSample.Web.Models
             if (ShouldMapTo(nameof(MaxPlayers))) entity.MaxPlayers = (MaxPlayers ?? entity.MaxPlayers);
             if (ShouldMapTo(nameof(MinPlayers))) entity.MinPlayers = (MinPlayers ?? entity.MinPlayers);
             if (ShouldMapTo(nameof(GenreId))) entity.GenreId = (GenreId ?? entity.GenreId);
+            if (ShouldMapTo(nameof(ImageId))) entity.ImageId = (ImageId ?? entity.ImageId);
         }
     }
 }

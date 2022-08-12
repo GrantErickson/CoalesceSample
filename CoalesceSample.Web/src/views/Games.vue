@@ -28,7 +28,7 @@ export default class GameList extends Vue {
   @Prop({ required: true })
   title!: string;
 
-  gameService = new GameServiceViewModel();
+  gameService: GameServiceViewModel = new GameServiceViewModel();
 
   async created() {
     await this.gameService.getGames();

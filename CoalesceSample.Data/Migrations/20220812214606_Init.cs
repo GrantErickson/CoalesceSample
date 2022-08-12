@@ -64,6 +64,19 @@ namespace CoalesceSample.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Images",
+                columns: table => new
+                {
+                    ImageId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Base64Image = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Images", x => x.ImageId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tags",
                 columns: table => new
                 {
@@ -198,7 +211,8 @@ namespace CoalesceSample.Data.Migrations
                     AverageDurationInHours = table.Column<double>(type: "float", nullable: false),
                     MaxPlayers = table.Column<int>(type: "int", nullable: false),
                     MinPlayers = table.Column<int>(type: "int", nullable: false),
-                    GenreId = table.Column<int>(type: "int", nullable: false)
+                    GenreId = table.Column<int>(type: "int", nullable: false),
+                    ImageId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -208,6 +222,12 @@ namespace CoalesceSample.Data.Migrations
                         column: x => x.GenreId,
                         principalTable: "Genres",
                         principalColumn: "GenreId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Games_Images_ImageId",
+                        column: x => x.ImageId,
+                        principalTable: "Images",
+                        principalColumn: "ImageId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -312,6 +332,11 @@ namespace CoalesceSample.Data.Migrations
                 column: "GenreId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Games_ImageId",
+                table: "Games",
+                column: "ImageId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_GameTags_GameId",
                 table: "GameTags",
                 column: "GameId");
@@ -369,6 +394,9 @@ namespace CoalesceSample.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Genres");
+
+            migrationBuilder.DropTable(
+                name: "Images");
         }
     }
 }

@@ -35,7 +35,7 @@ namespace CoalesceSample.Web.Api
         /// Method: GetGames
         /// </summary>
         [HttpPost("GetGames")]
-        [Authorize]
+        [AllowAnonymous]
         public virtual async Task<ItemResult<System.Collections.Generic.ICollection<GameDtoGen>>> GetGames()
         {
             IncludeTree includeTree = null;
@@ -50,7 +50,7 @@ namespace CoalesceSample.Web.Api
         /// Method: GetGameDetails
         /// </summary>
         [HttpPost("GetGameDetails")]
-        [Authorize]
+        [AllowAnonymous]
         public virtual async Task<ItemResult<GameDtoGen>> GetGameDetails(int gameId)
         {
             IncludeTree includeTree = null;
@@ -65,7 +65,7 @@ namespace CoalesceSample.Web.Api
         /// Method: LikeGame
         /// </summary>
         [HttpPost("LikeGame")]
-        [Authorize]
+        [AllowAnonymous]
         public virtual async Task<ItemResult> LikeGame(int gameId)
         {
             var _methodResult = await Service.LikeGame(gameId);
@@ -77,12 +77,24 @@ namespace CoalesceSample.Web.Api
         /// Method: GetGameImage
         /// </summary>
         [HttpPost("GetGameImage")]
-        [Authorize]
-        public virtual async Task<ItemResult<System.Uri>> GetGameImage(int gameId)
+        [AllowAnonymous]
+        public virtual async Task<ItemResult<string>> GetGameImage(int gameId)
         {
             var _methodResult = await Service.GetGameImage(gameId);
-            var _result = new ItemResult<System.Uri>(_methodResult);
+            var _result = new ItemResult<string>(_methodResult);
             _result.Object = _methodResult.Object;
+            return _result;
+        }
+
+        /// <summary>
+        /// Method: UploadGameImage
+        /// </summary>
+        [HttpPost("UploadGameImage")]
+        [Authorize]
+        public virtual async Task<ItemResult> UploadGameImage(int gameId, Microsoft.AspNetCore.Http.IFormFile image)
+        {
+            var _methodResult = await Service.UploadGameImage(User, gameId, image == null ? null : new IntelliTect.Coalesce.Models.File { Name = image.FileName, ContentType = image.ContentType, Length = image.Length, Content = image.OpenReadStream() });
+            var _result = new ItemResult(_methodResult);
             return _result;
         }
     }

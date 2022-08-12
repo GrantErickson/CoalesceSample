@@ -14,6 +14,8 @@ export interface Game extends Model<typeof metadata.Game> {
   minPlayers: number | null
   genreId: number | null
   genre: Genre | null
+  imageId: number | null
+  image: Image | null
   gameTags: GameTag[] | null
   reviews: Review[] | null
 }
@@ -83,6 +85,29 @@ export class Genre {
   /** Instantiate a new Genre, optionally basing it on the given data. */
   constructor(data?: Partial<Genre> | {[k: string]: any}) {
       Object.assign(this, Genre.map(data || {}));
+  }
+}
+
+
+export interface Image extends Model<typeof metadata.Image> {
+  imageId: number | null
+  base64Image: string | null
+}
+export class Image {
+  
+  /** Mutates the input object and its descendents into a valid Image implementation. */
+  static convert(data?: Partial<Image>): Image {
+    return convertToModel(data || {}, metadata.Image) 
+  }
+  
+  /** Maps the input object and its descendents to a new, valid Image implementation. */
+  static map(data?: Partial<Image>): Image {
+    return mapToModel(data || {}, metadata.Image) 
+  }
+  
+  /** Instantiate a new Image, optionally basing it on the given data. */
+  constructor(data?: Partial<Image> | {[k: string]: any}) {
+      Object.assign(this, Image.map(data || {}));
   }
 }
 

@@ -9,17 +9,15 @@
     >
       <v-row>
         <v-col cols="3">
-          <v-card height="250" class="fill-height">
-            <c-loader-status
-              v-slot
-              :loaders="{
-                'no-secondary-progress no-initial-content': [
-                  gameService.getGameImage,
-                ],
-              }"
-            >
-              <v-img :src="gameImage"></v-img>
-            </c-loader-status>
+          <v-card height="500" class="fill-height">
+            <v-img
+              :key="gameImage"
+              :src="gameImage"
+              aspect-ratio="1"
+              contain
+            ></v-img>
+            <v-file-input v-model="newImage" label="New Image"> </v-file-input>
+            <v-btn color="primary" @click="update"> Upload Image </v-btn>
           </v-card>
         </v-col>
         <v-col cols="9">
@@ -50,7 +48,9 @@
                   </template>
                   <span>{{ tag.tag.description }}</span>
                 </v-tooltip>
-                <v-icon>fa-plus</v-icon>
+                <v-btn fab x-small>
+                  <v-icon>fa-plus</v-icon>
+                </v-btn>
               </v-chip-group>
             </v-card-actions>
           </v-card>
@@ -61,9 +61,26 @@
           <v-card class="fill-height">
             <v-card-title>
               Reviews
-              <v-btn fab x-small class="ml-4" @click="toggleAddReview">
-                <v-icon>fa-plus</v-icon>
-              </v-btn>
+              <v-tooltip bottom>
+                <template #activator="{ on, attrs }">
+                  <v-btn
+                    v-bind="attrs"
+                    fab
+                    x-small
+                    class="ml-4"
+                    :ripple="isLoggedIn"
+                    :color="isLoggedIn ? 'primary' : 'grey'"
+                    v-on="on"
+                    @click="toggleAddReview"
+                  >
+                    <v-icon>fa-plus</v-icon>
+                  </v-btn>
+                </template>
+                <span v-if="!isLoggedIn">
+                  You must be logged in to add a review.
+                </span>
+                <span v-else> Add a review. </span>
+              </v-tooltip>
               <v-spacer />
               <v-sheet>
                 <v-row class="align-center">
@@ -71,14 +88,11 @@
                     Total Reviews: {{ numberOfRatings }}
                   </span>
                   <span class="pl-8 pr-2"> Average rating: </span>
-                  <v-rating
+                  <star-rating
                     :key="'avgRatings' + game.averageRating"
-                    v-model="game.averageRating"
-                    dense
                     class="mr-4"
-                    half-increments
-                    readonly
-                  ></v-rating>
+                    :rating="game.averageRating"
+                  />
                 </v-row>
               </v-sheet>
             </v-card-title>
@@ -90,7 +104,10 @@
                 ],
               }"
             >
-              <game-review-list :key="'revList' + game.numberOfRatings" :reviews="game.reviews"></game-review-list>
+              <game-review-list
+                :key="'revList' + game.numberOfRatings"
+                :reviews="game.reviews"
+              ></game-review-list>
             </c-loader-status>
           </v-card>
         </v-col>
@@ -111,8 +128,11 @@
 
             <v-card-title class="text-h8">
               <span>Rating:</span>
-              <v-rating v-model="reviewRating" :hover="false" half-increments>
-              </v-rating>
+              <star-rating
+                :rating="reviewRating"
+                :is-read-only="false"
+                :is-dense="false"
+              ></star-rating>
             </v-card-title>
 
             <v-textarea
@@ -135,55 +155,83 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { Game } from "@/models.g";
-import { GameServiceViewModel, ReviewServiceViewModel } from "@/viewmodels.g";
+import {
+  GameServiceViewModel,
+  LoginServiceViewModel,
+  ReviewServiceViewModel,
+} from "@/viewmodels.g";
 import GameReviewList from "@/components/game/GameReviewList.vue";
+import StarRating from "@/components/StarRating.vue";
 
 @Component({
-  components: { GameReviewList },
+  components: { GameReviewList, StarRating },
 })
 export default class GameDetails extends Vue {
   @Prop({ required: true })
   gameId!: number;
 
-  game!: Game;
-  gameService = new GameServiceViewModel();
+  gameService: GameServiceViewModel = new GameServiceViewModel();
   reviewService = new ReviewServiceViewModel();
+  loginService = new LoginServiceViewModel();
+
+  newImage: File | null = null;
+  gameImage = "";
+
+  isLoggedIn = false;
 
   showAddReview = false;
   reviewTitle = "";
   reviewRating = 0;
   reviewBody = "";
 
+  update() {
+    console.log("update");
+    if (this.newImage !== null) {
+      console.log("running");
+      this.gameService.uploadGameImage(this.gameId, this.newImage);
+    }
+    this.getGameImage();
+  }
   async created() {
     await this.gameService.getGameDetails(this.gameId);
-    if (
-      this.gameService.getGameDetails.wasSuccessful &&
-      this.gameService.getGameDetails.result
-    ) {
-      this.game = this.gameService.getGameDetails.result;
-      await this.gameService.getGameImage(this.game.gameId).catch((x) => {
-        console.table(x);
-      });
-    }
-    console.table(this.game.reviews);
+    await this.loginService.isLoggedIn();
+    this.isLoggedIn = this.loginService.isLoggedIn.wasSuccessful ?? false;
+
+    await this.getGameImage();
+  }
+
+  get game(): Game | null {
+    return this.gameService.getGameDetails.result;
   }
 
   get numberOfRatings() {
-    return this.game.numberOfRatings;
+    return this.game?.numberOfRatings;
   }
 
   get tags() {
-    return this.game.gameTags;
+    return this.game?.gameTags;
   }
 
-  get gameImage() {
-    return this.gameService.getGameImage.result;
+  async toggleAddReview() {
+    if (this.isLoggedIn) {
+      this.showAddReview = !this.showAddReview;
+    }
   }
 
-  toggleAddReview() {
-    this.showAddReview = !this.showAddReview;
+  async getGameImage() {
+    if (this.game == null) {
+      return;
+    }
+    try {
+      await this.gameService.getGameImage(this.gameId);
+      if (this.gameService.getGameImage.wasSuccessful) {
+        this.gameImage = this.gameService.getGameImage.result!;
+      }
+    } catch (e) {
+      this.gameImage = "";
+    }
   }
 
   clearReview() {
@@ -194,8 +242,11 @@ export default class GameDetails extends Vue {
   }
 
   async addReview() {
+    if (this.game === null) {
+      return;
+    }
     await this.reviewService.addReview(
-      this.game.gameId,
+      this.gameId,
       this.reviewTitle,
       this.reviewBody,
       this.reviewRating
@@ -207,8 +258,6 @@ export default class GameDetails extends Vue {
         (this.game.averageRating! + this.reviewRating) / 2;
       this.clearReview();
     }
-    // await this.reviewService.getReviews(this.gameId);
-    // this.game.reviews = this.reviewService.getReviews.result ?? [];
     this.clearReview();
   }
 }

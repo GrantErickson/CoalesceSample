@@ -12,7 +12,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { GameServiceViewModel } from "@/viewmodels.g";
+
 import { Game } from "@/models.g";
 import GameCard from "@/components/game/GameCard.vue";
 
@@ -24,6 +24,5 @@ import GameCard from "@/components/game/GameCard.vue";
 export default class GameCardList extends Vue {
   @Prop({ required: true })
   games!: Game[];
-  gameService = new GameServiceViewModel();
 }
 </script>
