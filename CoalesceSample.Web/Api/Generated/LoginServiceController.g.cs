@@ -103,5 +103,20 @@ namespace CoalesceSample.Web.Api
             var _result = new ItemResult(_methodResult);
             return _result;
         }
+
+        /// <summary>
+        /// Method: GetUserInfo
+        /// </summary>
+        [HttpPost("GetUserInfo")]
+        [AllowAnonymous]
+        public virtual async Task<ItemResult<UserInfoDtoDtoGen>> GetUserInfo()
+        {
+            IncludeTree includeTree = null;
+            var _mappingContext = new MappingContext(User);
+            var _methodResult = await Service.GetUserInfo(User);
+            var _result = new ItemResult<UserInfoDtoDtoGen>(_methodResult);
+            _result.Object = Mapper.MapToDto<CoalesceSample.Data.Dto.UserInfoDto, UserInfoDtoDtoGen>(_methodResult.Object, _mappingContext, includeTree);
+            return _result;
+        }
     }
 }

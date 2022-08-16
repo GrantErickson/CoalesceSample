@@ -16,5 +16,8 @@ public class Review
     public string ReviewerName { get; set; } = null!;
     public string ReviewTitle { get; set; } = null!;
     public string ReviewBody { get; set; } = null!;
+    public bool IsDeleted { get; set; } = false;
+    public int GameId { get; set; }
+    public Game ReviewedGame { get; set; } = null!;
 
 }

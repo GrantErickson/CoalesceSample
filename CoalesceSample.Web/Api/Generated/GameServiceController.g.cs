@@ -97,5 +97,71 @@ namespace CoalesceSample.Web.Api
             var _result = new ItemResult(_methodResult);
             return _result;
         }
+
+        /// <summary>
+        /// Method: GetAllTags
+        /// </summary>
+        [HttpPost("GetAllTags")]
+        [Authorize]
+        public virtual async Task<ItemResult<System.Collections.Generic.ICollection<TagDtoGen>>> GetAllTags()
+        {
+            IncludeTree includeTree = null;
+            var _mappingContext = new MappingContext(User);
+            var _methodResult = await Service.GetAllTags();
+            var _result = new ItemResult<System.Collections.Generic.ICollection<TagDtoGen>>(_methodResult);
+            _result.Object = _methodResult.Object?.ToList().Select(o => Mapper.MapToDto<CoalesceSample.Data.Models.Tag, TagDtoGen>(o, _mappingContext, includeTree)).ToList();
+            return _result;
+        }
+
+        /// <summary>
+        /// Method: GetGameTags
+        /// </summary>
+        [HttpPost("GetGameTags")]
+        [Authorize]
+        public virtual async Task<ItemResult<System.Collections.Generic.ICollection<GameTagDtoGen>>> GetGameTags(int gameId)
+        {
+            IncludeTree includeTree = null;
+            var _mappingContext = new MappingContext(User);
+            var _methodResult = await Service.GetGameTags(gameId);
+            var _result = new ItemResult<System.Collections.Generic.ICollection<GameTagDtoGen>>();
+            _result.Object = _methodResult?.ToList().Select(o => Mapper.MapToDto<CoalesceSample.Data.Models.GameTag, GameTagDtoGen>(o, _mappingContext, includeTree)).ToList();
+            return _result;
+        }
+
+        /// <summary>
+        /// Method: SetGameTags
+        /// </summary>
+        [HttpPost("SetGameTags")]
+        [Authorize]
+        public virtual async Task<ItemResult> SetGameTags(int gameId, System.Collections.Generic.ICollection<int> tagIds)
+        {
+            var _methodResult = await Service.SetGameTags(gameId, tagIds.ToList());
+            var _result = new ItemResult(_methodResult);
+            return _result;
+        }
+
+        /// <summary>
+        /// Method: AddLike
+        /// </summary>
+        [HttpPost("AddLike")]
+        [Authorize]
+        public virtual async Task<ItemResult> AddLike(int gameId)
+        {
+            var _methodResult = await Service.AddLike(gameId);
+            var _result = new ItemResult(_methodResult);
+            return _result;
+        }
+
+        /// <summary>
+        /// Method: RemoveLike
+        /// </summary>
+        [HttpPost("RemoveLike")]
+        [Authorize]
+        public virtual async Task<ItemResult> RemoveLike(int gameId)
+        {
+            var _methodResult = await Service.RemoveLike(gameId);
+            var _result = new ItemResult(_methodResult);
+            return _result;
+        }
     }
 }

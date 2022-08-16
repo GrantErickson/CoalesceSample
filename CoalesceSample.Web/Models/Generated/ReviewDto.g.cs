@@ -18,6 +18,9 @@ namespace CoalesceSample.Web.Models
         private string _ReviewerName;
         private string _ReviewTitle;
         private string _ReviewBody;
+        private bool? _IsDeleted;
+        private int? _GameId;
+        private CoalesceSample.Web.Models.GameDtoGen _ReviewedGame;
 
         public System.Guid? ReviewId
         {
@@ -49,6 +52,21 @@ namespace CoalesceSample.Web.Models
             get => _ReviewBody;
             set { _ReviewBody = value; Changed(nameof(ReviewBody)); }
         }
+        public bool? IsDeleted
+        {
+            get => _IsDeleted;
+            set { _IsDeleted = value; Changed(nameof(IsDeleted)); }
+        }
+        public int? GameId
+        {
+            get => _GameId;
+            set { _GameId = value; Changed(nameof(GameId)); }
+        }
+        public CoalesceSample.Web.Models.GameDtoGen ReviewedGame
+        {
+            get => _ReviewedGame;
+            set { _ReviewedGame = value; Changed(nameof(ReviewedGame)); }
+        }
 
         /// <summary>
         /// Map from the domain object to the properties of the current DTO instance.
@@ -66,6 +84,11 @@ namespace CoalesceSample.Web.Models
             this.ReviewerName = obj.ReviewerName;
             this.ReviewTitle = obj.ReviewTitle;
             this.ReviewBody = obj.ReviewBody;
+            this.IsDeleted = obj.IsDeleted;
+            this.GameId = obj.GameId;
+            if (tree == null || tree[nameof(this.ReviewedGame)] != null)
+                this.ReviewedGame = obj.ReviewedGame.MapToDto<CoalesceSample.Data.Models.Game, GameDtoGen>(context, tree?[nameof(this.ReviewedGame)]);
+
         }
 
         /// <summary>
@@ -83,6 +106,8 @@ namespace CoalesceSample.Web.Models
             if (ShouldMapTo(nameof(ReviewerName))) entity.ReviewerName = ReviewerName;
             if (ShouldMapTo(nameof(ReviewTitle))) entity.ReviewTitle = ReviewTitle;
             if (ShouldMapTo(nameof(ReviewBody))) entity.ReviewBody = ReviewBody;
+            if (ShouldMapTo(nameof(IsDeleted))) entity.IsDeleted = (IsDeleted ?? entity.IsDeleted);
+            if (ShouldMapTo(nameof(GameId))) entity.GameId = (GameId ?? entity.GameId);
         }
     }
 }

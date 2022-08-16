@@ -7,6 +7,7 @@ export interface Game extends Model<typeof metadata.Game> {
   description: string | null
   releaseDate: Date | null
   likes: number | null
+  totalRating: number | null
   numberOfRatings: number | null
   averageRating: number | null
   averageDurationInHours: number | null
@@ -119,6 +120,9 @@ export interface Review extends Model<typeof metadata.Review> {
   reviewerName: string | null
   reviewTitle: string | null
   reviewBody: string | null
+  isDeleted: boolean | null
+  gameId: number | null
+  reviewedGame: Game | null
 }
 export class Review {
   
@@ -160,6 +164,30 @@ export class Tag {
   /** Instantiate a new Tag, optionally basing it on the given data. */
   constructor(data?: Partial<Tag> | {[k: string]: any}) {
       Object.assign(this, Tag.map(data || {}));
+  }
+}
+
+
+export interface UserInfoDto extends Model<typeof metadata.UserInfoDto> {
+  name: string | null
+  email: string | null
+  userRoles: string[] | null
+}
+export class UserInfoDto {
+  
+  /** Mutates the input object and its descendents into a valid UserInfoDto implementation. */
+  static convert(data?: Partial<UserInfoDto>): UserInfoDto {
+    return convertToModel(data || {}, metadata.UserInfoDto) 
+  }
+  
+  /** Maps the input object and its descendents to a new, valid UserInfoDto implementation. */
+  static map(data?: Partial<UserInfoDto>): UserInfoDto {
+    return mapToModel(data || {}, metadata.UserInfoDto) 
+  }
+  
+  /** Instantiate a new UserInfoDto, optionally basing it on the given data. */
+  constructor(data?: Partial<UserInfoDto> | {[k: string]: any}) {
+      Object.assign(this, UserInfoDto.map(data || {}));
   }
 }
 

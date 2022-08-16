@@ -52,6 +52,19 @@ builder.Services.AddSwaggerGen(config=>
     });
 });
 
+// Use better requirements for production deployments!
+//https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity-configuration?view=aspnetcore-6.0
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    // Default Password settings.
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequiredLength = 3;
+    options.Password.RequiredUniqueChars = 1;
+});
+
 builder.Logging
     .AddConsole()
     // Filter out Request Starting/Request Finished noise:
@@ -206,6 +219,29 @@ using (var scope = app.Services.CreateScope())
         if(!await roleManager.RoleExistsAsync(role))
         {
             await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+    if (!db.Users.Any())
+    {
+        var userAccount = new ApplicationUser()
+        {
+            Name = "User",
+            Email = "user@intellitect.com",
+            UserName = "user@intellitect.com",
+        };
+        var adminAccount = new ApplicationUser()
+        {
+            Name = "Admin",
+            Email = "admin@intellitect.com",
+            UserName = "admin@intellitect.com",
+        };
+        UserManager<ApplicationUser>? userManager = serviceScope.GetService<UserManager<ApplicationUser>>();
+        if (userManager != null)
+        {
+            await userManager.CreateAsync(userAccount, "user");
+            await userManager.AddToRoleAsync(userAccount, Roles.User);
+            await userManager.CreateAsync(adminAccount, "admin");
+            await userManager.AddToRoleAsync(adminAccount, Roles.SuperAdmin);
         }
     }
 }

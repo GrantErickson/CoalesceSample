@@ -13,4 +13,7 @@ public interface IReviewService
 
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAuthorized)]
     public Task<ItemResult<Review>> AddReview(ClaimsPrincipal user, int gameId, string reviewTitle, string reviewBody, double rating);
+
+    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAuthorized)]
+    public Task<ItemResult> DeleteReview(ClaimsPrincipal user, Guid reviewId);
 }

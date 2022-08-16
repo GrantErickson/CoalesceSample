@@ -16,7 +16,7 @@ public class ReviewService : IReviewService
     {
         Game? game = Db.Games
             .Where(g => g.GameId == gameId)
-            .Include(g => g.Reviews)
+            .Include(g => g.Reviews.Where(r=>!r.IsDeleted))
             .FirstOrDefault();
         if (game == null)
         {
@@ -35,7 +35,7 @@ public class ReviewService : IReviewService
         ApplicationUser? existingUser = Db.Users.FirstOrDefault(u => u.Id == claim.Value);
         if (existingUser == null)
         {
-            return "Unable to find tyourhe account.";
+            return "Unable to find your account.";
         }
 
         Game? game = await Db.Games.FirstOrDefaultAsync(g => g.GameId == gameId);
@@ -58,5 +58,33 @@ public class ReviewService : IReviewService
         game.NumberOfRatings++;
         await Db.SaveChangesAsync();
         return newReview;
+    }
+
+    public async Task<ItemResult> DeleteReview(ClaimsPrincipal user, Guid reviewId)
+    {
+        Claim? claim = user.FindFirst(ClaimTypes.NameIdentifier);
+        if (claim == null)
+        {
+            return "Unable to find your account.";
+        }
+        ApplicationUser? existingUser = Db.Users.FirstOrDefault(u => u.Id == claim.Value);
+        if (existingUser == null)
+        {
+            return "Unable to find your account.";
+        }
+
+        Review? review = await Db.Reviews
+            .Include(r=>r.ReviewedGame)
+            .FirstOrDefaultAsync(r => r.ReviewId == reviewId && r.ReviewedGame != null);
+
+        if (review == null)
+        {
+            return "Unable to find the review.";
+        }
+        review.IsDeleted = true;
+        review.ReviewedGame.NumberOfRatings--;
+        review.ReviewedGame.TotalRating -= review.Rating;
+        Db.SaveChanges();
+        return true;
     }
 }

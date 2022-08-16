@@ -1,4 +1,5 @@
-﻿using CoalesceSample.Data.Identity;
+﻿using CoalesceSample.Data.Dto;
+using CoalesceSample.Data.Identity;
 using CoalesceSample.Data.Models;
 using IntelliTect.Coalesce.Models;
 using Microsoft.AspNetCore.Identity;
@@ -55,7 +56,7 @@ public class LoginService : ILoginService
                 };
 
                 var userRoles = await UserManager.GetRolesAsync(user);
-                foreach(var role in userRoles)
+                foreach (var role in userRoles)
                 {
                     claims.Add(new Claim(ClaimTypes.Role, role));
                 }
@@ -136,5 +137,25 @@ public class LoginService : ILoginService
         {
             return "You are not signed in";
         }
+    }
+
+    public async Task<ItemResult<UserInfoDto>> GetUserInfo(ClaimsPrincipal user)
+    {
+        Claim? claim = user.FindFirst(ClaimTypes.NameIdentifier);
+        if (claim == null)
+        {
+            return new UserInfoDto("", "", new List<string>().ToArray());
+        }
+        ApplicationUser? existingUser = Db.Users.FirstOrDefault(u => u.Id == claim.Value);
+        if (existingUser == null)
+        {
+            return new UserInfoDto("", "", new List<string>().ToArray());
+        }
+        string[] userRoles = (from userRole in Db.UserRoles
+                              join role in Db.Roles
+                              on userRole.UserId equals role.Id
+                              select role.Name.ToString())
+                              .ToArray();
+        return new UserInfoDto(existingUser.Name, existingUser.Email, userRoles);
     }
 }

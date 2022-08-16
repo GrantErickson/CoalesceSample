@@ -75,6 +75,46 @@ export class GameServiceApiClient extends ServiceApiClient<typeof $metadata.Game
     return this.$invoke($method, $params, $config)
   }
   
+  public getAllTags($config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Tag[]>> {
+    const $method = this.$metadata.methods.getAllTags
+    const $params =  {
+    }
+    return this.$invoke($method, $params, $config)
+  }
+  
+  public getGameTags(gameId: number | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.GameTag[]>> {
+    const $method = this.$metadata.methods.getGameTags
+    const $params =  {
+      gameId,
+    }
+    return this.$invoke($method, $params, $config)
+  }
+  
+  public setGameTags(gameId: number | null, tagIds: number[] | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<void>> {
+    const $method = this.$metadata.methods.setGameTags
+    const $params =  {
+      gameId,
+      tagIds,
+    }
+    return this.$invoke($method, $params, $config)
+  }
+  
+  public addLike(gameId: number | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<void>> {
+    const $method = this.$metadata.methods.addLike
+    const $params =  {
+      gameId,
+    }
+    return this.$invoke($method, $params, $config)
+  }
+  
+  public removeLike(gameId: number | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<void>> {
+    const $method = this.$metadata.methods.removeLike
+    const $params =  {
+      gameId,
+    }
+    return this.$invoke($method, $params, $config)
+  }
+  
 }
 
 
@@ -131,6 +171,13 @@ export class LoginServiceApiClient extends ServiceApiClient<typeof $metadata.Log
     return this.$invoke($method, $params, $config)
   }
   
+  public getUserInfo($config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.UserInfoDto>> {
+    const $method = this.$metadata.methods.getUserInfo
+    const $params =  {
+    }
+    return this.$invoke($method, $params, $config)
+  }
+  
 }
 
 
@@ -151,6 +198,14 @@ export class ReviewServiceApiClient extends ServiceApiClient<typeof $metadata.Re
       reviewTitle,
       reviewBody,
       rating,
+    }
+    return this.$invoke($method, $params, $config)
+  }
+  
+  public deleteReview(reviewId: string | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<void>> {
+    const $method = this.$metadata.methods.deleteReview
+    const $params =  {
+      reviewId,
     }
     return this.$invoke($method, $params, $config)
   }

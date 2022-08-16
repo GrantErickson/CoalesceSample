@@ -60,5 +60,17 @@ namespace CoalesceSample.Web.Api
             _result.Object = Mapper.MapToDto<CoalesceSample.Data.Models.Review, ReviewDtoGen>(_methodResult.Object, _mappingContext, includeTree);
             return _result;
         }
+
+        /// <summary>
+        /// Method: DeleteReview
+        /// </summary>
+        [HttpPost("DeleteReview")]
+        [Authorize]
+        public virtual async Task<ItemResult> DeleteReview(System.Guid reviewId)
+        {
+            var _methodResult = await Service.DeleteReview(User, reviewId);
+            var _result = new ItemResult(_methodResult);
+            return _result;
+        }
     }
 }

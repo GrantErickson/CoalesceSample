@@ -9,6 +9,7 @@ export interface GameViewModel extends $models.Game {
   description: string | null;
   releaseDate: Date | null;
   likes: number | null;
+  totalRating: number | null;
   numberOfRatings: number | null;
   averageRating: number | null;
   averageDurationInHours: number | null;
@@ -123,6 +124,9 @@ export interface ReviewViewModel extends $models.Review {
   reviewerName: string | null;
   reviewTitle: string | null;
   reviewBody: string | null;
+  isDeleted: boolean | null;
+  gameId: number | null;
+  reviewedGame: GameViewModel | null;
 }
 export class ReviewViewModel extends ViewModel<$models.Review, $apiClients.ReviewApiClient, string> implements $models.Review  {
   
@@ -228,6 +232,61 @@ export class GameServiceViewModel extends ServiceViewModel<typeof $metadata.Game
     return uploadGameImage
   }
   
+  public get getAllTags() {
+    const getAllTags = this.$apiClient.$makeCaller(
+      this.$metadata.methods.getAllTags,
+      (c) => c.getAllTags(),
+      () => ({}),
+      (c, args) => c.getAllTags())
+    
+    Object.defineProperty(this, 'getAllTags', {value: getAllTags});
+    return getAllTags
+  }
+  
+  public get getGameTags() {
+    const getGameTags = this.$apiClient.$makeCaller(
+      this.$metadata.methods.getGameTags,
+      (c, gameId: number | null) => c.getGameTags(gameId),
+      () => ({gameId: null as number | null, }),
+      (c, args) => c.getGameTags(args.gameId))
+    
+    Object.defineProperty(this, 'getGameTags', {value: getGameTags});
+    return getGameTags
+  }
+  
+  public get setGameTags() {
+    const setGameTags = this.$apiClient.$makeCaller(
+      this.$metadata.methods.setGameTags,
+      (c, gameId: number | null, tagIds: number[] | null) => c.setGameTags(gameId, tagIds),
+      () => ({gameId: null as number | null, tagIds: null as number[] | null, }),
+      (c, args) => c.setGameTags(args.gameId, args.tagIds))
+    
+    Object.defineProperty(this, 'setGameTags', {value: setGameTags});
+    return setGameTags
+  }
+  
+  public get addLike() {
+    const addLike = this.$apiClient.$makeCaller(
+      this.$metadata.methods.addLike,
+      (c, gameId: number | null) => c.addLike(gameId),
+      () => ({gameId: null as number | null, }),
+      (c, args) => c.addLike(args.gameId))
+    
+    Object.defineProperty(this, 'addLike', {value: addLike});
+    return addLike
+  }
+  
+  public get removeLike() {
+    const removeLike = this.$apiClient.$makeCaller(
+      this.$metadata.methods.removeLike,
+      (c, gameId: number | null) => c.removeLike(gameId),
+      () => ({gameId: null as number | null, }),
+      (c, args) => c.removeLike(args.gameId))
+    
+    Object.defineProperty(this, 'removeLike', {value: removeLike});
+    return removeLike
+  }
+  
   constructor() {
     super($metadata.GameService, new $apiClients.GameServiceApiClient())
   }
@@ -302,6 +361,17 @@ export class LoginServiceViewModel extends ServiceViewModel<typeof $metadata.Log
     return isLoggedIn
   }
   
+  public get getUserInfo() {
+    const getUserInfo = this.$apiClient.$makeCaller(
+      this.$metadata.methods.getUserInfo,
+      (c) => c.getUserInfo(),
+      () => ({}),
+      (c, args) => c.getUserInfo())
+    
+    Object.defineProperty(this, 'getUserInfo', {value: getUserInfo});
+    return getUserInfo
+  }
+  
   constructor() {
     super($metadata.LoginService, new $apiClients.LoginServiceApiClient())
   }
@@ -330,6 +400,17 @@ export class ReviewServiceViewModel extends ServiceViewModel<typeof $metadata.Re
     
     Object.defineProperty(this, 'addReview', {value: addReview});
     return addReview
+  }
+  
+  public get deleteReview() {
+    const deleteReview = this.$apiClient.$makeCaller(
+      this.$metadata.methods.deleteReview,
+      (c, reviewId: string | null) => c.deleteReview(reviewId),
+      () => ({reviewId: null as string | null, }),
+      (c, args) => c.deleteReview(args.reviewId))
+    
+    Object.defineProperty(this, 'deleteReview', {value: deleteReview});
+    return deleteReview
   }
   
   constructor() {

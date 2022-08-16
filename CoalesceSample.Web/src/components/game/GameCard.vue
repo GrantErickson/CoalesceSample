@@ -18,6 +18,12 @@
         </c-loader-status>
       </v-col>
       <v-col cols="10">
+        <v-sheet flat class="float-right">
+          <v-card-title>
+            {{ game.likes }}
+            <v-icon color="secondary" class="fa fa-thumbs-up px-2" />
+          </v-card-title>
+        </v-sheet>
         <v-card-title>
           {{ game.name }}
         </v-card-title>

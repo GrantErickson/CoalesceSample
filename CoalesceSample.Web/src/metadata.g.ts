@@ -48,6 +48,12 @@ export const Game = domain.types.Game = {
       type: "number",
       role: "value",
     },
+    totalRating: {
+      name: "totalRating",
+      displayName: "Total Rating",
+      type: "number",
+      role: "value",
+    },
     numberOfRatings: {
       name: "numberOfRatings",
       displayName: "Number Of Ratings",
@@ -367,6 +373,26 @@ export const Review = domain.types.Review = {
       type: "string",
       role: "value",
     },
+    isDeleted: {
+      name: "isDeleted",
+      displayName: "Is Deleted",
+      type: "boolean",
+      role: "value",
+    },
+    gameId: {
+      name: "gameId",
+      displayName: "Game Id",
+      type: "number",
+      role: "value",
+    },
+    reviewedGame: {
+      name: "reviewedGame",
+      displayName: "Reviewed Game",
+      type: "model",
+      get typeDef() { return (domain.types.Game as ModelType) },
+      role: "value",
+      dontSerialize: true,
+    },
   },
   methods: {
   },
@@ -430,6 +456,38 @@ export const Tag = domain.types.Tag = {
   methods: {
   },
   dataSources: {
+  },
+}
+export const UserInfoDto = domain.types.UserInfoDto = {
+  name: "UserInfoDto",
+  displayName: "User Info Dto",
+  get displayProp() { return this.props.name }, 
+  type: "object",
+  props: {
+    name: {
+      name: "name",
+      displayName: "Name",
+      type: "string",
+      role: "value",
+    },
+    email: {
+      name: "email",
+      displayName: "Email",
+      type: "string",
+      role: "value",
+    },
+    userRoles: {
+      name: "userRoles",
+      displayName: "User Roles",
+      type: "collection",
+      itemType: {
+        name: "$collectionItem",
+        displayName: "",
+        role: "value",
+        type: "string",
+      },
+      role: "value",
+    },
   },
 }
 export const GameService = domain.services.GameService = {
@@ -536,6 +594,126 @@ export const GameService = domain.services.GameService = {
           name: "image",
           displayName: "Image",
           type: "file",
+          role: "value",
+        },
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        type: "void",
+        role: "value",
+      },
+    },
+    getAllTags: {
+      name: "getAllTags",
+      displayName: "Get All Tags",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        type: "collection",
+        itemType: {
+          name: "$collectionItem",
+          displayName: "",
+          role: "value",
+          type: "model",
+          get typeDef() { return (domain.types.Tag as ModelType) },
+        },
+        role: "value",
+      },
+    },
+    getGameTags: {
+      name: "getGameTags",
+      displayName: "Get Game Tags",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+        gameId: {
+          name: "gameId",
+          displayName: "Game Id",
+          type: "number",
+          role: "value",
+        },
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        type: "collection",
+        itemType: {
+          name: "$collectionItem",
+          displayName: "",
+          role: "value",
+          type: "model",
+          get typeDef() { return (domain.types.GameTag as ModelType) },
+        },
+        role: "value",
+      },
+    },
+    setGameTags: {
+      name: "setGameTags",
+      displayName: "Set Game Tags",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+        gameId: {
+          name: "gameId",
+          displayName: "Game Id",
+          type: "number",
+          role: "value",
+        },
+        tagIds: {
+          name: "tagIds",
+          displayName: "Tag Ids",
+          type: "collection",
+          itemType: {
+            name: "$collectionItem",
+            displayName: "",
+            role: "value",
+            type: "number",
+          },
+          role: "value",
+        },
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        type: "void",
+        role: "value",
+      },
+    },
+    addLike: {
+      name: "addLike",
+      displayName: "Add Like",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+        gameId: {
+          name: "gameId",
+          displayName: "Game Id",
+          type: "number",
+          role: "value",
+        },
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        type: "void",
+        role: "value",
+      },
+    },
+    removeLike: {
+      name: "removeLike",
+      displayName: "Remove Like",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+        gameId: {
+          name: "gameId",
+          displayName: "Game Id",
+          type: "number",
           role: "value",
         },
       },
@@ -693,6 +871,21 @@ export const LoginService = domain.services.LoginService = {
         role: "value",
       },
     },
+    getUserInfo: {
+      name: "getUserInfo",
+      displayName: "Get User Info",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        type: "object",
+        get typeDef() { return (domain.types.UserInfoDto as ObjectType) },
+        role: "value",
+      },
+    },
   },
 }
 export const ReviewService = domain.services.ReviewService = {
@@ -767,6 +960,26 @@ export const ReviewService = domain.services.ReviewService = {
         role: "value",
       },
     },
+    deleteReview: {
+      name: "deleteReview",
+      displayName: "Delete Review",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+        reviewId: {
+          name: "reviewId",
+          displayName: "Review Id",
+          type: "string",
+          role: "value",
+        },
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        type: "void",
+        role: "value",
+      },
+    },
   },
 }
 
@@ -780,6 +993,7 @@ interface AppDomain extends Domain {
     Image: typeof Image
     Review: typeof Review
     Tag: typeof Tag
+    UserInfoDto: typeof UserInfoDto
   }
   services: {
     GameService: typeof GameService

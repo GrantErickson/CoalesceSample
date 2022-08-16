@@ -74,7 +74,7 @@ public class GameService
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
     public async Task<ItemResult<string>> GetGameImage(int gameId)
     {
-        Game? game = await Db.Games.Include(g=>g.Image).FirstOrDefaultAsync(g => g.GameId == gameId);
+        Game? game = await Db.Games.Include(g => g.Image).FirstOrDefaultAsync(g => g.GameId == gameId);
         if (game == null)
         {
             return new ItemResult<string>
@@ -83,7 +83,7 @@ public class GameService
                 WasSuccessful = false
             };
         }
-        if(game.Image.Base64Image == null)
+        if (game.Image.Base64Image == null)
         {
             return new ItemResult<string>
             {
@@ -106,11 +106,11 @@ public class GameService
         {
             return "Unable to find the game";
         }
-        if(image.Content == null)
+        if (image.Content == null)
         {
             return "Unable to upload this image";
         }
-        Image dbImage = Db.Images.First(i=>i.ImageId == game.ImageId);
+        Image dbImage = Db.Images.First(i => i.ImageId == game.ImageId);
         string? imageBase64;
         using (MemoryStream imageContents = new MemoryStream())
         {
@@ -122,6 +122,70 @@ public class GameService
             return "Unable to upload image";
         }
         dbImage.Base64Image = imageBase64;
+        await Db.SaveChangesAsync();
+        return true;
+    }
+
+    [Coalesce]
+    public async Task<ItemResult<List<Tag>>> GetAllTags()
+    {
+        if (!Db.Tags.Any())
+        {
+            return "There are no tags in the database";
+        }
+        return await Db.Tags.ToListAsync();
+    }
+
+    [Coalesce]
+    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
+    public async Task<List<GameTag>> GetGameTags(int gameId)
+    {
+        Game? game = Db.Games.Include(g=>g.GameTags).ThenInclude(gt=>gt.Tag).FirstOrDefault(i => i.GameId == gameId);
+        if(game == null)
+        {
+            return new List<GameTag>();
+        }
+        return game.GameTags.ToList();
+    }
+
+    [Coalesce]
+    public async Task<ItemResult> SetGameTags(int gameId, List<int> tagIds)
+    {
+        IQueryable<GameTag>? tags = Db.GameTags.Where(gt => gt.GameId == gameId);
+        Db.GameTags.RemoveRange(tags);
+        //foreach(int id in tagIds)
+        //{
+        //    game.GameTags.Add(new GameTag() { GameId = gameId, TagId = id });
+        //}
+        tagIds.ForEach(id => Db.Add(new GameTag() { GameId = gameId, TagId = id }));
+        await Db.SaveChangesAsync();
+        return true;
+    }
+
+    [Coalesce]
+    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
+    public async Task<ItemResult> AddLike(int gameId)
+    {
+        Game? game = Db.Games.Include(g => g.GameTags).ThenInclude(gt => gt.Tag).FirstOrDefault(i => i.GameId == gameId);
+        if (game == null)
+        {
+            return "Unable to find the requested game";
+        }
+        game.Likes++;
+        await Db.SaveChangesAsync();
+        return true;
+    }
+
+    [Coalesce]
+    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
+    public async Task<ItemResult> RemoveLike(int gameId)
+    {
+        Game? game = Db.Games.Include(g => g.GameTags).ThenInclude(gt => gt.Tag).FirstOrDefault(i => i.GameId == gameId);
+        if (game == null)
+        {
+            return "Unable to find the requested game";
+        }
+        game.Likes--;
         await Db.SaveChangesAsync();
         return true;
     }

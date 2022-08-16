@@ -9,34 +9,47 @@
     >
       <v-row>
         <v-col cols="3">
-          <v-card height="500" class="fill-height">
-            <v-img
-              :key="gameImage"
-              :src="gameImage"
-              aspect-ratio="1"
-              contain
-            ></v-img>
-            <v-file-input v-model="newImage" label="New Image"> </v-file-input>
-            <v-btn color="primary" @click="update"> Upload Image </v-btn>
+          <v-card>
+            <v-card-text class="pa-0 ma-0">
+              <v-img :key="gameImage" :src="gameImage" aspect-ratio="1" />
+            </v-card-text>
+            <v-card-actions v-if="isLoggedIn">
+              <v-spacer />
+              <v-btn
+                class="ma-1"
+                color="primary"
+                @click="toggleUpdateImageDialog"
+              >
+                Change Image
+              </v-btn>
+            </v-card-actions>
           </v-card>
         </v-col>
         <v-col cols="9">
           <v-card class="fill-height">
+            <v-card flat class="float-right">
+              <v-card-title>
+                <span :key="'likes' + game.likes">Likes: {{ game.likes }}</span>
+                <v-btn class="mx-3" fab x-small @click="toggleLike">
+                  <v-icon
+                    :color="hasLiked ? 'primary' : 'secondary'"
+                    class="fa fa-thumbs-up"
+                  />
+                </v-btn>
+              </v-card-title>
+            </v-card>
             <v-card-title>
               {{ game.name }}
             </v-card-title>
-            <v-card-subtitle class="py-0 pb-4">
+            <v-card-subtitle class="pb-0">
               {{ game.genre.name }}
             </v-card-subtitle>
-            <v-card-text class="black--text">
-              {{ game.description }}
-            </v-card-text>
             <v-card-actions>
               <v-chip-group>
-                <v-tooltip v-for="tag in tags" :key="tag.tag.name" bottom>
+                <v-tooltip v-for="tag in gameTags" :key="tag.tag.name" bottom>
                   <template #activator="{ on, attrs }">
                     <v-chip
-                      class="pa-2 ma-0"
+                      class="px-2 ma-0"
                       color="primary"
                       small
                       dark
@@ -48,11 +61,20 @@
                   </template>
                   <span>{{ tag.tag.description }}</span>
                 </v-tooltip>
-                <v-btn fab x-small>
-                  <v-icon>fa-plus</v-icon>
-                </v-btn>
               </v-chip-group>
+              <v-btn
+                v-if="isLoggedIn"
+                class="ml-2"
+                fab
+                x-small
+                @click="showEditTags = true"
+              >
+                <v-icon>fa-plus</v-icon>
+              </v-btn>
             </v-card-actions>
+            <v-card-text class="black--text pb-4">
+              {{ game.description }}
+            </v-card-text>
           </v-card>
         </v-col>
       </v-row>
@@ -69,7 +91,7 @@
                     x-small
                     class="ml-4"
                     :ripple="isLoggedIn"
-                    :color="isLoggedIn ? 'primary' : 'grey'"
+                    :color="isLoggedIn ? '' : 'grey'"
                     v-on="on"
                     @click="toggleAddReview"
                   >
@@ -107,11 +129,77 @@
               <game-review-list
                 :key="'revList' + game.numberOfRatings"
                 :reviews="game.reviews"
-              ></game-review-list>
+              />
             </c-loader-status>
           </v-card>
         </v-col>
       </v-row>
+
+      <v-dialog v-model="showEditTags" width="800">
+        <v-card>
+          <v-card-title> Edit Tags </v-card-title>
+          <v-card-text>
+            <c-loader-status
+              v-slot
+              :loaders="{
+                'no-secondary-progress no-initial-content no-error-content': [
+                  tags.$load,
+                ],
+              }"
+            >
+              <v-autocomplete
+                v-model="gameTagIds"
+                :items="tags.$items"
+                item-text="name"
+                item-value="tagId"
+                label="Tags"
+                hide-details
+                multiple
+                chips
+              >
+                <template slot="item" slot-scope="{ item }">
+                  <v-chip
+                    :key="item.tagId"
+                    :value="item.tagId"
+                    color="primary"
+                    dark
+                    small
+                  >
+                    {{ item.name }}
+                  </v-chip>
+                </template>
+              </v-autocomplete>
+            </c-loader-status>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn color="primary" @click="saveGameTags"> Save </v-btn>
+            <v-btn color="grey" @click="showEditTags = false"> Cancel </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="showUpdateImage" width="800">
+        <v-card>
+          <v-card-title> Update Image</v-card-title>
+          <v-card-text>
+            <v-file-input v-model="newImage" label="New Image"/>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn color="primary" @click="updateImage"> Update Image</v-btn>
+            <v-btn
+              color="primary"
+              class="px-10"
+              flat
+              icon
+              @click="showUpdateImage = false"
+            >
+              Close
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
 
       <v-dialog v-model="showAddReview" width="800">
         <v-card>
@@ -124,15 +212,15 @@
               :counter="50"
               maxlength="50"
               required
-            ></v-text-field>
+            />
 
             <v-card-title class="text-h8">
               <span>Rating:</span>
               <star-rating
-                :rating="reviewRating"
+                :rating.sync="reviewRating"
                 :is-read-only="false"
                 :is-dense="false"
-              ></star-rating>
+              />
             </v-card-title>
 
             <v-textarea
@@ -141,7 +229,7 @@
               :counter="800"
               maxlength="800"
               required
-            ></v-textarea>
+            />
           </v-card-text>
           <v-card-actions>
             <v-spacer />
@@ -155,12 +243,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import { Game } from "@/models.g";
+import { Component, Prop, Vue } from "vue-property-decorator";
+import { Game, GameTag } from "@/models.g";
 import {
   GameServiceViewModel,
   LoginServiceViewModel,
   ReviewServiceViewModel,
+  TagListViewModel,
 } from "@/viewmodels.g";
 import GameReviewList from "@/components/game/GameReviewList.vue";
 import StarRating from "@/components/StarRating.vue";
@@ -176,8 +265,13 @@ export default class GameDetails extends Vue {
   reviewService = new ReviewServiceViewModel();
   loginService = new LoginServiceViewModel();
 
+  showUpdateImage = false;
   newImage: File | null = null;
   gameImage = "";
+
+  showEditTags = false;
+  tags = new TagListViewModel();
+  gameTagIds: number[] = [];
 
   isLoggedIn = false;
 
@@ -186,20 +280,20 @@ export default class GameDetails extends Vue {
   reviewRating = 0;
   reviewBody = "";
 
-  update() {
-    console.log("update");
-    if (this.newImage !== null) {
-      console.log("running");
-      this.gameService.uploadGameImage(this.gameId, this.newImage);
-    }
-    this.getGameImage();
-  }
+  hasLiked = false;
+
   async created() {
     await this.gameService.getGameDetails(this.gameId);
-    await this.loginService.isLoggedIn();
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    await this.loginService.isLoggedIn().catch(() => {});
     this.isLoggedIn = this.loginService.isLoggedIn.wasSuccessful ?? false;
-
     await this.getGameImage();
+
+    this.tags.$pageSize = 1000;
+    await this.tags.$load();
+    this.gameTagIds = this.game?.gameTags!.map((tag) => tag.tagId!) ?? [];
+    this.hasLiked =
+      localStorage.getItem("liked-game-" + this.gameId) === "true" ?? false;
   }
 
   get game(): Game | null {
@@ -210,14 +304,63 @@ export default class GameDetails extends Vue {
     return this.game?.numberOfRatings;
   }
 
-  get tags() {
-    return this.game?.gameTags;
+  get gameTags() {
+    return this.game?.gameTags ?? [];
   }
 
-  async toggleAddReview() {
+  set gameTags(value: GameTag[]) {
+    if (this.game) {
+      this.game.gameTags = value;
+    }
+  }
+
+  async toggleLike() {
+    if (!this.hasLiked) {
+      await this.gameService.addLike(this.gameId);
+      if (this.gameService.addLike.wasSuccessful) {
+        localStorage.setItem("liked-game-" + this.gameId, "true");
+        this.hasLiked = true;
+        if (this.game && this.game.likes) {
+          this.game.likes++;
+        }
+      }
+    } else {
+      await this.gameService.removeLike(this.gameId);
+      if (this.gameService.removeLike.wasSuccessful) {
+        localStorage.setItem("liked-game-" + this.gameId, "false");
+        this.hasLiked = false;
+        if (this.game && this.game.likes) {
+          this.game.likes--;
+        }
+      }
+    }
+  }
+
+  async saveGameTags() {
+    this.gameService.setGameTags(this.gameId, this.gameTagIds);
+    await this.gameService.getGameTags(this.gameId);
+    if (this.game) {
+      console.log(this.gameService.getGameTags.result);
+      this.game.gameTags = this.gameService.getGameTags.result ?? [];
+    }
+  }
+
+  toggleAddReview() {
     if (this.isLoggedIn) {
       this.showAddReview = !this.showAddReview;
     }
+  }
+
+  toggleUpdateImageDialog() {
+    this.showUpdateImage = !this.showUpdateImage;
+  }
+
+  async updateImage() {
+    if (this.newImage !== null) {
+      this.gameService.uploadGameImage(this.gameId, this.newImage);
+    }
+    this.showUpdateImage = false;
+    await this.getGameImage();
   }
 
   async getGameImage() {
@@ -227,6 +370,7 @@ export default class GameDetails extends Vue {
     try {
       await this.gameService.getGameImage(this.gameId);
       if (this.gameService.getGameImage.wasSuccessful) {
+        console.log(this.gameService.getGameImage.result);
         this.gameImage = this.gameService.getGameImage.result!;
       }
     } catch (e) {
@@ -245,6 +389,7 @@ export default class GameDetails extends Vue {
     if (this.game === null) {
       return;
     }
+    console.log(this.reviewRating);
     await this.reviewService.addReview(
       this.gameId,
       this.reviewTitle,

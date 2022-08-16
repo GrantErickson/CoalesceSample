@@ -1,18 +1,22 @@
 <template>
   <v-card width="100%" class="pa-3">
     <v-row>
-      <v-col cols="3">
-        <v-card-title>
+      <v-col cols="2">
+        <v-card-text>
           <v-row>
-            {{ review.reviewerName }}
+            <v-card-title>
+              {{ review.reviewerName }}
+            </v-card-title>
           </v-row>
           <v-row>
-            <star-rating class="mr-4" :rating="review.rating" />
+            <v-card-title>
+              <star-rating class="mr-4" :rating="review.rating" />
+            </v-card-title>
           </v-row>
-        </v-card-title>
+        </v-card-text>
       </v-col>
       <v-col cols="8">
-        <v-card-title class="pa-1">{{ review.reviewTitle }}</v-card-title>
+        <v-card-title>{{ review.reviewTitle }}</v-card-title>
         <v-card-text>{{ review.reviewBody }}</v-card-text>
       </v-col>
     </v-row>

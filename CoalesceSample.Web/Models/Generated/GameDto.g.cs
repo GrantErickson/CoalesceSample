@@ -17,6 +17,7 @@ namespace CoalesceSample.Web.Models
         private string _Description;
         private System.DateTime? _ReleaseDate;
         private int? _Likes;
+        private double? _TotalRating;
         private int? _NumberOfRatings;
         private double? _AverageRating;
         private double? _AverageDurationInHours;
@@ -53,6 +54,11 @@ namespace CoalesceSample.Web.Models
         {
             get => _Likes;
             set { _Likes = value; Changed(nameof(Likes)); }
+        }
+        public double? TotalRating
+        {
+            get => _TotalRating;
+            set { _TotalRating = value; Changed(nameof(TotalRating)); }
         }
         public int? NumberOfRatings
         {
@@ -125,6 +131,7 @@ namespace CoalesceSample.Web.Models
             this.Description = obj.Description;
             this.ReleaseDate = obj.ReleaseDate;
             this.Likes = obj.Likes;
+            this.TotalRating = obj.TotalRating;
             this.NumberOfRatings = obj.NumberOfRatings;
             this.AverageRating = obj.AverageRating;
             this.AverageDurationInHours = obj.AverageDurationInHours;
@@ -178,6 +185,7 @@ namespace CoalesceSample.Web.Models
             if (ShouldMapTo(nameof(Description))) entity.Description = Description;
             if (ShouldMapTo(nameof(ReleaseDate))) entity.ReleaseDate = ReleaseDate;
             if (ShouldMapTo(nameof(Likes))) entity.Likes = (Likes ?? entity.Likes);
+            if (ShouldMapTo(nameof(TotalRating))) entity.TotalRating = (TotalRating ?? entity.TotalRating);
             if (ShouldMapTo(nameof(NumberOfRatings))) entity.NumberOfRatings = (NumberOfRatings ?? entity.NumberOfRatings);
             if (ShouldMapTo(nameof(AverageDurationInHours))) entity.AverageDurationInHours = (AverageDurationInHours ?? entity.AverageDurationInHours);
             if (ShouldMapTo(nameof(MaxPlayers))) entity.MaxPlayers = (MaxPlayers ?? entity.MaxPlayers);
