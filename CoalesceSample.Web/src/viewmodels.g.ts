@@ -175,6 +175,36 @@ export class TagListViewModel extends ListViewModel<$models.Tag, $apiClients.Tag
 }
 
 
+export class ApplicationUserServiceViewModel extends ServiceViewModel<typeof $metadata.ApplicationUserService, $apiClients.ApplicationUserServiceApiClient> {
+  
+  public get getRoles() {
+    const getRoles = this.$apiClient.$makeCaller(
+      this.$metadata.methods.getRoles,
+      (c) => c.getRoles(),
+      () => ({}),
+      (c, args) => c.getRoles())
+    
+    Object.defineProperty(this, 'getRoles', {value: getRoles});
+    return getRoles
+  }
+  
+  public get hasRole() {
+    const hasRole = this.$apiClient.$makeCaller(
+      this.$metadata.methods.hasRole,
+      (c, role: string | null) => c.hasRole(role),
+      () => ({role: null as string | null, }),
+      (c, args) => c.hasRole(args.role))
+    
+    Object.defineProperty(this, 'hasRole', {value: hasRole});
+    return hasRole
+  }
+  
+  constructor() {
+    super($metadata.ApplicationUserService, new $apiClients.ApplicationUserServiceApiClient())
+  }
+}
+
+
 export class GameServiceViewModel extends ServiceViewModel<typeof $metadata.GameService, $apiClients.GameServiceApiClient> {
   
   public get getGames() {
@@ -188,6 +218,17 @@ export class GameServiceViewModel extends ServiceViewModel<typeof $metadata.Game
     return getGames
   }
   
+  public get getGamesFromIds() {
+    const getGamesFromIds = this.$apiClient.$makeCaller(
+      this.$metadata.methods.getGamesFromIds,
+      (c, gameIds: number[] | null) => c.getGamesFromIds(gameIds),
+      () => ({gameIds: null as number[] | null, }),
+      (c, args) => c.getGamesFromIds(args.gameIds))
+    
+    Object.defineProperty(this, 'getGamesFromIds', {value: getGamesFromIds});
+    return getGamesFromIds
+  }
+  
   public get getGameDetails() {
     const getGameDetails = this.$apiClient.$makeCaller(
       this.$metadata.methods.getGameDetails,
@@ -197,17 +238,6 @@ export class GameServiceViewModel extends ServiceViewModel<typeof $metadata.Game
     
     Object.defineProperty(this, 'getGameDetails', {value: getGameDetails});
     return getGameDetails
-  }
-  
-  public get likeGame() {
-    const likeGame = this.$apiClient.$makeCaller(
-      this.$metadata.methods.likeGame,
-      (c, gameId: number | null) => c.likeGame(gameId),
-      () => ({gameId: null as number | null, }),
-      (c, args) => c.likeGame(args.gameId))
-    
-    Object.defineProperty(this, 'likeGame', {value: likeGame});
-    return likeGame
   }
   
   public get getGameImage() {
@@ -436,6 +466,7 @@ const listViewModelTypeLookup = ListViewModel.typeLookup = {
   Tag: TagListViewModel,
 }
 const serviceViewModelTypeLookup = ServiceViewModel.typeLookup = {
+  ApplicationUserService: ApplicationUserServiceViewModel,
   GameService: GameServiceViewModel,
   LoginService: LoginServiceViewModel,
   ReviewService: ReviewServiceViewModel,

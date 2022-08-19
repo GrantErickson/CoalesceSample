@@ -75,7 +75,7 @@ public class ReviewService : IReviewService
 
         Review? review = await Db.Reviews
             .Include(r=>r.ReviewedGame)
-            .FirstOrDefaultAsync(r => r.ReviewId == reviewId && r.ReviewedGame != null);
+            .FirstOrDefaultAsync(r => r.ReviewId == reviewId && r.ReviewedGame != null && !r.IsDeleted);
 
         if (review == null)
         {

@@ -26,20 +26,23 @@ public class Game
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
 
     #region DATASOURCE
-    [InternalUse]
     [DefaultDataSource]
-    public class DefaultDataSource : StandardDataSource<Game, AppDbContext>
+    public class GameDataSource : StandardDataSource<Game, AppDbContext>
     {
-        public DefaultDataSource(CrudContext<AppDbContext> context) : base(context) { }
+        public GameDataSource(CrudContext<AppDbContext> context) : base(context) { }
 
         [Coalesce]
-        public int GameId { get; set; }
-
+        public string FilterTags { get; set; }
         public override IQueryable<Game> GetQuery(IDataSourceParameters parameters)
         {
-            IQueryable<Game> query = base.GetQuery(parameters);
 
-            query = query.Where(g => g.GameId == GameId);
+            IQueryable<Game> query = base.GetQuery(parameters);
+            if (FilterTags != null)
+            {
+                IEnumerable<int> tags = FilterTags.Split(',').Where(x => int.TryParse(x, out _)).Select(Int32.Parse);
+                query = query
+                    .Where(g => g.GameTags.Where(gt => tags.Contains(gt.TagId)).Count() == tags.Count());
+            }
 
             return query;
         }

@@ -175,6 +175,20 @@ export const Game = domain.types.Game = {
   methods: {
   },
   dataSources: {
+    gameDataSource: {
+      type: "dataSource",
+      name: "GameDataSource",
+      displayName: "Game Data Source",
+      isDefault: true,
+      props: {
+        filterTags: {
+          name: "filterTags",
+          displayName: "Filter Tags",
+          type: "string",
+          role: "value",
+        },
+      },
+    },
   },
 }
 export const GameTag = domain.types.GameTag = {
@@ -490,6 +504,54 @@ export const UserInfoDto = domain.types.UserInfoDto = {
     },
   },
 }
+export const ApplicationUserService = domain.services.ApplicationUserService = {
+  name: "ApplicationUserService",
+  displayName: "Application User Service",
+  type: "service",
+  controllerRoute: "ApplicationUserService",
+  methods: {
+    getRoles: {
+      name: "getRoles",
+      displayName: "Get Roles",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        type: "collection",
+        itemType: {
+          name: "$collectionItem",
+          displayName: "",
+          role: "value",
+          type: "string",
+        },
+        role: "value",
+      },
+    },
+    hasRole: {
+      name: "hasRole",
+      displayName: "Has Role",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+        role: {
+          name: "role",
+          displayName: "Role",
+          type: "string",
+          role: "value",
+        },
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        type: "void",
+        role: "value",
+      },
+    },
+  },
+}
 export const GameService = domain.services.GameService = {
   name: "GameService",
   displayName: "Game Service",
@@ -502,6 +564,39 @@ export const GameService = domain.services.GameService = {
       transportType: "item",
       httpMethod: "POST",
       params: {
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        type: "collection",
+        itemType: {
+          name: "$collectionItem",
+          displayName: "",
+          role: "value",
+          type: "model",
+          get typeDef() { return (domain.types.Game as ModelType) },
+        },
+        role: "value",
+      },
+    },
+    getGamesFromIds: {
+      name: "getGamesFromIds",
+      displayName: "Get Games From Ids",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+        gameIds: {
+          name: "gameIds",
+          displayName: "Game Ids",
+          type: "collection",
+          itemType: {
+            name: "$collectionItem",
+            displayName: "",
+            role: "value",
+            type: "number",
+          },
+          role: "value",
+        },
       },
       return: {
         name: "$return",
@@ -535,26 +630,6 @@ export const GameService = domain.services.GameService = {
         displayName: "Result",
         type: "model",
         get typeDef() { return (domain.types.Game as ModelType) },
-        role: "value",
-      },
-    },
-    likeGame: {
-      name: "likeGame",
-      displayName: "Like Game",
-      transportType: "item",
-      httpMethod: "POST",
-      params: {
-        gameId: {
-          name: "gameId",
-          displayName: "Game Id",
-          type: "number",
-          role: "value",
-        },
-      },
-      return: {
-        name: "$return",
-        displayName: "Result",
-        type: "void",
         role: "value",
       },
     },
@@ -996,6 +1071,7 @@ interface AppDomain extends Domain {
     UserInfoDto: typeof UserInfoDto
   }
   services: {
+    ApplicationUserService: typeof ApplicationUserService
     GameService: typeof GameService
     LoginService: typeof LoginService
     ReviewService: typeof ReviewService

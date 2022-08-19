@@ -33,6 +33,26 @@ export class TagApiClient extends ModelApiClient<$models.Tag> {
 }
 
 
+export class ApplicationUserServiceApiClient extends ServiceApiClient<typeof $metadata.ApplicationUserService> {
+  constructor() { super($metadata.ApplicationUserService) }
+  public getRoles($config?: AxiosRequestConfig): AxiosPromise<ItemResult<string[]>> {
+    const $method = this.$metadata.methods.getRoles
+    const $params =  {
+    }
+    return this.$invoke($method, $params, $config)
+  }
+  
+  public hasRole(role: string | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<void>> {
+    const $method = this.$metadata.methods.hasRole
+    const $params =  {
+      role,
+    }
+    return this.$invoke($method, $params, $config)
+  }
+  
+}
+
+
 export class GameServiceApiClient extends ServiceApiClient<typeof $metadata.GameService> {
   constructor() { super($metadata.GameService) }
   public getGames($config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Game[]>> {
@@ -42,16 +62,16 @@ export class GameServiceApiClient extends ServiceApiClient<typeof $metadata.Game
     return this.$invoke($method, $params, $config)
   }
   
-  public getGameDetails(gameId: number | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Game>> {
-    const $method = this.$metadata.methods.getGameDetails
+  public getGamesFromIds(gameIds: number[] | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Game[]>> {
+    const $method = this.$metadata.methods.getGamesFromIds
     const $params =  {
-      gameId,
+      gameIds,
     }
     return this.$invoke($method, $params, $config)
   }
   
-  public likeGame(gameId: number | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<void>> {
-    const $method = this.$metadata.methods.likeGame
+  public getGameDetails(gameId: number | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Game>> {
+    const $method = this.$metadata.methods.getGameDetails
     const $params =  {
       gameId,
     }

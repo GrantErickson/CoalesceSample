@@ -37,6 +37,15 @@ export class Game {
       Object.assign(this, Game.map(data || {}));
   }
 }
+export namespace Game {
+  export namespace DataSources {
+    
+    export class GameDataSource implements DataSource<typeof metadata.Game.dataSources.gameDataSource> {
+      readonly $metadata = metadata.Game.dataSources.gameDataSource
+      filterTags: string | null = null
+    }
+  }
+}
 
 
 export interface GameTag extends Model<typeof metadata.GameTag> {

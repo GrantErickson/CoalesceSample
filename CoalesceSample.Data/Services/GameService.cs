@@ -34,6 +34,23 @@ public class GameService
 
     [Coalesce]
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
+    public async Task<ItemResult<List<Game>>> GetGamesFromIds(List<int> gameIds)
+    {
+        List<Game> games = await Db.Games
+            .Where(g => gameIds.Contains(g.GameId))
+            .Include(g => g.GameTags)
+                .ThenInclude(gt => gt.Tag)
+            .Include(g => g.Genre)
+            .ToListAsync();
+        if (!games.Any())
+        {
+            return new List<Game>();
+        }
+        return games;
+    }
+
+    [Coalesce]
+    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
     public async Task<ItemResult<Game>> GetGameDetails(int gameId)
     {
         Game? game = Db.Games
@@ -54,21 +71,6 @@ public class GameService
         }
         return game;
     }
-
-    [Coalesce]
-    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
-    public async Task<ItemResult> LikeGame(int gameId)
-    {
-        Game? game = await Db.Games.FirstOrDefaultAsync(g => g.GameId == gameId);
-        if (game != null)
-        {
-            game.Likes += 1;
-            await Db.SaveChangesAsync();
-            return true;
-        }
-        return "Unable to like game.";
-    }
-
 
     [Coalesce]
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
@@ -140,8 +142,8 @@ public class GameService
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
     public async Task<List<GameTag>> GetGameTags(int gameId)
     {
-        Game? game = Db.Games.Include(g=>g.GameTags).ThenInclude(gt=>gt.Tag).FirstOrDefault(i => i.GameId == gameId);
-        if(game == null)
+        Game? game = Db.Games.Include(g => g.GameTags).ThenInclude(gt => gt.Tag).FirstOrDefault(i => i.GameId == gameId);
+        if (game == null)
         {
             return new List<GameTag>();
         }

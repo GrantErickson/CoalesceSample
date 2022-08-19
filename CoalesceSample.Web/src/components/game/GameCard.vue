@@ -75,7 +75,6 @@ export default class GameCard extends Vue {
   }
 
   get image() {
-    console.log(this.gameService.getGameImage.wasSuccessful);
     if (this.gameService.getGameImage.wasSuccessful) {
       return this.gameService.getGameImage.result;
     } else {
@@ -88,16 +87,10 @@ export default class GameCard extends Vue {
   }
 
   async gameDetails(gameId: number) {
-    //await this.gameService.getGameDetails(gameId);
-    // if (
-    //   this.gameService.getGameDetails.wasSuccessful &&
-    //   this.gameService.getGameDetails.result
-    // ) {
     await this.$router.push({
       name: "game-details",
       params: { gameId: gameId.toString() },
     });
-    //  }
   }
 }
 </script>

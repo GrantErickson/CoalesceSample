@@ -47,6 +47,21 @@ namespace CoalesceSample.Web.Api
         }
 
         /// <summary>
+        /// Method: GetGamesFromIds
+        /// </summary>
+        [HttpPost("GetGamesFromIds")]
+        [AllowAnonymous]
+        public virtual async Task<ItemResult<System.Collections.Generic.ICollection<GameDtoGen>>> GetGamesFromIds(System.Collections.Generic.ICollection<int> gameIds)
+        {
+            IncludeTree includeTree = null;
+            var _mappingContext = new MappingContext(User);
+            var _methodResult = await Service.GetGamesFromIds(gameIds.ToList());
+            var _result = new ItemResult<System.Collections.Generic.ICollection<GameDtoGen>>(_methodResult);
+            _result.Object = _methodResult.Object?.ToList().Select(o => Mapper.MapToDto<CoalesceSample.Data.Models.Game, GameDtoGen>(o, _mappingContext, includeTree)).ToList();
+            return _result;
+        }
+
+        /// <summary>
         /// Method: GetGameDetails
         /// </summary>
         [HttpPost("GetGameDetails")]
@@ -58,18 +73,6 @@ namespace CoalesceSample.Web.Api
             var _methodResult = await Service.GetGameDetails(gameId);
             var _result = new ItemResult<GameDtoGen>(_methodResult);
             _result.Object = Mapper.MapToDto<CoalesceSample.Data.Models.Game, GameDtoGen>(_methodResult.Object, _mappingContext, includeTree);
-            return _result;
-        }
-
-        /// <summary>
-        /// Method: LikeGame
-        /// </summary>
-        [HttpPost("LikeGame")]
-        [AllowAnonymous]
-        public virtual async Task<ItemResult> LikeGame(int gameId)
-        {
-            var _methodResult = await Service.LikeGame(gameId);
-            var _result = new ItemResult(_methodResult);
             return _result;
         }
 
@@ -117,7 +120,7 @@ namespace CoalesceSample.Web.Api
         /// Method: GetGameTags
         /// </summary>
         [HttpPost("GetGameTags")]
-        [Authorize]
+        [AllowAnonymous]
         public virtual async Task<ItemResult<System.Collections.Generic.ICollection<GameTagDtoGen>>> GetGameTags(int gameId)
         {
             IncludeTree includeTree = null;
@@ -144,7 +147,7 @@ namespace CoalesceSample.Web.Api
         /// Method: AddLike
         /// </summary>
         [HttpPost("AddLike")]
-        [Authorize]
+        [AllowAnonymous]
         public virtual async Task<ItemResult> AddLike(int gameId)
         {
             var _methodResult = await Service.AddLike(gameId);
@@ -156,7 +159,7 @@ namespace CoalesceSample.Web.Api
         /// Method: RemoveLike
         /// </summary>
         [HttpPost("RemoveLike")]
-        [Authorize]
+        [AllowAnonymous]
         public virtual async Task<ItemResult> RemoveLike(int gameId)
         {
             var _methodResult = await Service.RemoveLike(gameId);

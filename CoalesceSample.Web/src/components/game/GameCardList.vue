@@ -2,7 +2,7 @@
   <v-card>
     <v-card-text>
       <v-list>
-        <v-list-item v-for="game in games" :key="game.name" class="py-3">
+        <v-list-item v-for="game in games.$items" :key="game.name" class="py-3">
           <game-card :game="game"></game-card>
         </v-list-item>
       </v-list>
@@ -11,10 +11,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Inject, Vue } from "vue-property-decorator";
 
-import { Game } from "@/models.g";
 import GameCard from "@/components/game/GameCard.vue";
+import { GameListViewModel } from "@/viewmodels.g";
 
 @Component({
   components: {
@@ -22,7 +22,7 @@ import GameCard from "@/components/game/GameCard.vue";
   },
 })
 export default class GameCardList extends Vue {
-  @Prop({ required: true })
-  games!: Game[];
+  @Inject("GAMESLIST")
+  games!: GameListViewModel;
 }
 </script>

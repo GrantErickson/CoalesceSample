@@ -52,8 +52,9 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Component } from "vue-property-decorator";
-import { GameServiceViewModel } from "@/viewmodels.g";
+import { Component, Provide } from "vue-property-decorator";
+import { GameListViewModel, GameServiceViewModel } from "@/viewmodels.g";
+import { Game } from "@/models.g";
 
 @Component({
   components: {},
@@ -62,7 +63,8 @@ export default class App extends Vue {
   drawer: boolean | null = null;
   routeComponent: Vue | null = null;
 
-  gameService = new GameServiceViewModel();
+  @Provide("GAMESLIST")
+  gamesList = new GameListViewModel();
 
   get routeMeta() {
     if (!this.$route || this.$route.name === null) return null;

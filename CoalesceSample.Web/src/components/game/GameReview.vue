@@ -1,7 +1,7 @@
 <template>
   <v-card width="100%" class="pa-3">
     <v-row>
-      <v-col cols="2">
+      <v-col cols="2" sm="3">
         <v-card-text>
           <v-row>
             <v-card-title>

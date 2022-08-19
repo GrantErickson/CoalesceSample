@@ -4,7 +4,7 @@
       v-slot
       :loaders="{
         'no-loading-content no-secondary-progress no-initial-content no-error-content':
-          [gameService.getGameDetails],
+          [gameList.$load],
       }"
     >
       <v-row>
@@ -13,7 +13,7 @@
             <v-card-text class="pa-0 ma-0">
               <v-img :key="gameImage" :src="gameImage" aspect-ratio="1" />
             </v-card-text>
-            <v-card-actions v-if="isLoggedIn">
+            <v-card-actions v-if="isLoggedIn && isAdmin">
               <v-spacer />
               <v-btn
                 class="ma-1"
@@ -183,7 +183,7 @@
         <v-card>
           <v-card-title> Update Image</v-card-title>
           <v-card-text>
-            <v-file-input v-model="newImage" label="New Image"/>
+            <v-file-input v-model="newImage" label="New Image" />
           </v-card-text>
           <v-card-actions>
             <v-spacer />
@@ -243,9 +243,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Inject, Prop, Vue } from "vue-property-decorator";
 import { Game, GameTag } from "@/models.g";
 import {
+  GameListViewModel,
   GameServiceViewModel,
   LoginServiceViewModel,
   ReviewServiceViewModel,
@@ -274,6 +275,7 @@ export default class GameDetails extends Vue {
   gameTagIds: number[] = [];
 
   isLoggedIn = false;
+  isAdmin = false;
 
   showAddReview = false;
   reviewTitle = "";
@@ -282,11 +284,23 @@ export default class GameDetails extends Vue {
 
   hasLiked = false;
 
+  @Inject("GAMESLIST")
+  gameList!: GameListViewModel;
+
+  //game: Game = this.gameList.$items.filter((g) => g.gameId === this.gameId)[0];
   async created() {
-    await this.gameService.getGameDetails(this.gameId);
+    //this.game=this.gameList.$items.filter(g=> g.gameId === this.gameId)[0];
+    //await this.gameService.getGameDetails(this.gameId);
+    console.log(this.gameList.$items);
+    if (this.gameList.$load.wasSuccessful == null) {
+      await this.gameList.$load();
+    }
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    await this.loginService.isLoggedIn().catch(() => {});
-    this.isLoggedIn = this.loginService.isLoggedIn.wasSuccessful ?? false;
+
+    this.isLoggedIn = this.$isLoggedIn;
+    console.log(this.isLoggedIn);
+    this.isAdmin = this.$isInRole("admin");
+
     await this.getGameImage();
 
     this.tags.$pageSize = 1000;
@@ -297,7 +311,7 @@ export default class GameDetails extends Vue {
   }
 
   get game(): Game | null {
-    return this.gameService.getGameDetails.result;
+    return this.gameList.$items.filter((g) => g.gameId === this.gameId)[0];
   }
 
   get numberOfRatings() {
@@ -389,7 +403,6 @@ export default class GameDetails extends Vue {
     if (this.game === null) {
       return;
     }
-    console.log(this.reviewRating);
     await this.reviewService.addReview(
       this.gameId,
       this.reviewTitle,
