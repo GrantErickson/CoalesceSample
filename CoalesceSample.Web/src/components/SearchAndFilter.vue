@@ -2,10 +2,7 @@
   <v-card>
     <v-card-text>
       <v-row>
-        <v-text-field
-          v-model="localGamesPerPage"
-          placeholder="Games Per Page"
-        />
+        <v-text-field v-model="localSearchText" placeholder="Search" />
         <v-autocomplete
           v-model="localFilterTags"
           :items="tags.$items"
@@ -28,6 +25,11 @@
             </v-chip>
           </template>
         </v-autocomplete>
+        <span class="pa-0 ma-1 text-h6">Games Per Page:</span>
+        <v-text-field
+          v-model="localGamesPerPage"
+          placeholder="Games Per Page"
+        />
       </v-row>
     </v-card-text>
     <v-card-actions class="pb-4 pt-0">
@@ -51,12 +53,12 @@ import { GameListViewModel, TagListViewModel } from "@/viewmodels.g";
   components: {},
 })
 export default class SearchAndFilter extends Vue {
-  //@Prop({ required: true })
-  //gameIds!: number[];
   @Prop({ required: true, default: "" })
   filterGameTags!: string;
   @Prop({ required: true, default: 10 })
   gamesPerPage!: number;
+  @Prop({ required: true, default: "" })
+  searchText!: string;
 
   filterGameTagsArray: number[] = [];
 
@@ -104,6 +106,13 @@ export default class SearchAndFilter extends Vue {
   }
   set localGamesPerPage(value: number) {
     this.$emit("update:gamesPerPage", value);
+  }
+
+  get localSearchText() {
+    return this.searchText;
+  }
+  set localSearchText(value: string) {
+    this.$emit("update:searchText", value);
   }
 
   toggleShowEditTags() {

@@ -50,7 +50,7 @@ namespace CoalesceSample.Web.Api
         /// Method: AddReview
         /// </summary>
         [HttpPost("AddReview")]
-        [Authorize]
+        [Authorize(Roles = "User")]
         public virtual async Task<ItemResult<ReviewDtoGen>> AddReview(int gameId, string reviewTitle, string reviewBody, double rating)
         {
             IncludeTree includeTree = null;
@@ -65,7 +65,7 @@ namespace CoalesceSample.Web.Api
         /// Method: DeleteReview
         /// </summary>
         [HttpPost("DeleteReview")]
-        [Authorize]
+        [Authorize(Roles = "User")]
         public virtual async Task<ItemResult> DeleteReview(System.Guid reviewId)
         {
             var _methodResult = await Service.DeleteReview(User, reviewId);

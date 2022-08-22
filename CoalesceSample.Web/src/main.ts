@@ -57,17 +57,11 @@ Vue.use(CoalesceVuetify, {
 
 Vue.config.productionTip = false;
 router.beforeEach(async (to, from, next) => {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  console.log("beforeEach");
   await applicationUserService.getRoles();
-  console.log("Roles:", applicationUserService.getRoles.result);
-  console.log(from);
-  console.log(next);
   next();
 });
 
 applicationUserService.getRoles().then(() => {
-  console.log("Vue");
   new Vue({
     router,
     vuetify,

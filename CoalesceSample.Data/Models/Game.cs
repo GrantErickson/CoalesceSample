@@ -7,7 +7,9 @@ namespace CoalesceSample.Data.Models;
 public class Game
 {
     public int GameId { get; set; }
+    [Search(SearchMethod = SearchAttribute.SearchMethods.Contains)]
     public string Name { get; set; } = string.Empty;
+    [Search(SearchMethod = SearchAttribute.SearchMethods.Contains)]
     public string Description { get; set; } = null!;
     public DateTime? ReleaseDate { get; set; }
     public int Likes { get; set; } = 0;

@@ -19,10 +19,7 @@
       </v-col>
       <v-col cols="10">
         <v-sheet flat class="float-right">
-          <v-card-title>
-            {{ game.likes }}
-            <v-icon color="secondary" class="fa fa-thumbs-up px-2" />
-          </v-card-title>
+          <like-button :game="game" />
         </v-sheet>
         <v-card-title>
           {{ game.name }}
@@ -62,8 +59,11 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { Game } from "@/models.g";
 import { GameServiceViewModel } from "@/viewmodels.g";
+import LikeButton from "@/components/LikeButton.vue";
 
-@Component
+@Component({
+  components: { LikeButton },
+})
 export default class GameCard extends Vue {
   @Prop({ required: true })
   game!: Game;

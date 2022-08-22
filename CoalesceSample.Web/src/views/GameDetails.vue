@@ -28,15 +28,7 @@
         <v-col cols="9">
           <v-card class="fill-height">
             <v-card flat class="float-right">
-              <v-card-title>
-                <span :key="'likes' + game.likes">Likes: {{ game.likes }}</span>
-                <v-btn class="mx-3" fab x-small @click="toggleLike">
-                  <v-icon
-                    :color="hasLiked ? 'primary' : 'secondary'"
-                    class="fa fa-thumbs-up"
-                  />
-                </v-btn>
-              </v-card-title>
+              <like-button :game="game" />
             </v-card>
             <v-card-title>
               {{ game.name }}
@@ -255,9 +247,10 @@ import {
 } from "@/viewmodels.g";
 import GameReviewList from "@/components/game/GameReviewList.vue";
 import StarRating from "@/components/StarRating.vue";
+import LikeButton from "@/components/LikeButton.vue";
 
 @Component({
-  components: { GameReviewList, StarRating },
+  components: { GameReviewList, StarRating, LikeButton },
 })
 export default class GameDetails extends Vue {
   @Prop({ required: true })
@@ -295,8 +288,6 @@ export default class GameDetails extends Vue {
     this.tags.$pageSize = 1000;
     await this.tags.$load();
     this.gameTagIds = this.game?.gameTags!.map((tag) => tag.tagId!) ?? [];
-    this.hasLiked =
-      localStorage.getItem("liked-game-" + this.gameId) === "true" ?? false;
   }
 
   async userRoles() {
@@ -320,28 +311,6 @@ export default class GameDetails extends Vue {
   set gameTags(value: GameTag[]) {
     if (this.game) {
       this.game.gameTags = value;
-    }
-  }
-
-  async toggleLike() {
-    if (!this.hasLiked) {
-      await this.gameService.addLike(this.gameId);
-      if (this.gameService.addLike.wasSuccessful) {
-        localStorage.setItem("liked-game-" + this.gameId, "true");
-        this.hasLiked = true;
-        if (this.game && this.game.likes) {
-          this.game.likes++;
-        }
-      }
-    } else {
-      await this.gameService.removeLike(this.gameId);
-      if (this.gameService.removeLike.wasSuccessful) {
-        localStorage.setItem("liked-game-" + this.gameId, "false");
-        this.hasLiked = false;
-        if (this.game && this.game.likes) {
-          this.game.likes--;
-        }
-      }
     }
   }
 

@@ -84,7 +84,7 @@ namespace CoalesceSample.Web.Api
         /// Method: ChangePassword
         /// </summary>
         [HttpPost("ChangePassword")]
-        [Authorize]
+        [Authorize(Roles = "User")]
         public virtual async Task<ItemResult> ChangePassword(string currentPassword, string newPassword)
         {
             var _methodResult = await Service.ChangePassword(User, currentPassword, newPassword);

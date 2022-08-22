@@ -6,6 +6,7 @@
     }"
   >
     <SearchAndFilter
+      :search-text.sync="gamesList.$params.search"
       :filter-game-tags.sync="dataSource.filterTags"
       :games-per-page.sync="gamesList.$pageSize"
     />
@@ -44,11 +45,6 @@ export default class GameList extends Vue {
     this.gamesList.$dataSource = this.dataSource;
     this.gamesList.$startAutoLoad(this);
     await this.gamesList.$load();
-  }
-
-  @Watch("gamesList.$items")
-  log() {
-    console.log(this.gamesList.$items);
   }
 }
 </script>

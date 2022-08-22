@@ -93,7 +93,7 @@ namespace CoalesceSample.Web.Api
         /// Method: UploadGameImage
         /// </summary>
         [HttpPost("UploadGameImage")]
-        [Authorize]
+        [Authorize(Roles = "SuperAdmin")]
         public virtual async Task<ItemResult> UploadGameImage(int gameId, Microsoft.AspNetCore.Http.IFormFile image)
         {
             var _methodResult = await Service.UploadGameImage(User, gameId, image == null ? null : new IntelliTect.Coalesce.Models.File { Name = image.FileName, ContentType = image.ContentType, Length = image.Length, Content = image.OpenReadStream() });
@@ -105,7 +105,7 @@ namespace CoalesceSample.Web.Api
         /// Method: GetAllTags
         /// </summary>
         [HttpPost("GetAllTags")]
-        [Authorize]
+        [Authorize(Roles = "User")]
         public virtual async Task<ItemResult<System.Collections.Generic.ICollection<TagDtoGen>>> GetAllTags()
         {
             IncludeTree includeTree = null;
@@ -135,7 +135,7 @@ namespace CoalesceSample.Web.Api
         /// Method: SetGameTags
         /// </summary>
         [HttpPost("SetGameTags")]
-        [Authorize]
+        [Authorize(Roles = "User")]
         public virtual async Task<ItemResult> SetGameTags(int gameId, System.Collections.Generic.ICollection<int> tagIds)
         {
             var _methodResult = await Service.SetGameTags(gameId, tagIds.ToList());
