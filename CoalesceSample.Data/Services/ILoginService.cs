@@ -21,7 +21,7 @@ public interface ILoginService
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
     Task<ItemResult> CreateAccount(string name, string email, string password);
 
-    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAuthorized)]
+    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAuthorized, Roles = Roles.User)]
     Task<ItemResult> ChangePassword(ClaimsPrincipal user, string currentPassword, string newPassword);
 
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]

@@ -13,7 +13,7 @@
             <v-card-text class="pa-0 ma-0">
               <v-img :key="gameImage" :src="gameImage" aspect-ratio="1" />
             </v-card-text>
-            <v-card-actions v-if="isLoggedIn && isAdmin">
+            <v-card-actions v-if="$isAdmin">
               <v-spacer />
               <v-btn
                 class="ma-1"
@@ -63,7 +63,7 @@
                 </v-tooltip>
               </v-chip-group>
               <v-btn
-                v-if="isLoggedIn"
+                v-if="$isAdmin"
                 class="ml-2"
                 fab
                 x-small
@@ -90,15 +90,15 @@
                     fab
                     x-small
                     class="ml-4"
-                    :ripple="isLoggedIn"
-                    :color="isLoggedIn ? '' : 'grey'"
+                    :ripple="$isLoggedIn"
+                    :color="$isLoggedIn ? '' : 'grey'"
                     v-on="on"
                     @click="toggleAddReview"
                   >
                     <v-icon>fa-plus</v-icon>
                   </v-btn>
                 </template>
-                <span v-if="!isLoggedIn">
+                <span v-if="!$isLoggedIn">
                   You must be logged in to add a review.
                 </span>
                 <span v-else> Add a review. </span>
@@ -190,9 +190,9 @@
             <v-btn color="primary" @click="updateImage"> Update Image</v-btn>
             <v-btn
               color="primary"
-              class="px-10"
+              class="px-3"
               flat
-              icon
+              text
               @click="showUpdateImage = false"
             >
               Close
@@ -246,6 +246,7 @@
 import { Component, Inject, Prop, Vue } from "vue-property-decorator";
 import { Game, GameTag } from "@/models.g";
 import {
+  ApplicationUserServiceViewModel,
   GameListViewModel,
   GameServiceViewModel,
   LoginServiceViewModel,
@@ -274,9 +275,6 @@ export default class GameDetails extends Vue {
   tags = new TagListViewModel();
   gameTagIds: number[] = [];
 
-  isLoggedIn = false;
-  isAdmin = false;
-
   showAddReview = false;
   reviewTitle = "";
   reviewRating = 0;
@@ -287,19 +285,10 @@ export default class GameDetails extends Vue {
   @Inject("GAMESLIST")
   gameList!: GameListViewModel;
 
-  //game: Game = this.gameList.$items.filter((g) => g.gameId === this.gameId)[0];
   async created() {
-    //this.game=this.gameList.$items.filter(g=> g.gameId === this.gameId)[0];
-    //await this.gameService.getGameDetails(this.gameId);
-    console.log(this.gameList.$items);
     if (this.gameList.$load.wasSuccessful == null) {
       await this.gameList.$load();
     }
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-
-    this.isLoggedIn = this.$isLoggedIn;
-    console.log(this.isLoggedIn);
-    this.isAdmin = this.$isInRole("admin");
 
     await this.getGameImage();
 
@@ -308,6 +297,12 @@ export default class GameDetails extends Vue {
     this.gameTagIds = this.game?.gameTags!.map((tag) => tag.tagId!) ?? [];
     this.hasLiked =
       localStorage.getItem("liked-game-" + this.gameId) === "true" ?? false;
+  }
+
+  async userRoles() {
+    let service = new ApplicationUserServiceViewModel();
+    await service.getRoles();
+    return service.getRoles.result;
   }
 
   get game(): Game | null {
@@ -354,13 +349,12 @@ export default class GameDetails extends Vue {
     this.gameService.setGameTags(this.gameId, this.gameTagIds);
     await this.gameService.getGameTags(this.gameId);
     if (this.game) {
-      console.log(this.gameService.getGameTags.result);
       this.game.gameTags = this.gameService.getGameTags.result ?? [];
     }
   }
 
   toggleAddReview() {
-    if (this.isLoggedIn) {
+    if (this.$isLoggedIn) {
       this.showAddReview = !this.showAddReview;
     }
   }
@@ -384,7 +378,6 @@ export default class GameDetails extends Vue {
     try {
       await this.gameService.getGameImage(this.gameId);
       if (this.gameService.getGameImage.wasSuccessful) {
-        console.log(this.gameService.getGameImage.result);
         this.gameImage = this.gameService.getGameImage.result!;
       }
     } catch (e) {

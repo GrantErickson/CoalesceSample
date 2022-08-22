@@ -12,9 +12,9 @@ namespace CoalesceSample.Data.Services;
 [Coalesce, Service]
 public interface IApplicationUserService
 {
-    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAuthorized)]
+    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
     public Task<ItemResult<List<string>>> GetRoles(ClaimsPrincipal user);
 
-    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAuthorized)]
+    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
     public Task<ItemResult> HasRole(ClaimsPrincipal user, string role);
 }

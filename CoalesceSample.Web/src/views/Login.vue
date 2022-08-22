@@ -10,7 +10,9 @@
         }"
       >
         <v-card class="mb-4">
-          <v-card-title> You are already signed in. </v-card-title>
+          <v-card-title>
+            Welcome {{ userName }}, you are already signed in.
+          </v-card-title>
         </v-card>
       </c-loader-status>
       <v-row>
@@ -136,9 +138,13 @@ export default class Login extends Vue {
 
   signInType = "cookie";
 
+  userName = "";
+
   async created() {
     await this.loginService.isLoggedIn();
+    await this.loginService.getUserInfo();
     this.isLoggedIn = this.loginService.isLoggedIn.wasSuccessful ?? false;
+    this.userName = this.loginService.getUserInfo.result?.name ?? "";
   }
 
   async login() {

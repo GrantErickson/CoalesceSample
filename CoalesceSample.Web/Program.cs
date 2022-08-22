@@ -158,6 +158,9 @@ if (app.Environment.IsDevelopment())
     // This exists only because Coalesce restricts all generated pages and API to only logged in users by default.
     app.Use(async (context, next) =>
     {
+        var identity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, "anonymous") }, CookieAuthenticationDefaults.AuthenticationScheme);
+        await context.SignInAsync(context.User = new ClaimsPrincipal(identity));
+
         await next.Invoke();
     });
     // End Dummy Authentication.
@@ -242,6 +245,7 @@ using (var scope = app.Services.CreateScope())
             await userManager.CreateAsync(userAccount, "user");
             await userManager.AddToRoleAsync(userAccount, Roles.User);
             await userManager.CreateAsync(adminAccount, "admin");
+            await userManager.AddToRoleAsync(adminAccount, Roles.User);
             await userManager.AddToRoleAsync(adminAccount, Roles.SuperAdmin);
         }
     }

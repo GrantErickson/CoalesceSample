@@ -35,7 +35,7 @@ namespace CoalesceSample.Web.Api
         /// Method: GetRoles
         /// </summary>
         [HttpPost("GetRoles")]
-        [Authorize]
+        [AllowAnonymous]
         public virtual async Task<ItemResult<System.Collections.Generic.ICollection<string>>> GetRoles()
         {
             var _methodResult = await Service.GetRoles(User);
@@ -48,7 +48,7 @@ namespace CoalesceSample.Web.Api
         /// Method: HasRole
         /// </summary>
         [HttpPost("HasRole")]
-        [Authorize]
+        [AllowAnonymous]
         public virtual async Task<ItemResult> HasRole(string role)
         {
             var _methodResult = await Service.HasRole(User, role);

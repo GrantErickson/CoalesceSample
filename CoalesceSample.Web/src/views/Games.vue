@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Watch, Inject } from "vue-property-decorator";
-import { GameListViewModel, GameServiceViewModel } from "@/viewmodels.g";
+import { GameListViewModel } from "@/viewmodels.g";
 import GameCardList from "@/components/game/GameCardList.vue";
 import { Game } from "@/models.g";
 import SearchAndFilter from "@/components/SearchAndFilter.vue";
@@ -33,8 +33,6 @@ import SearchAndFilter from "@/components/SearchAndFilter.vue";
 export default class GameList extends Vue {
   @Prop({ required: true })
   title!: string;
-
-  gameService: GameServiceViewModel = new GameServiceViewModel();
 
   @Inject("GAMESLIST")
   gamesList!: GameListViewModel;

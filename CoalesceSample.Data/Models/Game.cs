@@ -27,6 +27,7 @@ public class Game
 
     #region DATASOURCE
     [DefaultDataSource]
+    [Coalesce]
     public class GameDataSource : StandardDataSource<Game, AppDbContext>
     {
         public GameDataSource(CrudContext<AppDbContext> context) : base(context) { }

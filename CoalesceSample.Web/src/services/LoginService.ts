@@ -7,15 +7,30 @@ declare module "vue/types/vue" {
     $userService: ApplicationUserServiceViewModel;
     readonly $isLoggedIn: boolean;
     readonly $userRoles: string[];
+
     $isInRole(role: string): boolean;
   }
 }
 const applicationUserService = (Vue.prototype.$userService =
   new ApplicationUserServiceViewModel());
 
+Object.defineProperty(Vue.prototype, "$isAdmin", {
+  get() {
+    return (
+      (applicationUserService.getRoles.wasSuccessful &&
+        applicationUserService.getRoles.result?.includes("SuperAdmin")) ??
+      false
+    );
+  },
+});
+
 Object.defineProperty(Vue.prototype, "$isLoggedIn", {
   get() {
-    return applicationUserService.hasRole.wasSuccessful ?? false;
+    return (
+      (applicationUserService.getRoles.wasSuccessful &&
+        applicationUserService.getRoles.result?.includes("User")) ??
+      false
+    );
   },
 });
 
@@ -31,17 +46,10 @@ export const isInRole = (Vue.prototype.$isInRole = (role: string) => {
   );
 });
 
-setInterval(async () => {
-  if (document.hidden) {
-    // Don't refresh info if the window is minimized or the tab is in the background.
-    return;
-  }
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const loggedIn = await applicationUserService.hasRole("user").catch(() => {});
-  if (loggedIn) {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    applicationUserService.getRoles().catch(() => {});
-  }
-}, 1000 * 60 * 2); // Refresh every 2 minutes.
+const interval = 1000 * 60 * 2;
+setInterval(() => {
+  applicationUserService.getRoles().catch().then();
+  console.log("Interval: ", applicationUserService.getRoles.result);
+}, interval); // Refresh every 2 minutes.
 
 export default applicationUserService;

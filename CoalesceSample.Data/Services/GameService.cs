@@ -101,6 +101,7 @@ public class GameService
     }
 
     [Coalesce]
+    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAuthorized, Roles = Roles.SuperAdmin)]
     public async Task<ItemResult> UploadGameImage(ClaimsPrincipal claim, int gameId, IFile image)
     {
         Game? game = await Db.Games.FirstOrDefaultAsync(g => g.GameId == gameId);
@@ -129,6 +130,7 @@ public class GameService
     }
 
     [Coalesce]
+    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAuthorized, Roles = Roles.User)]
     public async Task<ItemResult<List<Tag>>> GetAllTags()
     {
         if (!Db.Tags.Any())
@@ -151,6 +153,7 @@ public class GameService
     }
 
     [Coalesce]
+    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAuthorized, Roles = Roles.User)]
     public async Task<ItemResult> SetGameTags(int gameId, List<int> tagIds)
     {
         IQueryable<GameTag>? tags = Db.GameTags.Where(gt => gt.GameId == gameId);

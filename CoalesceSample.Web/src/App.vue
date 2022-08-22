@@ -53,8 +53,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Provide } from "vue-property-decorator";
-import { GameListViewModel, GameServiceViewModel } from "@/viewmodels.g";
-import { Game } from "@/models.g";
+import { GameListViewModel } from "@/viewmodels.g";
 
 @Component({
   components: {},
