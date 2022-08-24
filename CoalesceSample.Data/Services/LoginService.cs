@@ -129,7 +129,7 @@ public class LoginService : ILoginService
 
     public async Task<ItemResult> IsLoggedIn(ClaimsPrincipal user)
     {
-        if (SignInManager.IsSignedIn(user))
+        if (SignInManager.IsSignedIn(user) && user.IsInRole(Roles.User))
         {
             return true;
         }

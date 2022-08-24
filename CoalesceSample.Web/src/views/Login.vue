@@ -124,6 +124,7 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { LoginServiceViewModel } from "@/viewmodels.g";
+import applicationUserService from '@/services/UserService';
 
 @Component({})
 export default class Login extends Vue {
@@ -136,32 +137,47 @@ export default class Login extends Vue {
   password = "";
   password2 = "";
 
-  signInType = "cookie";
+  signInType = "jwt";
 
   userName = "";
 
   async created() {
     await this.loginService.isLoggedIn();
     await this.loginService.getUserInfo();
-    this.isLoggedIn = this.$isLoggedIn// this.loginService.isLoggedIn.wasSuccessful ?? false;
+    this.isLoggedIn = this.$isLoggedIn; // this.loginService.isLoggedIn.wasSuccessful ?? false;
     this.userName = this.loginService.getUserInfo.result?.name ?? "";
   }
 
   async login() {
+    console.log("logout");
+    await this.logout().catch();
+console.log("login");
     if (this.signInType === "jwt") {
       await this.loginService.getToken(this.email, this.password);
+      if (this.loginService.getToken.wasSuccessful) {
+        // console.log((this.loginService.getToken.result as any).token);
+        localStorage.setItem(
+          "token",
+          (this.loginService.getToken.result as any).token
+        );
+        console.log("set");
+      }
     } else {
       await this.loginService.login(this.email, this.password);
     }
-    window.location.reload();
+    applicationUserService.getRoles()
+    //window.location.reload();
   }
+
   async register() {
     await this.loginService.createAccount(this.name, this.email, this.password);
     window.location.reload();
   }
+
   async logout() {
     await this.loginService.logout();
-    window.location.reload();
+    localStorage.removeItem("token");
+    //window.location.reload();
   }
 }
 </script>

@@ -127,7 +127,6 @@ export interface Review extends Model<typeof metadata.Review> {
   rating: number | null
   reviewDate: Date | null
   reviewerName: string | null
-  reviewerId: string | null
   reviewTitle: string | null
   reviewBody: string | null
   isDeleted: boolean | null

@@ -263,9 +263,8 @@ namespace CoalesceSample.Data.Migrations
                     ReviewId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Rating = table.Column<double>(type: "float", nullable: false),
                     ReviewDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ReviewerId1 = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ReviewerId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     ReviewerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ReviewerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ReviewTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReviewBody = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
@@ -276,8 +275,8 @@ namespace CoalesceSample.Data.Migrations
                 {
                     table.PrimaryKey("PK_Reviews", x => x.ReviewId);
                     table.ForeignKey(
-                        name: "FK_Reviews_AspNetUsers_ReviewerId1",
-                        column: x => x.ReviewerId1,
+                        name: "FK_Reviews_AspNetUsers_ReviewerId",
+                        column: x => x.ReviewerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -354,9 +353,9 @@ namespace CoalesceSample.Data.Migrations
                 column: "ReviewedGameGameId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reviews_ReviewerId1",
+                name: "IX_Reviews_ReviewerId",
                 table: "Reviews",
-                column: "ReviewerId1");
+                column: "ReviewerId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -375,12 +375,6 @@ export const Review = domain.types.Review = {
       type: "string",
       role: "value",
     },
-    reviewerId: {
-      name: "reviewerId",
-      displayName: "Reviewer Id",
-      type: "string",
-      role: "value",
-    },
     reviewTitle: {
       name: "reviewTitle",
       displayName: "Review Title",

@@ -105,29 +105,32 @@ services
 
     });
 services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-        .AddCookie(options =>
-        {
-            options.LoginPath = "/Login";
-            options.LogoutPath = "/";
-            options.AccessDeniedPath = "Login";
-        });
-JwtConfiguration jwtConfiguration = builder.Configuration.GetSection("JwtConfig").Get<JwtConfiguration>();
-services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtConfiguration.Issuer,
-            ValidAudience = jwtConfiguration.Audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.SigningKey)),
-        };
-    });
-services.AddSingleton(jwtConfiguration);
+        .AddCookie();
 services.AddControllersWithViews();
+//services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+//        .AddCookie(options =>
+//        {
+//            options.LoginPath = "/Login";
+//            options.LogoutPath = "/";
+//            options.AccessDeniedPath = "Login";
+//        });
+JwtConfiguration jwtConfiguration = builder.Configuration.GetSection("JwtConfig").Get<JwtConfiguration>();
+//services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//    .AddJwtBearer(options =>
+//    {
+//        options.TokenValidationParameters = new TokenValidationParameters
+//        {
+//            ValidateIssuer = true,
+//            ValidateAudience = true,
+//            ValidateLifetime = true,
+//            ValidateIssuerSigningKey = true,
+//            ValidIssuer = jwtConfiguration.Issuer,
+//            ValidAudience = jwtConfiguration.Audience,
+//            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.SigningKey)),
+//        };
+//    });
+services.AddSingleton(jwtConfiguration);
+//services.AddControllersWithViews();
 
 #endregion
 
@@ -158,9 +161,11 @@ if (app.Environment.IsDevelopment())
     // This exists only because Coalesce restricts all generated pages and API to only logged in users by default.
     app.Use(async (context, next) =>
     {
-        var identity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, "anonymous") }, CookieAuthenticationDefaults.AuthenticationScheme);
-        await context.SignInAsync(context.User = new ClaimsPrincipal(identity));
-
+        if (!context.User.Claims.Any())
+        {
+            var identity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, "anonymous") }, CookieAuthenticationDefaults.AuthenticationScheme);
+            await context.SignInAsync(context.User = new ClaimsPrincipal(identity));
+        }
         await next.Invoke();
     });
     // End Dummy Authentication.

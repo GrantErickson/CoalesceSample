@@ -1,8 +1,6 @@
 import Vue from "vue";
 
-import {
-  ApplicationUserServiceViewModel,
-} from "@/viewmodels.g";
+import { ApplicationUserServiceViewModel } from "@/viewmodels.g";
 
 declare module "vue/types/vue" {
   export interface Vue {
@@ -59,10 +57,10 @@ export const isInRole = (Vue.prototype.$isInRole = (role: string) => {
   );
 });
 
-const interval = 1000 * 60 * 2;
+const interval = 1000 * 60 * 2; // Refresh every 2 minutes.
 setInterval(() => {
   applicationUserService.getRoles().catch().then();
   applicationUserService.getUserReviews().catch().then();
-}, interval); // Refresh every 2 minutes.
+}, interval);
 
 export default applicationUserService;

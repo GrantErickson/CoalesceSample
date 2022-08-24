@@ -16,7 +16,6 @@ namespace CoalesceSample.Web.Models
         private double? _Rating;
         private System.DateTime? _ReviewDate;
         private string _ReviewerName;
-        private System.Guid? _ReviewerId;
         private string _ReviewTitle;
         private string _ReviewBody;
         private bool? _IsDeleted;
@@ -42,11 +41,6 @@ namespace CoalesceSample.Web.Models
         {
             get => _ReviewerName;
             set { _ReviewerName = value; Changed(nameof(ReviewerName)); }
-        }
-        public System.Guid? ReviewerId
-        {
-            get => _ReviewerId;
-            set { _ReviewerId = value; Changed(nameof(ReviewerId)); }
         }
         public string ReviewTitle
         {
@@ -88,7 +82,6 @@ namespace CoalesceSample.Web.Models
             this.Rating = obj.Rating;
             this.ReviewDate = obj.ReviewDate;
             this.ReviewerName = obj.ReviewerName;
-            this.ReviewerId = obj.ReviewerId;
             this.ReviewTitle = obj.ReviewTitle;
             this.ReviewBody = obj.ReviewBody;
             this.IsDeleted = obj.IsDeleted;
@@ -111,7 +104,6 @@ namespace CoalesceSample.Web.Models
             if (ShouldMapTo(nameof(Rating))) entity.Rating = (Rating ?? entity.Rating);
             if (ShouldMapTo(nameof(ReviewDate))) entity.ReviewDate = (ReviewDate ?? entity.ReviewDate);
             if (ShouldMapTo(nameof(ReviewerName))) entity.ReviewerName = ReviewerName;
-            if (ShouldMapTo(nameof(ReviewerId))) entity.ReviewerId = (ReviewerId ?? entity.ReviewerId);
             if (ShouldMapTo(nameof(ReviewTitle))) entity.ReviewTitle = ReviewTitle;
             if (ShouldMapTo(nameof(ReviewBody))) entity.ReviewBody = ReviewBody;
             if (ShouldMapTo(nameof(IsDeleted))) entity.IsDeleted = (IsDeleted ?? entity.IsDeleted);

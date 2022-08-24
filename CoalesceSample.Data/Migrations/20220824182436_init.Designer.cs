@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoalesceSample.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220823224900_init")]
+    [Migration("20220824182436_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -230,10 +230,7 @@ namespace CoalesceSample.Data.Migrations
                     b.Property<Guid>("ReviewedGameGameId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ReviewerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ReviewerId1")
+                    b.Property<string>("ReviewerId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ReviewerName")
@@ -244,7 +241,7 @@ namespace CoalesceSample.Data.Migrations
 
                     b.HasIndex("ReviewedGameGameId");
 
-                    b.HasIndex("ReviewerId1");
+                    b.HasIndex("ReviewerId");
 
                     b.ToTable("Reviews");
                 });
@@ -450,7 +447,7 @@ namespace CoalesceSample.Data.Migrations
 
                     b.HasOne("CoalesceSample.Data.Models.ApplicationUser", "Reviewer")
                         .WithMany("Reviews")
-                        .HasForeignKey("ReviewerId1")
+                        .HasForeignKey("ReviewerId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("ReviewedGame");
