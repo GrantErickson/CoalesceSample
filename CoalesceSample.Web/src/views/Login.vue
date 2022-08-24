@@ -124,7 +124,7 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { LoginServiceViewModel } from "@/viewmodels.g";
-import applicationUserService from '@/services/UserService';
+import applicationUserService from "@/services/UserService";
 
 @Component({})
 export default class Login extends Vue {
@@ -150,8 +150,8 @@ export default class Login extends Vue {
 
   async login() {
     console.log("logout");
-    await this.logout().catch();
-console.log("login");
+    await this.logout(false)
+    console.log("login");
     if (this.signInType === "jwt") {
       await this.loginService.getToken(this.email, this.password);
       if (this.loginService.getToken.wasSuccessful) {
@@ -165,8 +165,7 @@ console.log("login");
     } else {
       await this.loginService.login(this.email, this.password);
     }
-    applicationUserService.getRoles()
-    //window.location.reload();
+    window.location.reload();
   }
 
   async register() {
@@ -174,10 +173,12 @@ console.log("login");
     window.location.reload();
   }
 
-  async logout() {
+  async logout(reload = true) {
     await this.loginService.logout();
     localStorage.removeItem("token");
-    //window.location.reload();
+    if(reload) {
+      window.location.reload();
+    }
   }
 }
 </script>

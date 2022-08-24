@@ -104,32 +104,33 @@ services
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 
     });
-services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-        .AddCookie();
-services.AddControllersWithViews();
 //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-//        .AddCookie(options =>
-//        {
-//            options.LoginPath = "/Login";
-//            options.LogoutPath = "/";
-//            options.AccessDeniedPath = "Login";
-//        });
+//        .AddCookie();
+services.AddControllersWithViews();
+
 JwtConfiguration jwtConfiguration = builder.Configuration.GetSection("JwtConfig").Get<JwtConfiguration>();
-//services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//    .AddJwtBearer(options =>
-//    {
-//        options.TokenValidationParameters = new TokenValidationParameters
-//        {
-//            ValidateIssuer = true,
-//            ValidateAudience = true,
-//            ValidateLifetime = true,
-//            ValidateIssuerSigningKey = true,
-//            ValidIssuer = jwtConfiguration.Issuer,
-//            ValidAudience = jwtConfiguration.Audience,
-//            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.SigningKey)),
-//        };
-//    });
+services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtConfiguration.Issuer,
+            ValidAudience = jwtConfiguration.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.SigningKey)),
+        };
+    });
 services.AddSingleton(jwtConfiguration);
+services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        .AddCookie(options =>
+        {
+            options.LoginPath = "/Login";
+            options.LogoutPath = "/";
+            options.AccessDeniedPath = "Login";
+        });
 //services.AddControllersWithViews();
 
 #endregion

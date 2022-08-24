@@ -26,4 +26,31 @@ public class HomeController : Controller
         ViewData["RequestId"] = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
         return View();
     }
+
+    [HttpGet("/test - bearer")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    public string Test()
+    {
+        var test = User.Identities.ToList().ToString();
+
+       return "Test method has run.";
+    }
+
+    [HttpGet("/test - authorize")]
+    [Authorize]
+    public string Test2()
+    {
+        var test = User.Identities.ToList().ToString();
+
+        return "Test method has run.";
+    }
+
+    [HttpGet("/test - role")]
+    [Authorize(Roles = "User")]
+    public string Test3()
+    {
+        var test = User.Identities.ToList().ToString();
+
+        return "Test method has run.";
+    }
 }

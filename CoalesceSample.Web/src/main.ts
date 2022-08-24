@@ -73,9 +73,6 @@ Vue.config.productionTip = false;
 router.beforeEach(async (to, from, next) => {
   await applicationUserService.getRoles();
   await applicationUserService.getUserReviews();
-  // CoalesceAxiosClient.defaults.headers.common["Authorization"] =
-  //   "Bearer " + localStorage.getItem("token");
-  // console.log(CoalesceAxiosClient.defaults.headers.common["Authorization"]);
   next();
 });
 

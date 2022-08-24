@@ -13,6 +13,7 @@ declare module "vue/types/vue" {
     $isInRole(role: string): boolean;
   }
 }
+
 const applicationUserService = (Vue.prototype.$userService =
   new ApplicationUserServiceViewModel());
 
