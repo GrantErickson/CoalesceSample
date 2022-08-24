@@ -4,14 +4,22 @@
       v-slot
       :loaders="{
         'no-loading-content no-secondary-progress no-initial-content no-error-content':
-          [gameService.getGameDetails, gameService.getGameImage],
+          [gameService.getGameDetails],
       }"
     >
       <v-row>
         <v-col cols="3">
           <v-card>
             <v-card-text class="pa-0 ma-0">
-              <v-img :key="gameImage" :src="gameImage" aspect-ratio="1" />
+              <c-loader-status
+                v-slot
+                :loaders="{
+                  'no-loading-content no-secondary-progress no-initial-content no-error-content':
+                    [gameService.getGameDetails],
+                }"
+              >
+                <v-img :key="gameImage" :src="gameImage" aspect-ratio="1" />
+              </c-loader-status>
             </v-card-text>
             <v-card-actions v-if="$isAdmin">
               <v-spacer />
@@ -173,7 +181,13 @@ export default class GameDetails extends Vue {
 
   async created() {
     await this.gameService.getGameDetails(this.gameId);
-    await this.gameService.getGameImage(this.gameId);
+    console.log("error");
+    try {
+      await this.gameService.getGameImage(this.gameId).catch();
+    } catch (e) {
+      console.log(e);
+    }
+    console.log("error2");
   }
 
   async userRoles() {
@@ -230,6 +244,9 @@ export default class GameDetails extends Vue {
   }
 
   get gameImage() {
+    if (this.gameService.getGameImage.wasSuccessful) {
+      this.game.image!.base64Image = this.gameService.getGameImage.result;
+    }
     return this.gameService.getGameImage.result ?? "";
   }
 }
