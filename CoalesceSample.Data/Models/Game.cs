@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 namespace CoalesceSample.Data.Models;
 public class Game
 {
-    public int GameId { get; set; }
+    public Guid GameId { get; set; }
     [Search(SearchMethod = SearchAttribute.SearchMethods.Contains)]
     public string Name { get; set; } = string.Empty;
     [Search(SearchMethod = SearchAttribute.SearchMethods.Contains)]

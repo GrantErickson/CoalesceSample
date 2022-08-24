@@ -143,7 +143,7 @@ export default class Login extends Vue {
   async created() {
     await this.loginService.isLoggedIn();
     await this.loginService.getUserInfo();
-    this.isLoggedIn = this.loginService.isLoggedIn.wasSuccessful ?? false;
+    this.isLoggedIn = this.$isLoggedIn// this.loginService.isLoggedIn.wasSuccessful ?? false;
     this.userName = this.loginService.getUserInfo.result?.name ?? "";
   }
 

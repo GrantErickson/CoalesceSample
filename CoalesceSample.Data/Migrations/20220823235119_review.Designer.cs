@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoalesceSample.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220815220551_update")]
-    partial class update
+    [Migration("20220823235119_review")]
+    partial class review
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -94,11 +94,9 @@ namespace CoalesceSample.Data.Migrations
 
             modelBuilder.Entity("CoalesceSample.Data.Models.Game", b =>
                 {
-                    b.Property<int>("GameId")
+                    b.Property<Guid>("GameId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GameId"), 1L, 1);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<double>("AverageDurationInHours")
                         .HasColumnType("float");
@@ -152,8 +150,8 @@ namespace CoalesceSample.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GameTagId"), 1L, 1);
 
-                    b.Property<int>("GameId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("GameId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("TagId")
                         .HasColumnType("int");
@@ -209,7 +207,7 @@ namespace CoalesceSample.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("GameId")
+                    b.Property<int>("GameId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
@@ -229,6 +227,9 @@ namespace CoalesceSample.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("ReviewedGameGameId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("ReviewerId")
                         .HasColumnType("nvarchar(450)");
 
@@ -238,7 +239,7 @@ namespace CoalesceSample.Data.Migrations
 
                     b.HasKey("ReviewId");
 
-                    b.HasIndex("GameId");
+                    b.HasIndex("ReviewedGameGameId");
 
                     b.HasIndex("ReviewerId");
 
@@ -438,15 +439,18 @@ namespace CoalesceSample.Data.Migrations
 
             modelBuilder.Entity("CoalesceSample.Data.Models.Review", b =>
                 {
-                    b.HasOne("CoalesceSample.Data.Models.Game", null)
+                    b.HasOne("CoalesceSample.Data.Models.Game", "ReviewedGame")
                         .WithMany("Reviews")
-                        .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ReviewedGameGameId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("CoalesceSample.Data.Models.ApplicationUser", "Reviewer")
                         .WithMany("Reviews")
                         .HasForeignKey("ReviewerId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ReviewedGame");
 
                     b.Navigation("Reviewer");
                 });

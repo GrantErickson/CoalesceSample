@@ -50,6 +50,13 @@ export class ApplicationUserServiceApiClient extends ServiceApiClient<typeof $me
     return this.$invoke($method, $params, $config)
   }
   
+  public getUserReviews($config?: AxiosRequestConfig): AxiosPromise<ItemResult<string[]>> {
+    const $method = this.$metadata.methods.getUserReviews
+    const $params =  {
+    }
+    return this.$invoke($method, $params, $config)
+  }
+  
 }
 
 
@@ -62,7 +69,7 @@ export class GameServiceApiClient extends ServiceApiClient<typeof $metadata.Game
     return this.$invoke($method, $params, $config)
   }
   
-  public getGamesFromIds(gameIds: number[] | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Game[]>> {
+  public getGamesFromIds(gameIds: string[] | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Game[]>> {
     const $method = this.$metadata.methods.getGamesFromIds
     const $params =  {
       gameIds,
@@ -70,7 +77,7 @@ export class GameServiceApiClient extends ServiceApiClient<typeof $metadata.Game
     return this.$invoke($method, $params, $config)
   }
   
-  public getGameDetails(gameId: number | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Game>> {
+  public getGameDetails(gameId: string | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Game>> {
     const $method = this.$metadata.methods.getGameDetails
     const $params =  {
       gameId,
@@ -78,7 +85,7 @@ export class GameServiceApiClient extends ServiceApiClient<typeof $metadata.Game
     return this.$invoke($method, $params, $config)
   }
   
-  public getGameImage(gameId: number | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<string>> {
+  public getGameImage(gameId: string | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<string>> {
     const $method = this.$metadata.methods.getGameImage
     const $params =  {
       gameId,
@@ -86,7 +93,7 @@ export class GameServiceApiClient extends ServiceApiClient<typeof $metadata.Game
     return this.$invoke($method, $params, $config)
   }
   
-  public uploadGameImage(gameId: number | null, image: File | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<void>> {
+  public uploadGameImage(gameId: string | null, image: File | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<File>> {
     const $method = this.$metadata.methods.uploadGameImage
     const $params =  {
       gameId,
@@ -102,7 +109,7 @@ export class GameServiceApiClient extends ServiceApiClient<typeof $metadata.Game
     return this.$invoke($method, $params, $config)
   }
   
-  public getGameTags(gameId: number | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.GameTag[]>> {
+  public getGameTags(gameId: string | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.GameTag[]>> {
     const $method = this.$metadata.methods.getGameTags
     const $params =  {
       gameId,
@@ -110,7 +117,7 @@ export class GameServiceApiClient extends ServiceApiClient<typeof $metadata.Game
     return this.$invoke($method, $params, $config)
   }
   
-  public setGameTags(gameId: number | null, tagIds: number[] | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<void>> {
+  public setGameTags(gameId: string | null, tagIds: number[] | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.GameTag[]>> {
     const $method = this.$metadata.methods.setGameTags
     const $params =  {
       gameId,
@@ -119,7 +126,7 @@ export class GameServiceApiClient extends ServiceApiClient<typeof $metadata.Game
     return this.$invoke($method, $params, $config)
   }
   
-  public addLike(gameId: number | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<void>> {
+  public addLike(gameId: string | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<void>> {
     const $method = this.$metadata.methods.addLike
     const $params =  {
       gameId,
@@ -127,7 +134,7 @@ export class GameServiceApiClient extends ServiceApiClient<typeof $metadata.Game
     return this.$invoke($method, $params, $config)
   }
   
-  public removeLike(gameId: number | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<void>> {
+  public removeLike(gameId: string | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<void>> {
     const $method = this.$metadata.methods.removeLike
     const $params =  {
       gameId,
@@ -203,7 +210,7 @@ export class LoginServiceApiClient extends ServiceApiClient<typeof $metadata.Log
 
 export class ReviewServiceApiClient extends ServiceApiClient<typeof $metadata.ReviewService> {
   constructor() { super($metadata.ReviewService) }
-  public getReviews(gameId: number | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Review[]>> {
+  public getReviews(gameId: string | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Review[]>> {
     const $method = this.$metadata.methods.getReviews
     const $params =  {
       gameId,
@@ -211,7 +218,7 @@ export class ReviewServiceApiClient extends ServiceApiClient<typeof $metadata.Re
     return this.$invoke($method, $params, $config)
   }
   
-  public addReview(gameId: number | null, reviewTitle: string | null, reviewBody: string | null, rating: number | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Review>> {
+  public addReview(gameId: string | null, reviewTitle: string | null, reviewBody: string | null, rating: number | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Review>> {
     const $method = this.$metadata.methods.addReview
     const $params =  {
       gameId,

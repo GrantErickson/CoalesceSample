@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace CoalesceSample.Data.Migrations
 {
-    public partial class Init : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -200,8 +200,7 @@ namespace CoalesceSample.Data.Migrations
                 name: "Games",
                 columns: table => new
                 {
-                    GameId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    GameId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReleaseDate = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -238,7 +237,7 @@ namespace CoalesceSample.Data.Migrations
                     GameTagId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TagId = table.Column<int>(type: "int", nullable: false),
-                    GameId = table.Column<int>(type: "int", nullable: false)
+                    GameId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -264,24 +263,27 @@ namespace CoalesceSample.Data.Migrations
                     ReviewId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Rating = table.Column<double>(type: "float", nullable: false),
                     ReviewDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ReviewerId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ReviewerId1 = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     ReviewerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReviewerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ReviewTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReviewBody = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    GameId = table.Column<int>(type: "int", nullable: true)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    GameId = table.Column<int>(type: "int", nullable: false),
+                    ReviewedGameGameId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Reviews", x => x.ReviewId);
                     table.ForeignKey(
-                        name: "FK_Reviews_AspNetUsers_ReviewerId",
-                        column: x => x.ReviewerId,
+                        name: "FK_Reviews_AspNetUsers_ReviewerId1",
+                        column: x => x.ReviewerId1,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Reviews_Games_GameId",
-                        column: x => x.GameId,
+                        name: "FK_Reviews_Games_ReviewedGameGameId",
+                        column: x => x.ReviewedGameGameId,
                         principalTable: "Games",
                         principalColumn: "GameId",
                         onDelete: ReferentialAction.Restrict);
@@ -347,14 +349,14 @@ namespace CoalesceSample.Data.Migrations
                 column: "TagId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reviews_GameId",
+                name: "IX_Reviews_ReviewedGameGameId",
                 table: "Reviews",
-                column: "GameId");
+                column: "ReviewedGameGameId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reviews_ReviewerId",
+                name: "IX_Reviews_ReviewerId1",
                 table: "Reviews",
-                column: "ReviewerId");
+                column: "ReviewerId1");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

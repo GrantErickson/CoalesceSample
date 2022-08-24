@@ -51,7 +51,7 @@ namespace CoalesceSample.Web.Api
         /// </summary>
         [HttpPost("GetGamesFromIds")]
         [AllowAnonymous]
-        public virtual async Task<ItemResult<System.Collections.Generic.ICollection<GameDtoGen>>> GetGamesFromIds(System.Collections.Generic.ICollection<int> gameIds)
+        public virtual async Task<ItemResult<System.Collections.Generic.ICollection<GameDtoGen>>> GetGamesFromIds(System.Collections.Generic.ICollection<System.Guid> gameIds)
         {
             IncludeTree includeTree = null;
             var _mappingContext = new MappingContext(User);
@@ -66,7 +66,7 @@ namespace CoalesceSample.Web.Api
         /// </summary>
         [HttpPost("GetGameDetails")]
         [AllowAnonymous]
-        public virtual async Task<ItemResult<GameDtoGen>> GetGameDetails(int gameId)
+        public virtual async Task<ItemResult<GameDtoGen>> GetGameDetails(System.Guid gameId)
         {
             IncludeTree includeTree = null;
             var _mappingContext = new MappingContext(User);
@@ -81,7 +81,7 @@ namespace CoalesceSample.Web.Api
         /// </summary>
         [HttpPost("GetGameImage")]
         [AllowAnonymous]
-        public virtual async Task<ItemResult<string>> GetGameImage(int gameId)
+        public virtual async Task<ItemResult<string>> GetGameImage(System.Guid gameId)
         {
             var _methodResult = await Service.GetGameImage(gameId);
             var _result = new ItemResult<string>(_methodResult);
@@ -94,10 +94,23 @@ namespace CoalesceSample.Web.Api
         /// </summary>
         [HttpPost("UploadGameImage")]
         [Authorize(Roles = "SuperAdmin")]
-        public virtual async Task<ItemResult> UploadGameImage(int gameId, Microsoft.AspNetCore.Http.IFormFile image)
+        public virtual async Task<ActionResult<ItemResult<IntelliTect.Coalesce.Models.IFile>>> UploadGameImage(System.Guid gameId, Microsoft.AspNetCore.Http.IFormFile image)
         {
             var _methodResult = await Service.UploadGameImage(User, gameId, image == null ? null : new IntelliTect.Coalesce.Models.File { Name = image.FileName, ContentType = image.ContentType, Length = image.Length, Content = image.OpenReadStream() });
-            var _result = new ItemResult(_methodResult);
+            if (_methodResult.Object != null)
+            {
+                string _contentType = _methodResult.Object.ContentType;
+                if (string.IsNullOrWhiteSpace(_contentType) && (
+                    string.IsNullOrWhiteSpace(_methodResult.Object.Name) ||
+                    !(new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider().TryGetContentType(_methodResult.Object.Name, out _contentType))
+                ))
+                {
+                    _contentType = "application/octet-stream";
+                }
+                return File(_methodResult.Object.Content, _contentType, _methodResult.Object.Name, !(_methodResult.Object.Content is System.IO.MemoryStream));
+            }
+            var _result = new ItemResult<IntelliTect.Coalesce.Models.IFile>(_methodResult);
+            _result.Object = _methodResult.Object;
             return _result;
         }
 
@@ -121,7 +134,7 @@ namespace CoalesceSample.Web.Api
         /// </summary>
         [HttpPost("GetGameTags")]
         [AllowAnonymous]
-        public virtual async Task<ItemResult<System.Collections.Generic.ICollection<GameTagDtoGen>>> GetGameTags(int gameId)
+        public virtual async Task<ItemResult<System.Collections.Generic.ICollection<GameTagDtoGen>>> GetGameTags(System.Guid gameId)
         {
             IncludeTree includeTree = null;
             var _mappingContext = new MappingContext(User);
@@ -136,10 +149,13 @@ namespace CoalesceSample.Web.Api
         /// </summary>
         [HttpPost("SetGameTags")]
         [Authorize(Roles = "User")]
-        public virtual async Task<ItemResult> SetGameTags(int gameId, System.Collections.Generic.ICollection<int> tagIds)
+        public virtual async Task<ItemResult<System.Collections.Generic.ICollection<GameTagDtoGen>>> SetGameTags(System.Guid gameId, System.Collections.Generic.ICollection<int> tagIds)
         {
+            IncludeTree includeTree = null;
+            var _mappingContext = new MappingContext(User);
             var _methodResult = await Service.SetGameTags(gameId, tagIds.ToList());
-            var _result = new ItemResult(_methodResult);
+            var _result = new ItemResult<System.Collections.Generic.ICollection<GameTagDtoGen>>(_methodResult);
+            _result.Object = _methodResult.Object?.ToList().Select(o => Mapper.MapToDto<CoalesceSample.Data.Models.GameTag, GameTagDtoGen>(o, _mappingContext, includeTree)).ToList();
             return _result;
         }
 
@@ -148,7 +164,7 @@ namespace CoalesceSample.Web.Api
         /// </summary>
         [HttpPost("AddLike")]
         [AllowAnonymous]
-        public virtual async Task<ItemResult> AddLike(int gameId)
+        public virtual async Task<ItemResult> AddLike(System.Guid gameId)
         {
             var _methodResult = await Service.AddLike(gameId);
             var _result = new ItemResult(_methodResult);
@@ -160,7 +176,7 @@ namespace CoalesceSample.Web.Api
         /// </summary>
         [HttpPost("RemoveLike")]
         [AllowAnonymous]
-        public virtual async Task<ItemResult> RemoveLike(int gameId)
+        public virtual async Task<ItemResult> RemoveLike(System.Guid gameId)
         {
             var _methodResult = await Service.RemoveLike(gameId);
             var _result = new ItemResult(_methodResult);

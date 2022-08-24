@@ -34,7 +34,7 @@ public class GameService
 
     [Coalesce]
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
-    public async Task<ItemResult<List<Game>>> GetGamesFromIds(List<int> gameIds)
+    public async Task<ItemResult<List<Game>>> GetGamesFromIds(List<Guid> gameIds)
     {
         List<Game> games = await Db.Games
             .Where(g => gameIds.Contains(g.GameId))
@@ -51,14 +51,14 @@ public class GameService
 
     [Coalesce]
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
-    public async Task<ItemResult<Game>> GetGameDetails(int gameId)
+    public async Task<ItemResult<Game>> GetGameDetails(Guid gameId)
     {
         Game? game = Db.Games
             .Where(g => g.GameId == gameId)
             .Include(g => g.GameTags)
                 .ThenInclude(gt => gt.Tag)
             .Include(g => g.Genre)
-            .Include(g => g.Reviews)
+            .Include(g => g.Reviews.Where(r=>!r.IsDeleted))
             .FirstOrDefault();
 
         if (game == null)
@@ -74,7 +74,7 @@ public class GameService
 
     [Coalesce]
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
-    public async Task<ItemResult<string>> GetGameImage(int gameId)
+    public async Task<ItemResult<string>> GetGameImage(Guid gameId)
     {
         Game? game = await Db.Games.Include(g => g.Image).FirstOrDefaultAsync(g => g.GameId == gameId);
         if (game == null)
@@ -102,31 +102,33 @@ public class GameService
 
     [Coalesce]
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAuthorized, Roles = Roles.SuperAdmin)]
-    public async Task<ItemResult> UploadGameImage(ClaimsPrincipal claim, int gameId, IFile image)
+    public async Task<ItemResult<IFile>> UploadGameImage(ClaimsPrincipal claim, Guid gameId, IFile image)
     {
         Game? game = await Db.Games.FirstOrDefaultAsync(g => g.GameId == gameId);
         if (game == null)
         {
             return "Unable to find the game";
         }
-        if (image.Content == null)
+        if (image == null | image!.Content == null)
         {
             return "Unable to upload this image";
         }
         Image dbImage = Db.Images.First(i => i.ImageId == game.ImageId);
-        string? imageBase64;
-        using (MemoryStream imageContents = new MemoryStream())
+
+        IntelliTect.Coalesce.Models.File file;
+        using (MemoryStream imageContents = new())
         {
-            image.Content.CopyTo(imageContents);
-            imageBase64 = "data:image/jpeg;base64," + Convert.ToBase64String(imageContents.ToArray());
+            image.Content!.CopyTo(imageContents);
+            string? imageBase64 = "data:image/jpeg;base64," + Convert.ToBase64String(imageContents.ToArray());
+            if (imageBase64 == null || imageBase64 == "data:image/jpeg;base64,")
+            {
+                return "Unable to upload image";
+            }
+            dbImage.Base64Image = imageBase64;
+            file = new IntelliTect.Coalesce.Models.File(imageContents.ToArray());
         }
-        if (imageBase64 == null || imageBase64 == "data:image/jpeg;base64,")
-        {
-            return "Unable to upload image";
-        }
-        dbImage.Base64Image = imageBase64;
         await Db.SaveChangesAsync();
-        return true;
+        return file;
     }
 
     [Coalesce]
@@ -142,7 +144,7 @@ public class GameService
 
     [Coalesce]
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
-    public async Task<List<GameTag>> GetGameTags(int gameId)
+    public async Task<List<GameTag>> GetGameTags(Guid gameId)
     {
         Game? game = Db.Games.Include(g => g.GameTags).ThenInclude(gt => gt.Tag).FirstOrDefault(i => i.GameId == gameId);
         if (game == null)
@@ -154,22 +156,20 @@ public class GameService
 
     [Coalesce]
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAuthorized, Roles = Roles.User)]
-    public async Task<ItemResult> SetGameTags(int gameId, List<int> tagIds)
+    public async Task<ItemResult<List<GameTag>>> SetGameTags(Guid gameId, List<int> tagIds)
     {
         IQueryable<GameTag>? tags = Db.GameTags.Where(gt => gt.GameId == gameId);
         Db.GameTags.RemoveRange(tags);
-        //foreach(int id in tagIds)
-        //{
-        //    game.GameTags.Add(new GameTag() { GameId = gameId, TagId = id });
-        //}
-        tagIds.ForEach(id => Db.Add(new GameTag() { GameId = gameId, TagId = id }));
+        var tagList = new List<GameTag>();
+        tagIds.ForEach(id => tagList.Add(new GameTag() { GameId = gameId, TagId = id }));
+        Db.AddRange(tagList);
         await Db.SaveChangesAsync();
-        return true;
+        return tagList;
     }
 
     [Coalesce]
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
-    public async Task<ItemResult> AddLike(int gameId)
+    public async Task<ItemResult> AddLike(Guid gameId)
     {
         Game? game = Db.Games.Include(g => g.GameTags).ThenInclude(gt => gt.Tag).FirstOrDefault(i => i.GameId == gameId);
         if (game == null)
@@ -183,7 +183,7 @@ public class GameService
 
     [Coalesce]
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
-    public async Task<ItemResult> RemoveLike(int gameId)
+    public async Task<ItemResult> RemoveLike(Guid gameId)
     {
         Game? game = Db.Games.Include(g => g.GameTags).ThenInclude(gt => gt.Tag).FirstOrDefault(i => i.GameId == gameId);
         if (game == null)

@@ -18,7 +18,7 @@ export const Game = domain.types.Game = {
     gameId: {
       name: "gameId",
       displayName: "Game Id",
-      type: "number",
+      type: "string",
       role: "primaryKey",
       hidden: 3,
     },
@@ -234,7 +234,7 @@ export const GameTag = domain.types.GameTag = {
     gameId: {
       name: "gameId",
       displayName: "Game Id",
-      type: "number",
+      type: "string",
       role: "foreignKey",
       get principalKey() { return (domain.types.Game as ModelType).props.gameId as PrimaryKeyProperty },
       get principalType() { return (domain.types.Game as ModelType) },
@@ -372,6 +372,12 @@ export const Review = domain.types.Review = {
     reviewerName: {
       name: "reviewerName",
       displayName: "Reviewer Name",
+      type: "string",
+      role: "value",
+    },
+    reviewerId: {
+      name: "reviewerId",
+      displayName: "Reviewer Id",
       type: "string",
       role: "value",
     },
@@ -550,6 +556,26 @@ export const ApplicationUserService = domain.services.ApplicationUserService = {
         role: "value",
       },
     },
+    getUserReviews: {
+      name: "getUserReviews",
+      displayName: "Get User Reviews",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        type: "collection",
+        itemType: {
+          name: "$collectionItem",
+          displayName: "",
+          role: "value",
+          type: "string",
+        },
+        role: "value",
+      },
+    },
   },
 }
 export const GameService = domain.services.GameService = {
@@ -593,7 +619,7 @@ export const GameService = domain.services.GameService = {
             name: "$collectionItem",
             displayName: "",
             role: "value",
-            type: "number",
+            type: "string",
           },
           role: "value",
         },
@@ -621,7 +647,7 @@ export const GameService = domain.services.GameService = {
         gameId: {
           name: "gameId",
           displayName: "Game Id",
-          type: "number",
+          type: "string",
           role: "value",
         },
       },
@@ -642,7 +668,7 @@ export const GameService = domain.services.GameService = {
         gameId: {
           name: "gameId",
           displayName: "Game Id",
-          type: "number",
+          type: "string",
           role: "value",
         },
       },
@@ -662,7 +688,7 @@ export const GameService = domain.services.GameService = {
         gameId: {
           name: "gameId",
           displayName: "Game Id",
-          type: "number",
+          type: "string",
           role: "value",
         },
         image: {
@@ -675,7 +701,7 @@ export const GameService = domain.services.GameService = {
       return: {
         name: "$return",
         displayName: "Result",
-        type: "void",
+        type: "file",
         role: "value",
       },
     },
@@ -709,7 +735,7 @@ export const GameService = domain.services.GameService = {
         gameId: {
           name: "gameId",
           displayName: "Game Id",
-          type: "number",
+          type: "string",
           role: "value",
         },
       },
@@ -736,7 +762,7 @@ export const GameService = domain.services.GameService = {
         gameId: {
           name: "gameId",
           displayName: "Game Id",
-          type: "number",
+          type: "string",
           role: "value",
         },
         tagIds: {
@@ -755,7 +781,14 @@ export const GameService = domain.services.GameService = {
       return: {
         name: "$return",
         displayName: "Result",
-        type: "void",
+        type: "collection",
+        itemType: {
+          name: "$collectionItem",
+          displayName: "",
+          role: "value",
+          type: "model",
+          get typeDef() { return (domain.types.GameTag as ModelType) },
+        },
         role: "value",
       },
     },
@@ -768,7 +801,7 @@ export const GameService = domain.services.GameService = {
         gameId: {
           name: "gameId",
           displayName: "Game Id",
-          type: "number",
+          type: "string",
           role: "value",
         },
       },
@@ -788,7 +821,7 @@ export const GameService = domain.services.GameService = {
         gameId: {
           name: "gameId",
           displayName: "Game Id",
-          type: "number",
+          type: "string",
           role: "value",
         },
       },
@@ -978,7 +1011,7 @@ export const ReviewService = domain.services.ReviewService = {
         gameId: {
           name: "gameId",
           displayName: "Game Id",
-          type: "number",
+          type: "string",
           role: "value",
         },
       },
@@ -1005,7 +1038,7 @@ export const ReviewService = domain.services.ReviewService = {
         gameId: {
           name: "gameId",
           displayName: "Game Id",
-          type: "number",
+          type: "string",
           role: "value",
         },
         reviewTitle: {

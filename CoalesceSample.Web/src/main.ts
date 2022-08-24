@@ -58,6 +58,7 @@ Vue.use(CoalesceVuetify, {
 Vue.config.productionTip = false;
 router.beforeEach(async (to, from, next) => {
   await applicationUserService.getRoles();
+  await applicationUserService.getUserReviews();
   next();
 });
 

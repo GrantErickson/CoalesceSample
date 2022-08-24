@@ -17,4 +17,7 @@ public interface IApplicationUserService
 
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
     public Task<ItemResult> HasRole(ClaimsPrincipal user, string role);
+
+    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
+    public Task<ItemResult<List<Guid>>> GetUserReviews(ClaimsPrincipal user);
 }

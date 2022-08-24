@@ -12,11 +12,11 @@ public class ReviewService : IReviewService
     {
         Db = db;
     }
-    public async Task<ItemResult<List<Review>>> GetReviews(int gameId)
+    public async Task<ItemResult<List<Review>>> GetReviews(Guid gameId)
     {
         Game? game = Db.Games
             .Where(g => g.GameId == gameId)
-            .Include(g => g.Reviews.Where(r=>!r.IsDeleted))
+            .Include(g => g.Reviews.Where(r => !r.IsDeleted))
             .FirstOrDefault();
         if (game == null)
         {
@@ -24,7 +24,7 @@ public class ReviewService : IReviewService
         }
         return game.Reviews.ToList();
     }
-    public async Task<ItemResult<Review>> AddReview(ClaimsPrincipal user, int gameId, string reviewTitle, string reviewBody, double rating)
+    public async Task<ItemResult<Review>> AddReview(ClaimsPrincipal user, Guid gameId, string reviewTitle, string reviewBody, double rating)
     {
         Claim? claim = user.FindFirst(ClaimTypes.NameIdentifier);
         if (claim == null)
@@ -32,6 +32,7 @@ public class ReviewService : IReviewService
 
             return "Unable to find your account.";
         }
+
         ApplicationUser? existingUser = Db.Users.FirstOrDefault(u => u.Id == claim.Value);
         if (existingUser == null)
         {
@@ -39,10 +40,14 @@ public class ReviewService : IReviewService
         }
 
         Game? game = await Db.Games.FirstOrDefaultAsync(g => g.GameId == gameId);
-
         if (game == null)
         {
             return "Unable to find the game.";
+        }
+
+        if (string.IsNullOrEmpty(reviewTitle.Trim()) || string.IsNullOrEmpty(reviewBody.Trim()))
+        {
+            return "Cannot add a review without a title and body";
         }
         Review newReview = new()
         {
@@ -74,12 +79,22 @@ public class ReviewService : IReviewService
         }
 
         Review? review = await Db.Reviews
-            .Include(r=>r.ReviewedGame)
+            .Include(r => r.ReviewedGame)
+            .Include(r => r.Reviewer)
             .FirstOrDefaultAsync(r => r.ReviewId == reviewId && r.ReviewedGame != null && !r.IsDeleted);
-
         if (review == null)
         {
             return "Unable to find the review.";
+        }
+        ItemResult<Guid> userGuid = Guid.Parse(existingUser.Id);
+        ItemResult<Guid> reviewerGuid = Guid.Parse(review.Reviewer.Id);
+        bool guidsValid = userGuid.WasSuccessful && reviewerGuid.WasSuccessful;
+        
+        if (!user.IsInRole(Roles.SuperAdmin) &&
+            guidsValid &
+            reviewerGuid.Object != userGuid.Object)
+        {
+            return "You do not have permission to delete this review.";
         }
         review.IsDeleted = true;
         review.ReviewedGame.NumberOfRatings--;

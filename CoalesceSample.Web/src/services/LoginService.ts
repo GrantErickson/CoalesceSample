@@ -1,10 +1,14 @@
 import Vue from "vue";
 
-import { ApplicationUserServiceViewModel } from "@/viewmodels.g";
+import {
+  ApplicationUserServiceViewModel,
+} from "@/viewmodels.g";
 
 declare module "vue/types/vue" {
   export interface Vue {
     $userService: ApplicationUserServiceViewModel;
+    $userReviews: string[];
+    readonly $isAdmin: boolean;
     readonly $isLoggedIn: boolean;
     readonly $userRoles: string[];
 
@@ -13,6 +17,15 @@ declare module "vue/types/vue" {
 }
 const applicationUserService = (Vue.prototype.$userService =
   new ApplicationUserServiceViewModel());
+
+Object.defineProperty(Vue.prototype, "$userReviews", {
+  get() {
+    return applicationUserService.getUserReviews.result;
+  },
+  set(value: string[]) {
+    this.$userReviews = value;
+  },
+});
 
 Object.defineProperty(Vue.prototype, "$isAdmin", {
   get() {
@@ -49,6 +62,7 @@ export const isInRole = (Vue.prototype.$isInRole = (role: string) => {
 const interval = 1000 * 60 * 2;
 setInterval(() => {
   applicationUserService.getRoles().catch().then();
+  applicationUserService.getUserReviews().catch().then();
 }, interval); // Refresh every 2 minutes.
 
 export default applicationUserService;

@@ -2,7 +2,7 @@ import * as metadata from './metadata.g'
 import { Model, DataSource, convertToModel, mapToModel } from 'coalesce-vue/lib/model'
 
 export interface Game extends Model<typeof metadata.Game> {
-  gameId: number | null
+  gameId: string | null
   name: string | null
   description: string | null
   releaseDate: Date | null
@@ -52,7 +52,7 @@ export interface GameTag extends Model<typeof metadata.GameTag> {
   gameTagId: number | null
   tagId: number | null
   tag: Tag | null
-  gameId: number | null
+  gameId: string | null
   game: Game | null
 }
 export class GameTag {
@@ -127,6 +127,7 @@ export interface Review extends Model<typeof metadata.Review> {
   rating: number | null
   reviewDate: Date | null
   reviewerName: string | null
+  reviewerId: string | null
   reviewTitle: string | null
   reviewBody: string | null
   isDeleted: boolean | null

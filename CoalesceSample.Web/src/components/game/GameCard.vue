@@ -86,10 +86,10 @@ export default class GameCard extends Vue {
     return this.game.gameTags;
   }
 
-  async gameDetails(gameId: number) {
+  async gameDetails(gameId: string) {
     await this.$router.push({
       name: "game-details",
-      params: { gameId: gameId.toString() },
+      params: { gameId: gameId },
     });
   }
 }

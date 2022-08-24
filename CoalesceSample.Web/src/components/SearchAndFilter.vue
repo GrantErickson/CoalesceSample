@@ -48,6 +48,7 @@
 <script lang="ts">
 import { Component, Inject, Prop, Vue, Watch } from "vue-property-decorator";
 import { GameListViewModel, TagListViewModel } from "@/viewmodels.g";
+import { Game } from "@/models.g";
 
 @Component({
   components: {},
@@ -60,20 +61,13 @@ export default class SearchAndFilter extends Vue {
   @Prop({ required: true, default: "" })
   searchText!: string;
 
-  filterGameTagsArray: number[] = [];
-
   @Inject("GAMESLIST")
   games!: GameListViewModel;
-  tags = new TagListViewModel();
 
-  showEditTags = false;
+  @Inject("TAGSLIST")
+  tags!: TagListViewModel;
 
-  async created() {
-    this.tags.$pageSize = 1000;
-    await this.tags.$load();
-
-    //await this.update();
-  }
+  filterGameTagsArray: number[] = [];
 
   @Watch("filterGameTags")
   updateArray() {
@@ -113,10 +107,6 @@ export default class SearchAndFilter extends Vue {
   }
   set localSearchText(value: string) {
     this.$emit("update:searchText", value);
-  }
-
-  toggleShowEditTags() {
-    this.showEditTags = !this.showEditTags;
   }
 }
 </script>

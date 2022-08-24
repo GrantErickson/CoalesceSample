@@ -15,7 +15,7 @@ namespace CoalesceSample.Web.Models
         private int? _GameTagId;
         private int? _TagId;
         private CoalesceSample.Web.Models.TagDtoGen _Tag;
-        private int? _GameId;
+        private System.Guid? _GameId;
         private CoalesceSample.Web.Models.GameDtoGen _Game;
 
         public int? GameTagId
@@ -33,7 +33,7 @@ namespace CoalesceSample.Web.Models
             get => _Tag;
             set { _Tag = value; Changed(nameof(Tag)); }
         }
-        public int? GameId
+        public System.Guid? GameId
         {
             get => _GameId;
             set { _GameId = value; Changed(nameof(GameId)); }

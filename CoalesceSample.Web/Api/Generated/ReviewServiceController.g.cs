@@ -36,7 +36,7 @@ namespace CoalesceSample.Web.Api
         /// </summary>
         [HttpPost("GetReviews")]
         [AllowAnonymous]
-        public virtual async Task<ItemResult<System.Collections.Generic.ICollection<ReviewDtoGen>>> GetReviews(int gameId)
+        public virtual async Task<ItemResult<System.Collections.Generic.ICollection<ReviewDtoGen>>> GetReviews(System.Guid gameId)
         {
             IncludeTree includeTree = null;
             var _mappingContext = new MappingContext(User);
@@ -51,7 +51,7 @@ namespace CoalesceSample.Web.Api
         /// </summary>
         [HttpPost("AddReview")]
         [Authorize(Roles = "User")]
-        public virtual async Task<ItemResult<ReviewDtoGen>> AddReview(int gameId, string reviewTitle, string reviewBody, double rating)
+        public virtual async Task<ItemResult<ReviewDtoGen>> AddReview(System.Guid gameId, string reviewTitle, string reviewBody, double rating)
         {
             IncludeTree includeTree = null;
             var _mappingContext = new MappingContext(User);

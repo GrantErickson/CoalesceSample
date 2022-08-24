@@ -3,7 +3,7 @@
     <v-navigation-drawer v-model="drawer" app clipped>
       <v-row class="py-5 justify-center">
         <v-card class="">
-          <v-btn outlined to="/login" exact> Login </v-btn>
+          <v-btn outlined to="/login" exact> Account </v-btn>
         </v-card>
       </v-row>
       <v-list>
@@ -52,8 +52,9 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Component, Provide } from "vue-property-decorator";
-import { GameListViewModel } from "@/viewmodels.g";
+import { Component, Inject, Provide } from "vue-property-decorator";
+import { GameListViewModel, TagListViewModel } from "@/viewmodels.g";
+import { Game } from "@/models.g";
 
 @Component({
   components: {},
@@ -65,6 +66,12 @@ export default class App extends Vue {
   @Provide("GAMESLIST")
   gamesList = new GameListViewModel();
 
+  dataSource = (this.gamesList.$dataSource =
+    new Game.DataSources.GameDataSource());
+
+  @Provide("TAGSLIST")
+  tags = new TagListViewModel();
+
   get routeMeta() {
     if (!this.$route || this.$route.name === null) return null;
 
@@ -75,7 +82,11 @@ export default class App extends Vue {
     this.routeComponent = this.$refs.routerView as Vue;
   }
 
-  created() {
+  async created() {
+    this.gamesList.$dataSource = this.dataSource;
+    this.tags.$pageSize = 1000;
+    await this.tags.$load();
+
     const baseTitle = document.title;
     this.$watch(
       () => (this.routeComponent as any)?.pageTitle,

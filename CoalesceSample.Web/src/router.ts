@@ -22,7 +22,7 @@ export default new Router({
       path: "/gamedetails/:gameId",
       name: "game-details",
       component: () => import("./views/GameDetails.vue"),
-      props: ({ params }) => ({ gameId: Number.parseInt(params.gameId) }),
+      props: true,
     },
     {
       path: "/login",

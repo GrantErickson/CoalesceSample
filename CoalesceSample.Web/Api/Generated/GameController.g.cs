@@ -34,7 +34,7 @@ namespace CoalesceSample.Web.Api
         [HttpGet("get/{id}")]
         [Authorize]
         public virtual Task<ItemResult<GameDtoGen>> Get(
-            int id,
+            System.Guid id,
             DataSourceParameters parameters,
             IDataSource<CoalesceSample.Data.Models.Game> dataSource)
             => GetImplementation(id, parameters, dataSource);
@@ -65,7 +65,7 @@ namespace CoalesceSample.Web.Api
         [HttpPost("delete/{id}")]
         [Authorize]
         public virtual Task<ItemResult<GameDtoGen>> Delete(
-            int id,
+            System.Guid id,
             IBehaviors<CoalesceSample.Data.Models.Game> behaviors,
             IDataSource<CoalesceSample.Data.Models.Game> dataSource)
             => DeleteImplementation(id, new DataSourceParameters(), dataSource, behaviors);

@@ -12,7 +12,7 @@ namespace CoalesceSample.Web.Models
     {
         public GameDtoGen() { }
 
-        private int? _GameId;
+        private System.Guid? _GameId;
         private string _Name;
         private string _Description;
         private System.DateTime? _ReleaseDate;
@@ -30,7 +30,7 @@ namespace CoalesceSample.Web.Models
         private System.Collections.Generic.ICollection<CoalesceSample.Web.Models.GameTagDtoGen> _GameTags;
         private System.Collections.Generic.ICollection<CoalesceSample.Web.Models.ReviewDtoGen> _Reviews;
 
-        public int? GameId
+        public System.Guid? GameId
         {
             get => _GameId;
             set { _GameId = value; Changed(nameof(GameId)); }

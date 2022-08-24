@@ -4,7 +4,7 @@
       v-slot
       :loaders="{
         'no-loading-content no-secondary-progress no-initial-content no-error-content':
-          [gameList.$load],
+          [gameService.getGameDetails, gameService.getGameImage],
       }"
     >
       <v-row>
@@ -55,11 +55,11 @@
                 </v-tooltip>
               </v-chip-group>
               <v-btn
-                v-if="$isAdmin"
+                v-if="$isLoggedIn"
                 class="ml-2"
                 fab
                 x-small
-                @click="showEditTags = true"
+                @click="toggleShowEditTags"
               >
                 <v-icon>fa-plus</v-icon>
               </v-btn>
@@ -120,174 +120,60 @@
             >
               <game-review-list
                 :key="'revList' + game.numberOfRatings"
-                :reviews="game.reviews"
+                :game.sync="game"
               />
             </c-loader-status>
           </v-card>
         </v-col>
       </v-row>
 
-      <v-dialog v-model="showEditTags" width="800">
-        <v-card>
-          <v-card-title> Edit Tags </v-card-title>
-          <v-card-text>
-            <c-loader-status
-              v-slot
-              :loaders="{
-                'no-secondary-progress no-initial-content no-error-content': [
-                  tags.$load,
-                ],
-              }"
-            >
-              <v-autocomplete
-                v-model="gameTagIds"
-                :items="tags.$items"
-                item-text="name"
-                item-value="tagId"
-                label="Tags"
-                hide-details
-                multiple
-                chips
-              >
-                <template slot="item" slot-scope="{ item }">
-                  <v-chip
-                    :key="item.tagId"
-                    :value="item.tagId"
-                    color="primary"
-                    dark
-                    small
-                  >
-                    {{ item.name }}
-                  </v-chip>
-                </template>
-              </v-autocomplete>
-            </c-loader-status>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn color="primary" @click="saveGameTags"> Save </v-btn>
-            <v-btn color="grey" @click="showEditTags = false"> Cancel </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-
-      <v-dialog v-model="showUpdateImage" width="800">
-        <v-card>
-          <v-card-title> Update Image</v-card-title>
-          <v-card-text>
-            <v-file-input v-model="newImage" label="New Image" />
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn color="primary" @click="updateImage"> Update Image</v-btn>
-            <v-btn
-              color="primary"
-              class="px-3"
-              flat
-              text
-              @click="showUpdateImage = false"
-            >
-              Close
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-
-      <v-dialog v-model="showAddReview" width="800">
-        <v-card>
-          <v-card-title> Write a review for: {{ game.name }}</v-card-title>
-
-          <v-card-text class="align-center justify-center pb-4">
-            <v-text-field
-              v-model="reviewTitle"
-              label="Review Title"
-              :counter="50"
-              maxlength="50"
-              required
-            />
-
-            <v-card-title class="text-h8">
-              <span>Rating:</span>
-              <star-rating
-                :rating.sync="reviewRating"
-                :is-read-only="false"
-                :is-dense="false"
-              />
-            </v-card-title>
-
-            <v-textarea
-              v-model="reviewBody"
-              label="Review Contents"
-              :counter="800"
-              maxlength="800"
-              required
-            />
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn color="primary" @click="clearReview">Cancel</v-btn>
-            <v-btn color="primary" @click="addReview">Submit</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+      <edit-tags-dialog v-model="showEditTags" :game.sync="game" />
+      <add-review-dialog v-model="showAddReview" :game.sync="game" />
+      <update-image-dialog v-model="showUpdateImage" :game.sync="game" />
     </c-loader-status>
   </v-container>
 </template>
 
 <script lang="ts">
-import { Component, Inject, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-property-decorator";
 import { Game, GameTag } from "@/models.g";
 import {
   ApplicationUserServiceViewModel,
-  GameListViewModel,
   GameServiceViewModel,
-  LoginServiceViewModel,
-  ReviewServiceViewModel,
-  TagListViewModel,
 } from "@/viewmodels.g";
 import GameReviewList from "@/components/game/GameReviewList.vue";
 import StarRating from "@/components/StarRating.vue";
 import LikeButton from "@/components/LikeButton.vue";
+import AddReviewDialog from "@/components/dialogs/AddReviewDialog.vue";
+import UpdateImageDialog from "@/components/dialogs/UpdateImageDialog.vue";
+import EditTagsDialog from "@/components/dialogs/EditTagsDialog.vue";
 
 @Component({
-  components: { GameReviewList, StarRating, LikeButton },
+  components: {
+    AddReviewDialog,
+    GameReviewList,
+    StarRating,
+    LikeButton,
+    UpdateImageDialog,
+    EditTagsDialog,
+  },
 })
 export default class GameDetails extends Vue {
   @Prop({ required: true })
-  gameId!: number;
+  gameId!: string;
 
   gameService: GameServiceViewModel = new GameServiceViewModel();
-  reviewService = new ReviewServiceViewModel();
-  loginService = new LoginServiceViewModel();
 
   showUpdateImage = false;
-  newImage: File | null = null;
-  gameImage = "";
-
-  showEditTags = false;
-  tags = new TagListViewModel();
-  gameTagIds: number[] = [];
 
   showAddReview = false;
-  reviewTitle = "";
-  reviewRating = 0;
-  reviewBody = "";
+  showEditTags = false;
 
-  hasLiked = false;
-
-  @Inject("GAMESLIST")
-  gameList!: GameListViewModel;
+  gameDetails: Game | null = null;
 
   async created() {
-    if (this.gameList.$load.wasSuccessful == null) {
-      await this.gameList.$load();
-    }
-
-    await this.getGameImage();
-
-    this.tags.$pageSize = 1000;
-    await this.tags.$load();
-    this.gameTagIds = this.game?.gameTags!.map((tag) => tag.tagId!) ?? [];
+    await this.gameService.getGameDetails(this.gameId);
+    await this.gameService.getGameImage(this.gameId);
   }
 
   async userRoles() {
@@ -296,8 +182,16 @@ export default class GameDetails extends Vue {
     return service.getRoles.result;
   }
 
-  get game(): Game | null {
-    return this.gameList.$items.filter((g) => g.gameId === this.gameId)[0];
+  get game(): Game {
+    if (this.gameDetails === null) {
+      return this.gameService.getGameDetails.result as Game;
+    } else {
+      return this.gameDetails as Game;
+    }
+  }
+
+  set game(value: Game) {
+    this.gameDetails = value;
   }
 
   get numberOfRatings() {
@@ -314,71 +208,29 @@ export default class GameDetails extends Vue {
     }
   }
 
-  async saveGameTags() {
-    this.gameService.setGameTags(this.gameId, this.gameTagIds);
-    await this.gameService.getGameTags(this.gameId);
-    if (this.game) {
-      this.game.gameTags = this.gameService.getGameTags.result ?? [];
+  toggleShowEditTags() {
+    if (this.$isLoggedIn) {
+      this.showEditTags = !this.showEditTags;
     }
+    return this.showAddReview;
   }
 
-  toggleAddReview() {
+  toggleAddReview(): boolean {
     if (this.$isLoggedIn) {
       this.showAddReview = !this.showAddReview;
     }
+    return this.showAddReview;
   }
 
-  toggleUpdateImageDialog() {
-    this.showUpdateImage = !this.showUpdateImage;
+  toggleUpdateImageDialog(): boolean {
+    if (this.$isAdmin) {
+      this.showUpdateImage = !this.showUpdateImage;
+    }
+    return this.showAddReview;
   }
 
-  async updateImage() {
-    if (this.newImage !== null) {
-      this.gameService.uploadGameImage(this.gameId, this.newImage);
-    }
-    this.showUpdateImage = false;
-    await this.getGameImage();
-  }
-
-  async getGameImage() {
-    if (this.game == null) {
-      return;
-    }
-    try {
-      await this.gameService.getGameImage(this.gameId);
-      if (this.gameService.getGameImage.wasSuccessful) {
-        this.gameImage = this.gameService.getGameImage.result!;
-      }
-    } catch (e) {
-      this.gameImage = "";
-    }
-  }
-
-  clearReview() {
-    this.reviewTitle = "";
-    this.reviewRating = 0;
-    this.reviewBody = "";
-    this.showAddReview = false;
-  }
-
-  async addReview() {
-    if (this.game === null) {
-      return;
-    }
-    await this.reviewService.addReview(
-      this.gameId,
-      this.reviewTitle,
-      this.reviewBody,
-      this.reviewRating
-    );
-    if (this.reviewService.addReview.wasSuccessful) {
-      this.game.reviews!.push(this.reviewService.addReview.result!);
-      this.game.numberOfRatings!++;
-      this.game.averageRating =
-        (this.game.averageRating! + this.reviewRating) / 2;
-      this.clearReview();
-    }
-    this.clearReview();
+  get gameImage() {
+    return this.gameService.getGameImage.result ?? "";
   }
 }
 </script>

@@ -4,7 +4,7 @@ import * as $apiClients from './api-clients.g'
 import { ViewModel, ListViewModel, ServiceViewModel, DeepPartial, defineProps } from 'coalesce-vue/lib/viewmodel'
 
 export interface GameViewModel extends $models.Game {
-  gameId: number | null;
+  gameId: string | null;
   name: string | null;
   description: string | null;
   releaseDate: Date | null;
@@ -22,7 +22,7 @@ export interface GameViewModel extends $models.Game {
   gameTags: GameTagViewModel[] | null;
   reviews: ReviewViewModel[] | null;
 }
-export class GameViewModel extends ViewModel<$models.Game, $apiClients.GameApiClient, number> implements $models.Game  {
+export class GameViewModel extends ViewModel<$models.Game, $apiClients.GameApiClient, string> implements $models.Game  {
   
   
   public addToGameTags() {
@@ -51,7 +51,7 @@ export interface GameTagViewModel extends $models.GameTag {
   gameTagId: number | null;
   tagId: number | null;
   tag: TagViewModel | null;
-  gameId: number | null;
+  gameId: string | null;
   game: GameViewModel | null;
 }
 export class GameTagViewModel extends ViewModel<$models.GameTag, $apiClients.GameTagApiClient, number> implements $models.GameTag  {
@@ -122,6 +122,7 @@ export interface ReviewViewModel extends $models.Review {
   rating: number | null;
   reviewDate: Date | null;
   reviewerName: string | null;
+  reviewerId: string | null;
   reviewTitle: string | null;
   reviewBody: string | null;
   isDeleted: boolean | null;
@@ -199,6 +200,17 @@ export class ApplicationUserServiceViewModel extends ServiceViewModel<typeof $me
     return hasRole
   }
   
+  public get getUserReviews() {
+    const getUserReviews = this.$apiClient.$makeCaller(
+      this.$metadata.methods.getUserReviews,
+      (c) => c.getUserReviews(),
+      () => ({}),
+      (c, args) => c.getUserReviews())
+    
+    Object.defineProperty(this, 'getUserReviews', {value: getUserReviews});
+    return getUserReviews
+  }
+  
   constructor() {
     super($metadata.ApplicationUserService, new $apiClients.ApplicationUserServiceApiClient())
   }
@@ -221,8 +233,8 @@ export class GameServiceViewModel extends ServiceViewModel<typeof $metadata.Game
   public get getGamesFromIds() {
     const getGamesFromIds = this.$apiClient.$makeCaller(
       this.$metadata.methods.getGamesFromIds,
-      (c, gameIds: number[] | null) => c.getGamesFromIds(gameIds),
-      () => ({gameIds: null as number[] | null, }),
+      (c, gameIds: string[] | null) => c.getGamesFromIds(gameIds),
+      () => ({gameIds: null as string[] | null, }),
       (c, args) => c.getGamesFromIds(args.gameIds))
     
     Object.defineProperty(this, 'getGamesFromIds', {value: getGamesFromIds});
@@ -232,8 +244,8 @@ export class GameServiceViewModel extends ServiceViewModel<typeof $metadata.Game
   public get getGameDetails() {
     const getGameDetails = this.$apiClient.$makeCaller(
       this.$metadata.methods.getGameDetails,
-      (c, gameId: number | null) => c.getGameDetails(gameId),
-      () => ({gameId: null as number | null, }),
+      (c, gameId: string | null) => c.getGameDetails(gameId),
+      () => ({gameId: null as string | null, }),
       (c, args) => c.getGameDetails(args.gameId))
     
     Object.defineProperty(this, 'getGameDetails', {value: getGameDetails});
@@ -243,8 +255,8 @@ export class GameServiceViewModel extends ServiceViewModel<typeof $metadata.Game
   public get getGameImage() {
     const getGameImage = this.$apiClient.$makeCaller(
       this.$metadata.methods.getGameImage,
-      (c, gameId: number | null) => c.getGameImage(gameId),
-      () => ({gameId: null as number | null, }),
+      (c, gameId: string | null) => c.getGameImage(gameId),
+      () => ({gameId: null as string | null, }),
       (c, args) => c.getGameImage(args.gameId))
     
     Object.defineProperty(this, 'getGameImage', {value: getGameImage});
@@ -254,8 +266,8 @@ export class GameServiceViewModel extends ServiceViewModel<typeof $metadata.Game
   public get uploadGameImage() {
     const uploadGameImage = this.$apiClient.$makeCaller(
       this.$metadata.methods.uploadGameImage,
-      (c, gameId: number | null, image: File | null) => c.uploadGameImage(gameId, image),
-      () => ({gameId: null as number | null, image: null as File | null, }),
+      (c, gameId: string | null, image: File | null) => c.uploadGameImage(gameId, image),
+      () => ({gameId: null as string | null, image: null as File | null, }),
       (c, args) => c.uploadGameImage(args.gameId, args.image))
     
     Object.defineProperty(this, 'uploadGameImage', {value: uploadGameImage});
@@ -276,8 +288,8 @@ export class GameServiceViewModel extends ServiceViewModel<typeof $metadata.Game
   public get getGameTags() {
     const getGameTags = this.$apiClient.$makeCaller(
       this.$metadata.methods.getGameTags,
-      (c, gameId: number | null) => c.getGameTags(gameId),
-      () => ({gameId: null as number | null, }),
+      (c, gameId: string | null) => c.getGameTags(gameId),
+      () => ({gameId: null as string | null, }),
       (c, args) => c.getGameTags(args.gameId))
     
     Object.defineProperty(this, 'getGameTags', {value: getGameTags});
@@ -287,8 +299,8 @@ export class GameServiceViewModel extends ServiceViewModel<typeof $metadata.Game
   public get setGameTags() {
     const setGameTags = this.$apiClient.$makeCaller(
       this.$metadata.methods.setGameTags,
-      (c, gameId: number | null, tagIds: number[] | null) => c.setGameTags(gameId, tagIds),
-      () => ({gameId: null as number | null, tagIds: null as number[] | null, }),
+      (c, gameId: string | null, tagIds: number[] | null) => c.setGameTags(gameId, tagIds),
+      () => ({gameId: null as string | null, tagIds: null as number[] | null, }),
       (c, args) => c.setGameTags(args.gameId, args.tagIds))
     
     Object.defineProperty(this, 'setGameTags', {value: setGameTags});
@@ -298,8 +310,8 @@ export class GameServiceViewModel extends ServiceViewModel<typeof $metadata.Game
   public get addLike() {
     const addLike = this.$apiClient.$makeCaller(
       this.$metadata.methods.addLike,
-      (c, gameId: number | null) => c.addLike(gameId),
-      () => ({gameId: null as number | null, }),
+      (c, gameId: string | null) => c.addLike(gameId),
+      () => ({gameId: null as string | null, }),
       (c, args) => c.addLike(args.gameId))
     
     Object.defineProperty(this, 'addLike', {value: addLike});
@@ -309,8 +321,8 @@ export class GameServiceViewModel extends ServiceViewModel<typeof $metadata.Game
   public get removeLike() {
     const removeLike = this.$apiClient.$makeCaller(
       this.$metadata.methods.removeLike,
-      (c, gameId: number | null) => c.removeLike(gameId),
-      () => ({gameId: null as number | null, }),
+      (c, gameId: string | null) => c.removeLike(gameId),
+      () => ({gameId: null as string | null, }),
       (c, args) => c.removeLike(args.gameId))
     
     Object.defineProperty(this, 'removeLike', {value: removeLike});
@@ -413,8 +425,8 @@ export class ReviewServiceViewModel extends ServiceViewModel<typeof $metadata.Re
   public get getReviews() {
     const getReviews = this.$apiClient.$makeCaller(
       this.$metadata.methods.getReviews,
-      (c, gameId: number | null) => c.getReviews(gameId),
-      () => ({gameId: null as number | null, }),
+      (c, gameId: string | null) => c.getReviews(gameId),
+      () => ({gameId: null as string | null, }),
       (c, args) => c.getReviews(args.gameId))
     
     Object.defineProperty(this, 'getReviews', {value: getReviews});
@@ -424,8 +436,8 @@ export class ReviewServiceViewModel extends ServiceViewModel<typeof $metadata.Re
   public get addReview() {
     const addReview = this.$apiClient.$makeCaller(
       this.$metadata.methods.addReview,
-      (c, gameId: number | null, reviewTitle: string | null, reviewBody: string | null, rating: number | null) => c.addReview(gameId, reviewTitle, reviewBody, rating),
-      () => ({gameId: null as number | null, reviewTitle: null as string | null, reviewBody: null as string | null, rating: null as number | null, }),
+      (c, gameId: string | null, reviewTitle: string | null, reviewBody: string | null, rating: number | null) => c.addReview(gameId, reviewTitle, reviewBody, rating),
+      () => ({gameId: null as string | null, reviewTitle: null as string | null, reviewBody: null as string | null, rating: null as number | null, }),
       (c, args) => c.addReview(args.gameId, args.reviewTitle, args.reviewBody, args.rating))
     
     Object.defineProperty(this, 'addReview', {value: addReview});

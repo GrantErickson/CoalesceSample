@@ -55,5 +55,18 @@ namespace CoalesceSample.Web.Api
             var _result = new ItemResult(_methodResult);
             return _result;
         }
+
+        /// <summary>
+        /// Method: GetUserReviews
+        /// </summary>
+        [HttpPost("GetUserReviews")]
+        [AllowAnonymous]
+        public virtual async Task<ItemResult<System.Collections.Generic.ICollection<System.Guid>>> GetUserReviews()
+        {
+            var _methodResult = await Service.GetUserReviews(User);
+            var _result = new ItemResult<System.Collections.Generic.ICollection<System.Guid>>(_methodResult);
+            _result.Object = _methodResult.Object?.ToList();
+            return _result;
+        }
     }
 }

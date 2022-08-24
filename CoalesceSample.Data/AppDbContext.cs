@@ -104,7 +104,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     {
         if (!Genres.Any(g => g.Name == "Test Genre"))
         {
-            Genre testGenre = new Genre()
+            Genre testGenre = new()
             {
                 Name = "Test Genre",
                 Description = "A genre for testing",
