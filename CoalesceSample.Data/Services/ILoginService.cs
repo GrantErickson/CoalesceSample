@@ -24,7 +24,7 @@ public interface ILoginService
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAuthorized)]
     Task<ItemResult> ChangePassword(ClaimsPrincipal user, string currentPassword, string newPassword);
 
-    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
+    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAuthorized)]
     Task<ItemResult> IsLoggedIn(ClaimsPrincipal user);
 
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]

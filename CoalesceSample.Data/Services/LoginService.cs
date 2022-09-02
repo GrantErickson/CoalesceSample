@@ -69,6 +69,7 @@ public class LoginService : ILoginService
                     signingCredentials: credentials
                     );
                 string jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
+                await SignInManager.SignInAsync(user, false, authenticationMethod: "bearer");
                 return new { token = jwtToken };
             }
         }

@@ -18,7 +18,7 @@ public class ApplicationUserService : IApplicationUserService
 
     public async Task<ItemResult<List<Guid>>> GetUserReviews(ClaimsPrincipal user)
     {
-                Claim? claim = user.FindFirst(ClaimTypes.NameIdentifier);
+        Claim? claim = user.FindFirst(ClaimTypes.NameIdentifier);
         if (claim == null)
         {
             return new();
@@ -28,13 +28,13 @@ public class ApplicationUserService : IApplicationUserService
         {
             return new();
         }
-        IQueryable<Review> reviews = Db.Reviews.Where(r=>r.Reviewer == existingUser);
+        IQueryable<Review> reviews = Db.Reviews.Where(r => r.Reviewer == existingUser);
         return reviews.Where(r => !r.IsDeleted).Select(r => r.ReviewId).ToList();
     }
 
     public async Task<ItemResult<List<string>>> GetRoles(ClaimsPrincipal user)
     {
-                Claim? claim = user.FindFirst(ClaimTypes.NameIdentifier);
+        Claim? claim = user.FindFirst(ClaimTypes.NameIdentifier);
         if (claim == null)
         {
 
@@ -54,7 +54,7 @@ public class ApplicationUserService : IApplicationUserService
 
     public async Task<ItemResult> HasRole(ClaimsPrincipal user, string role)
     {
-                Claim? claim = user.FindFirst(ClaimTypes.NameIdentifier);
+        Claim? claim = user.FindFirst(ClaimTypes.NameIdentifier);
         if (claim == null)
         {
 

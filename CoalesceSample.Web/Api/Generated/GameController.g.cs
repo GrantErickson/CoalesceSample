@@ -22,7 +22,6 @@ namespace CoalesceSample.Web.Api
 {
     [Route("api/Game")]
     [Authorize]
-    [AllowAnonymous]
     [ServiceFilter(typeof(IApiActionFilter))]
     public partial class GameController
         : BaseApiController<CoalesceSample.Data.Models.Game, GameDtoGen, CoalesceSample.Data.AppDbContext>

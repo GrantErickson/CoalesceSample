@@ -3,7 +3,7 @@ using CoalesceSample.Data.Identity;
 using CoalesceSample.Data.Models;
 using CoalesceSample.Data.Services;
 using IntelliTect.Coalesce;
-//using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -110,21 +110,13 @@ JwtConfiguration jwtConfiguration = builder.Configuration.GetSection("JwtConfig"
 services.AddSingleton(jwtConfiguration);
 
 services.AddAuthentication(auth =>
-{
-    auth.DefaultScheme = "Bearer";
-    auth.DefaultChallengeScheme = "Bearer";
-    //auth.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    //auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    //auth.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-})
-    //.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-    //{
-    //    options.Events.OnRedirectToLogin = c =>
-    //    {
-    //        c.Response.StatusCode = StatusCodes.Status401Unauthorized;
-    //        return Task.FromResult<object>(null!);
-    //    };
-    //})
+    {
+        auth.DefaultScheme = "JWT_OR_COOKIE";
+        auth.DefaultChallengeScheme = "JWT_OR_COOKIE";
+        //auth.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        //auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        //auth.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    })
     .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -145,6 +137,7 @@ services.AddAuthentication(auth =>
 
             OnMessageReceived = context =>
             {
+                var path = context.Request.Path;
                 // Pull the token from the querystring if it is present there.
                 context.Token = context.Request.Headers["Authorization"].ToString().Replace("bearer ", "");
                 if (context.Request.QueryString.Value?.Contains("token") ?? false)
@@ -157,31 +150,37 @@ services.AddAuthentication(auth =>
                 return Task.CompletedTask;
             },
         };
-    });
-    //.AddPolicyScheme("JWT_OR_COOKIE", "JWT_OR_COOKIE", options =>
-    //{
-    //    // runs on each request
-    //    options.ForwardDefaultSelector = context =>
-    //    {
-    //        // filter by auth type
-    //        string authorization = context.Request.Headers[HeaderNames.Authorization];
-    //        if (context.Request.QueryString.Value?.Contains("token") ?? false)
-    //            return JwtBearerDefaults.AuthenticationScheme;
-    //        if (!string.IsNullOrEmpty(authorization) && !authorization.Contains("null"))
-    //            return JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+    {
+        options.Events.OnRedirectToLogin = c =>
+        {
+            c.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Task.FromResult<object>(null!);
+        };
+    })
+    .AddPolicyScheme("JWT_OR_COOKIE", "JWT_OR_COOKIE", options =>
+    {
+        // runs on each request
+        options.ForwardDefaultSelector = context =>
+        {
+            // filter by auth type
+            string authorization = context.Request.Headers[HeaderNames.Authorization];
+            if (context.Request.QueryString.Value?.Contains("token") ?? false)
+                return JwtBearerDefaults.AuthenticationScheme;
+            if (!string.IsNullOrEmpty(authorization) && !authorization.Contains("null"))
+                return JwtBearerDefaults.AuthenticationScheme;
 
-    //        // otherwise always check for cookie auth
-    //        return CookieAuthenticationDefaults.AuthenticationScheme;
-    //    };
-    //});
+            // otherwise always check for cookie auth
+            return CookieAuthenticationDefaults.AuthenticationScheme;
+        };
+    });
 
 builder.Services.AddAuthorization(options =>
 {
     options.DefaultPolicy = new AuthorizationPolicyBuilder(
-    //    "JWT_OR_COOKIE",
-        JwtBearerDefaults.AuthenticationScheme
-    //    CookieAuthenticationDefaults.AuthenticationScheme
-        ).RequireAuthenticatedUser().Build();
+        "JWT_OR_COOKIE"
+        ).RequireAssertion(_ => true).Build();
 });
 
 services.AddControllersWithViews();
@@ -216,7 +215,7 @@ if (app.Environment.IsDevelopment())
     // Replace this with ASP.NET Core Identity, Windows Authentication, or some other scheme.
     // This exists only because Coalesce restricts all generated pages and API to only logged in users by default.
     app.Use(async (context, next) =>
-    { 
+    {
         await next.Invoke();
         var test = context;
         Console.WriteLine(test.User.Identity.Name);
@@ -225,7 +224,7 @@ if (app.Environment.IsDevelopment())
         if (test.User.Identity.IsAuthenticated)
         {
             Console.WriteLine("AUTHENTICATED DATA:");
-            test.User.Claims.ToList().ForEach(x=>Console.Write(x.ToString()+ ", "));
+            test.User.Claims.ToList().ForEach(x => Console.Write(x.ToString() + ", "));
             Console.WriteLine(test.User.Identities);
         }
     });
@@ -315,6 +314,6 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-app.Run(); 
+app.Run();
 
 #endregion

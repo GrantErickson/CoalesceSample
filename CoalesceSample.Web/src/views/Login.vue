@@ -168,7 +168,7 @@ export default class Login extends Vue {
     } else {
       await this.loginService.login(this.email, this.password);
     }
-    //this.created();
+    this.created();
     //window.location.reload();
   }
 

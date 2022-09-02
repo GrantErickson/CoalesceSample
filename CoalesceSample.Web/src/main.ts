@@ -52,12 +52,13 @@ CoalesceAxiosClient.defaults.baseURL = "/api";
 CoalesceAxiosClient.defaults.withCredentials = true;
 CoalesceAxiosClient.interceptors.request.use(
   (config) => {
-    console.log("intercepting");
-    config.headers!["Authorization"] = `bearer ${localStorage.getItem(
-      "token"
-    )}`;
+    const token = localStorage.getItem("token");
+    if (token) {
+      console.log("intercepting");
+      config.headers!["Authorization"] = `bearer ${token}`;
 
-    console.log(config.headers!["Authorization"]);
+      console.log(config.headers!["Authorization"]);
+    }
     return config;
   },
   (error) => {
@@ -66,15 +67,16 @@ CoalesceAxiosClient.interceptors.request.use(
 );
 AxiosClient.interceptors.request.use(
   (config) => {
-    if (config.headers!["Authorization"] === undefined) {
-      console.log("AXIOS MISSING AUTH", config);
+    const token = localStorage.getItem("token");
+    if (token) {
+      if (config.headers!["Authorization"] === undefined) {
+        console.log("AXIOS MISSING AUTH", config);
+      }
+      if (config!.url!.includes("login")) {
+        console.log("Login AXIOS", config);
+      }
+      config.headers!["Authorization"] = `bearer ${token}`;
     }
-    if (config!.url!.includes("login")) {
-      console.log("Login AXIOS", config);
-    }
-    config.headers!["Authorization"] = `bearer ${localStorage.getItem(
-      "token"
-    )}`;
     return config;
   },
   (error) => {
