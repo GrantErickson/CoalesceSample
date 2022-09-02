@@ -18,6 +18,7 @@ import $metadata from "@/metadata.g";
 // This global lookup allows the admin page components to function.
 import "@/viewmodels.g";
 import applicationUserService from "@/services/UserService";
+import { AxiosClient } from "coalesce-vue/lib/api-client";
 
 // SETUP: vuetify
 Vue.use(Vuetify);
@@ -52,11 +53,28 @@ CoalesceAxiosClient.defaults.withCredentials = true;
 CoalesceAxiosClient.interceptors.request.use(
   (config) => {
     console.log("intercepting");
-    config.headers!["Authorization"] = `Bearer ${localStorage.getItem(
+    config.headers!["Authorization"] = `bearer ${localStorage.getItem(
       "token"
     )}`;
 
     console.log(config.headers!["Authorization"]);
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+AxiosClient.interceptors.request.use(
+  (config) => {
+    if (config.headers!["Authorization"] === undefined) {
+      console.log("AXIOS MISSING AUTH", config);
+    }
+    if (config!.url!.includes("login")) {
+      console.log("Login AXIOS", config);
+    }
+    config.headers!["Authorization"] = `bearer ${localStorage.getItem(
+      "token"
+    )}`;
     return config;
   },
   (error) => {

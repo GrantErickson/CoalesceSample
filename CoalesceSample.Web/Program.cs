@@ -1,23 +1,23 @@
+using CoalesceSample.Data;
+using CoalesceSample.Data.Identity;
+using CoalesceSample.Data.Models;
+using CoalesceSample.Data.Services;
 using IntelliTect.Coalesce;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+//using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Console;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
+using Microsoft.OpenApi.Models;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
-using CoalesceSample.Data;
-using CoalesceSample.Data.Services;
-using CoalesceSample.Data.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using CoalesceSample.Data.Identity;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
@@ -25,16 +25,15 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
     // Explicit declaration prevents ASP.NET Core from erroring if wwwroot doesn't exist at startup:
     WebRootPath = "wwwroot"
 });
-
-builder.Services.AddSwaggerGen(config=>
+builder.Services.AddSwaggerGen(config =>
 {
     config.SwaggerDoc("v1", new OpenApiInfo { Title = "Coalesce Sample", Version = "v1" });
     config.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
         In = ParameterLocation.Header,
-        Type=SecuritySchemeType.Http,
-        Scheme="Bearer"
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer"
     });
     config.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
@@ -87,6 +86,7 @@ services.AddScoped<GameService>();
 services.AddScoped<ILoginService, LoginService>();
 services.AddScoped<IReviewService, ReviewService>();
 services.AddScoped<IApplicationUserService, ApplicationUserService>();
+services.AddScoped<TokenValidator>();
 
 services.AddCoalesce<AppDbContext>();
 
@@ -104,13 +104,28 @@ services
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 
     });
-//services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-//        .AddCookie();
-services.AddControllersWithViews();
+
 
 JwtConfiguration jwtConfiguration = builder.Configuration.GetSection("JwtConfig").Get<JwtConfiguration>();
-services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+services.AddSingleton(jwtConfiguration);
+
+services.AddAuthentication(auth =>
+{
+    auth.DefaultScheme = "Bearer";
+    auth.DefaultChallengeScheme = "Bearer";
+    //auth.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    //auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    //auth.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+    //.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+    //{
+    //    options.Events.OnRedirectToLogin = c =>
+    //    {
+    //        c.Response.StatusCode = StatusCodes.Status401Unauthorized;
+    //        return Task.FromResult<object>(null!);
+    //    };
+    //})
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -122,17 +137,54 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = jwtConfiguration.Audience,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.SigningKey)),
         };
-    });
-services.AddSingleton(jwtConfiguration);
-services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-        .AddCookie(options =>
+        options.SaveToken = true;
+        options.SecurityTokenValidators.Clear();
+        options.SecurityTokenValidators.Add(new TokenValidator(jwtConfiguration));
+        options.Events = new JwtBearerEvents
         {
-            options.LoginPath = "/Login";
-            options.LogoutPath = "/";
-            options.AccessDeniedPath = "Login";
-        });
-//services.AddControllersWithViews();
 
+            OnMessageReceived = context =>
+            {
+                // Pull the token from the querystring if it is present there.
+                context.Token = context.Request.Headers["Authorization"].ToString().Replace("bearer ", "");
+                if (context.Request.QueryString.Value?.Contains("token") ?? false)
+                    context.Token = context.Request.Query.Where(q => q.Key == "token").First().Value;
+
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                return Task.CompletedTask;
+            },
+        };
+    });
+    //.AddPolicyScheme("JWT_OR_COOKIE", "JWT_OR_COOKIE", options =>
+    //{
+    //    // runs on each request
+    //    options.ForwardDefaultSelector = context =>
+    //    {
+    //        // filter by auth type
+    //        string authorization = context.Request.Headers[HeaderNames.Authorization];
+    //        if (context.Request.QueryString.Value?.Contains("token") ?? false)
+    //            return JwtBearerDefaults.AuthenticationScheme;
+    //        if (!string.IsNullOrEmpty(authorization) && !authorization.Contains("null"))
+    //            return JwtBearerDefaults.AuthenticationScheme;
+
+    //        // otherwise always check for cookie auth
+    //        return CookieAuthenticationDefaults.AuthenticationScheme;
+    //    };
+    //});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.DefaultPolicy = new AuthorizationPolicyBuilder(
+    //    "JWT_OR_COOKIE",
+        JwtBearerDefaults.AuthenticationScheme
+    //    CookieAuthenticationDefaults.AuthenticationScheme
+        ).RequireAuthenticatedUser().Build();
+});
+
+services.AddControllersWithViews();
 #endregion
 
 
@@ -140,6 +192,9 @@ services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 #region Configure HTTP Pipeline
 
 var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
@@ -161,19 +216,22 @@ if (app.Environment.IsDevelopment())
     // Replace this with ASP.NET Core Identity, Windows Authentication, or some other scheme.
     // This exists only because Coalesce restricts all generated pages and API to only logged in users by default.
     app.Use(async (context, next) =>
-    {
-        if (!context.User.Claims.Any())
-        {
-            var identity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, "anonymous") }, CookieAuthenticationDefaults.AuthenticationScheme);
-            await context.SignInAsync(context.User = new ClaimsPrincipal(identity));
-        }
+    { 
         await next.Invoke();
+        var test = context;
+        Console.WriteLine(test.User.Identity.Name);
+        Console.WriteLine(test.User.Identity.AuthenticationType);
+        Console.WriteLine(test.User.Identity.IsAuthenticated);
+        if (test.User.Identity.IsAuthenticated)
+        {
+            Console.WriteLine("AUTHENTICATED DATA:");
+            test.User.Claims.ToList().ForEach(x=>Console.Write(x.ToString()+ ", "));
+            Console.WriteLine(test.User.Identities);
+        }
     });
     // End Dummy Authentication.
 }
 
-app.UseAuthentication();
-app.UseAuthorization();
 
 var containsFileHashRegex = new Regex(@"\.[0-9a-fA-F]{8}\.[^\.]*$", RegexOptions.Compiled);
 app.UseStaticFiles(new StaticFileOptions
@@ -224,9 +282,9 @@ using (var scope = app.Services.CreateScope())
 
     RoleManager<IdentityRole> roleManager = serviceScope.GetRequiredService<RoleManager<IdentityRole>>();
 
-    foreach(string role in Roles.AllRoles)
+    foreach (string role in Roles.AllRoles)
     {
-        if(!await roleManager.RoleExistsAsync(role))
+        if (!await roleManager.RoleExistsAsync(role))
         {
             await roleManager.CreateAsync(new IdentityRole(role));
         }
@@ -257,6 +315,6 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-app.Run();
+app.Run(); 
 
 #endregion

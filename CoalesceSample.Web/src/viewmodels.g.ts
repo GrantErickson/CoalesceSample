@@ -210,6 +210,17 @@ export class ApplicationUserServiceViewModel extends ServiceViewModel<typeof $me
     return getUserReviews
   }
   
+  public get isLoggedIn() {
+    const isLoggedIn = this.$apiClient.$makeCaller(
+      this.$metadata.methods.isLoggedIn,
+      (c) => c.isLoggedIn(),
+      () => ({}),
+      (c, args) => c.isLoggedIn())
+    
+    Object.defineProperty(this, 'isLoggedIn', {value: isLoggedIn});
+    return isLoggedIn
+  }
+  
   constructor() {
     super($metadata.ApplicationUserService, new $apiClients.ApplicationUserServiceApiClient())
   }

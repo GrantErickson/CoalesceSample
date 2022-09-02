@@ -57,6 +57,13 @@ export class ApplicationUserServiceApiClient extends ServiceApiClient<typeof $me
     return this.$invoke($method, $params, $config)
   }
   
+  public isLoggedIn($config?: AxiosRequestConfig): AxiosPromise<ItemResult<unknown>> {
+    const $method = this.$metadata.methods.isLoggedIn
+    const $params =  {
+    }
+    return this.$invoke($method, $params, $config)
+  }
+  
 }
 
 

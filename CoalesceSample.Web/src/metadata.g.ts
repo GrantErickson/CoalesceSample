@@ -570,6 +570,21 @@ export const ApplicationUserService = domain.services.ApplicationUserService = {
         role: "value",
       },
     },
+    isLoggedIn: {
+      name: "isLoggedIn",
+      displayName: "Is Logged In",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        // Type not supported natively by Coalesce - falling back to unknown.
+        type: "unknown",
+        role: "value",
+      },
+    },
   },
 }
 export const GameService = domain.services.GameService = {

@@ -21,11 +21,12 @@ public interface ILoginService
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
     Task<ItemResult> CreateAccount(string name, string email, string password);
 
-    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAuthorized, Roles = Roles.User)]
+    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAuthorized)]
     Task<ItemResult> ChangePassword(ClaimsPrincipal user, string currentPassword, string newPassword);
 
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
     Task<ItemResult> IsLoggedIn(ClaimsPrincipal user);
+
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
     Task<ItemResult<UserInfoDto>> GetUserInfo(ClaimsPrincipal user);
 }

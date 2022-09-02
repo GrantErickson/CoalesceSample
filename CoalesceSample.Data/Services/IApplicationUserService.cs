@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace CoalesceSample.Data.Services;
 [Coalesce, Service]
 public interface IApplicationUserService
-{
+{ 
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
     public Task<ItemResult<List<string>>> GetRoles(ClaimsPrincipal user);
 
@@ -20,4 +20,9 @@ public interface IApplicationUserService
 
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
     public Task<ItemResult<List<Guid>>> GetUserReviews(ClaimsPrincipal user);
+    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
+    public async Task<ItemResult<ClaimsPrincipal>> IsLoggedIn(ClaimsPrincipal user)
+    {
+        return user;
+    }
 }

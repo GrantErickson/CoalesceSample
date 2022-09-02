@@ -150,12 +150,15 @@ export default class Login extends Vue {
 
   async login() {
     console.log("logout");
-    await this.logout(false)
+    await this.logout(false);
     console.log("login");
     if (this.signInType === "jwt") {
       await this.loginService.getToken(this.email, this.password);
       if (this.loginService.getToken.wasSuccessful) {
-        // console.log((this.loginService.getToken.result as any).token);
+        console.log(
+          "login using",
+          (this.loginService.getToken.result as any).token
+        );
         localStorage.setItem(
           "token",
           (this.loginService.getToken.result as any).token
@@ -165,7 +168,8 @@ export default class Login extends Vue {
     } else {
       await this.loginService.login(this.email, this.password);
     }
-    window.location.reload();
+    //this.created();
+    //window.location.reload();
   }
 
   async register() {
@@ -176,7 +180,7 @@ export default class Login extends Vue {
   async logout(reload = true) {
     await this.loginService.logout();
     localStorage.removeItem("token");
-    if(reload) {
+    if (reload) {
       window.location.reload();
     }
   }
