@@ -18,8 +18,7 @@ public class ApplicationUserService : IApplicationUserService
 
     public async Task<ItemResult<List<Guid>>> GetUserReviews(ClaimsPrincipal user)
     {
-        Console.WriteLine("RUNNING GET USER REVIEWS");
-        Claim? claim = user.FindFirst(ClaimTypes.NameIdentifier);
+                Claim? claim = user.FindFirst(ClaimTypes.NameIdentifier);
         if (claim == null)
         {
             return new();
@@ -35,8 +34,7 @@ public class ApplicationUserService : IApplicationUserService
 
     public async Task<ItemResult<List<string>>> GetRoles(ClaimsPrincipal user)
     {
-        Console.WriteLine("RUNNING GET ROLES");
-        Claim? claim = user.FindFirst(ClaimTypes.NameIdentifier);
+                Claim? claim = user.FindFirst(ClaimTypes.NameIdentifier);
         if (claim == null)
         {
 
@@ -56,8 +54,7 @@ public class ApplicationUserService : IApplicationUserService
 
     public async Task<ItemResult> HasRole(ClaimsPrincipal user, string role)
     {
-        Console.WriteLine("RUNNING HAS ROLE");
-        Claim? claim = user.FindFirst(ClaimTypes.NameIdentifier);
+                Claim? claim = user.FindFirst(ClaimTypes.NameIdentifier);
         if (claim == null)
         {
 

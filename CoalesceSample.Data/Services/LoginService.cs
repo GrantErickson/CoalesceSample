@@ -29,7 +29,7 @@ public class LoginService : ILoginService
     }
     public async Task<ItemResult> Login(string email, string password)
     {
-                SignInResult? result = await SignInManager.PasswordSignInAsync(email, password, false, false);
+        SignInResult? result = await SignInManager.PasswordSignInAsync(email, password, false, false);
 
         if (result.Succeeded)
         {
@@ -42,7 +42,7 @@ public class LoginService : ILoginService
     }
     public async Task<ItemResult<dynamic>> GetToken(string email, string password)
     {
-                ApplicationUser? user = Db.Users.FirstOrDefault(u => u.Email == email);
+        ApplicationUser? user = Db.Users.FirstOrDefault(u => u.Email == email);
         if (user != null)
         {
             if (await UserManager.CheckPasswordAsync(user, password))
@@ -77,7 +77,7 @@ public class LoginService : ILoginService
 
     public async Task<ItemResult> Logout()
     {
-                await SignInManager.SignOutAsync();
+        await SignInManager.SignOutAsync();
         return true;
     }
 
@@ -129,7 +129,7 @@ public class LoginService : ILoginService
 
     public async Task<ItemResult> IsLoggedIn(ClaimsPrincipal user)
     {
-                if (SignInManager.IsSignedIn(user) && user.IsInRole(Roles.User))
+        if (SignInManager.IsSignedIn(user) && user.IsInRole(Roles.User))
         {
             return true;
         }
@@ -143,7 +143,7 @@ public class LoginService : ILoginService
     public async Task<ItemResult<UserInfoDto>> GetUserInfo(ClaimsPrincipal user)
     {
 
-                Claim? claim = user.FindFirst(ClaimTypes.NameIdentifier);
+        Claim? claim = user.FindFirst(ClaimTypes.NameIdentifier);
         if (claim == null)
         {
             return new UserInfoDto("", "", new List<string>().ToArray());
