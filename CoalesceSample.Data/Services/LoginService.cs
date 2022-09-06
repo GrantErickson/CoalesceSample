@@ -52,7 +52,7 @@ public class LoginService : ILoginService
 
                 var claims = new List<Claim>
                 {
-                    new Claim(JwtRegisteredClaimNames.Sub, user.Email)
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Id)
                 };
 
                 var userRoles = await UserManager.GetRolesAsync(user);
@@ -69,7 +69,7 @@ public class LoginService : ILoginService
                     signingCredentials: credentials
                     );
                 string jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
-                await SignInManager.SignInAsync(user, false, authenticationMethod: "bearer");
+                await SignInManager.SignInAsync(user, true, authenticationMethod: "bearer");
                 return new { token = jwtToken };
             }
         }
@@ -130,7 +130,7 @@ public class LoginService : ILoginService
 
     public async Task<ItemResult> IsLoggedIn(ClaimsPrincipal user)
     {
-        if (SignInManager.IsSignedIn(user) && user.IsInRole(Roles.User))
+        if ((user.Identity?.IsAuthenticated ?? false) && user.IsInRole(Roles.User))
         {
             return true;
         }

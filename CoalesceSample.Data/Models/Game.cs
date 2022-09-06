@@ -1,9 +1,11 @@
 ﻿using IntelliTect.Coalesce;
 using IntelliTect.Coalesce.DataAnnotations;
 using IntelliTect.Coalesce.Models;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace CoalesceSample.Data.Models;
+[Read(SecurityPermissionLevels.AllowAll)]
 public class Game
 {
     public Guid GameId { get; set; }
@@ -32,7 +34,7 @@ public class Game
     [Coalesce]
     public class GameDataSource : StandardDataSource<Game, AppDbContext>
     {
-        public GameDataSource(CrudContext<AppDbContext> context) : base(context) { }
+        public GameDataSource(CrudContext<AppDbContext> context) : base(context) { FilterTags = ""; }
 
         [Coalesce]
         public string FilterTags { get; set; }
@@ -44,10 +46,44 @@ public class Game
             {
                 IEnumerable<int> tags = FilterTags.Split(',').Where(x => int.TryParse(x, out _)).Select(Int32.Parse);
                 query = query
+                    .Include(g=>g.Reviews.Where(r=>!r.IsDeleted))
                     .Where(g => g.GameTags.Where(gt => tags.Contains(gt.TagId)).Count() == tags.Count());
             }
 
             return query;
+        }
+    }
+    #endregion
+
+    #region BEHAVIORS
+    [Coalesce]
+    public class GameBehaviors : StandardBehaviors<Game, AppDbContext>
+    {
+        public GameBehaviors(CrudContext<AppDbContext> context) : base(context)
+        {
+        }
+        [Execute(SecurityPermissionLevels.AllowAll)]
+        protected override DbSet<Game> GetDbSet()
+        {
+            Console.WriteLine("Behavior Triggered");
+            Console.WriteLine("Behavior Triggered");
+            Console.WriteLine("Behavior Triggered");
+            Console.WriteLine("Behavior Triggered");
+            Console.WriteLine("Behavior Triggered");
+            Console.WriteLine("Behavior Triggered");
+            Console.WriteLine("Behavior Triggered");
+            Console.WriteLine("Behavior Triggered");
+            Console.WriteLine("Behavior Triggered");
+            Console.WriteLine("Behavior Triggered");
+            Console.WriteLine("Behavior Triggered");
+            Console.WriteLine("Behavior Triggered");
+            Console.WriteLine("Behavior Triggered");
+            Console.WriteLine("Behavior Triggered");
+            Console.WriteLine("Behavior Triggered");
+            Console.WriteLine("Behavior Triggered");
+            Console.WriteLine("Behavior Triggered");
+            Console.WriteLine("Behavior Triggered");
+            return base.GetDbSet();
         }
     }
     #endregion

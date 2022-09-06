@@ -3,6 +3,7 @@ using CoalesceSample.Data.Identity;
 using CoalesceSample.Data.Models;
 using CoalesceSample.Data.Services;
 using IntelliTect.Coalesce;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -112,7 +113,8 @@ services.AddSingleton(jwtConfiguration);
 services.AddAuthentication(auth =>
     {
         auth.DefaultScheme = "JWT_OR_COOKIE";
-        auth.DefaultChallengeScheme = "JWT_OR_COOKIE";
+        auth.DefaultChallengeScheme = auth.DefaultAuthenticateScheme = null;
+
         //auth.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         //auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         //auth.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -166,22 +168,13 @@ services.AddAuthentication(auth =>
         {
             // filter by auth type
             string authorization = context.Request.Headers[HeaderNames.Authorization];
-            if (context.Request.QueryString.Value?.Contains("token") ?? false)
-                return JwtBearerDefaults.AuthenticationScheme;
             if (!string.IsNullOrEmpty(authorization) && !authorization.Contains("null"))
                 return JwtBearerDefaults.AuthenticationScheme;
 
             // otherwise always check for cookie auth
-            return CookieAuthenticationDefaults.AuthenticationScheme;
+            return IdentityConstants.ApplicationScheme;
         };
     });
-
-builder.Services.AddAuthorization(options =>
-{
-    options.DefaultPolicy = new AuthorizationPolicyBuilder(
-        "JWT_OR_COOKIE"
-        ).RequireAssertion(_ => true).Build();
-});
 
 services.AddControllersWithViews();
 #endregion
@@ -216,7 +209,6 @@ if (app.Environment.IsDevelopment())
     // This exists only because Coalesce restricts all generated pages and API to only logged in users by default.
     app.Use(async (context, next) =>
     {
-        await next.Invoke();
         var test = context;
         Console.WriteLine(test.User.Identity.Name);
         Console.WriteLine(test.User.Identity.AuthenticationType);
@@ -227,8 +219,8 @@ if (app.Environment.IsDevelopment())
             test.User.Claims.ToList().ForEach(x => Console.Write(x.ToString() + ", "));
             Console.WriteLine(test.User.Identities);
         }
+        await next.Invoke();
     });
-    // End Dummy Authentication.
 }
 
 
