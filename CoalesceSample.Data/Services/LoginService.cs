@@ -90,7 +90,7 @@ public class LoginService : ILoginService
         }
         else
         {
-            ApplicationUser newUser = new(name, email) { UserName = email };
+            ApplicationUser newUser = new(){ Name=name, Email=email, UserName = email };
             IdentityResult? createUserResult = await UserManager.CreateAsync(newUser, password);
             if (createUserResult.Succeeded)
             {

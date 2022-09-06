@@ -20,6 +20,17 @@
       <v-col cols="10">
         <v-sheet flat class="float-right">
           <like-button :game="game" />
+          <star-rating :game="game" :rating="game.averageRating" />
+          <v-sheet flat class="float-right mt-8">
+            <v-btn
+              v-if="$isAdmin"
+              fab
+              x-small
+              @click.native.stop="toggleShowEditGame"
+            >
+              <v-icon color="red"> fa-pencil </v-icon>
+            </v-btn>
+          </v-sheet>
         </v-sheet>
         <v-card-title>
           {{ game.name }}
@@ -52,6 +63,7 @@
         </v-card-text>
       </v-col>
     </v-row>
+    <edit-game-dialog v-model="showEditGame" :game="game" />
   </v-card>
 </template>
 
@@ -60,15 +72,19 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import { Game } from "@/models.g";
 import { GameServiceViewModel } from "@/viewmodels.g";
 import LikeButton from "@/components/LikeButton.vue";
+import StarRating from "@/components/StarRating.vue";
+import EditGameDialog from "@/components/dialogs/EditGameDialog.vue";
 
 @Component({
-  components: { LikeButton },
+  components: { EditGameDialog, StarRating, LikeButton },
 })
 export default class GameCard extends Vue {
   @Prop({ required: true })
   game!: Game;
 
   gameService: GameServiceViewModel = new GameServiceViewModel();
+
+  showEditGame = false;
 
   created() {
     this.gameService.getGameImage(this.game.gameId);
@@ -84,6 +100,13 @@ export default class GameCard extends Vue {
 
   get tags() {
     return this.game.gameTags;
+  }
+
+  toggleShowEditGame() {
+    if (this.$isAdmin) {
+      this.showEditGame = !this.showEditGame;
+    }
+    return this.showEditGame;
   }
 
   async gameDetails(gameId: string) {

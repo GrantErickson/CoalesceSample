@@ -74,9 +74,10 @@ export default class EditTagsDialog extends Vue {
   }
 
   async saveGameTags() {
-    this.gameService.setGameTags(this.game.gameId, this.gameTagIds);
-    await this.gameService.getGameTags(this.game.gameId);
+    await this.gameService.setGameTags(this.game.gameId, this.gameTagIds);
     if (this.gameService.setGameTags.wasSuccessful) {
+      console.log(this.game.gameTags);
+      console.log(this.gameService.setGameTags.result);
       this.game.gameTags = this.gameService.setGameTags.result ?? [];
     }
     close();

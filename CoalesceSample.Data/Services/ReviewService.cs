@@ -59,8 +59,6 @@ public class ReviewService : IReviewService
             ReviewDate = DateTime.Now,
         };
         game.Reviews.Add(newReview);
-        game.TotalRating += rating;
-        game.NumberOfRatings++;
         await Db.SaveChangesAsync();
         return newReview;
     }
@@ -97,8 +95,6 @@ public class ReviewService : IReviewService
             return "You do not have permission to delete this review.";
         }
         review.IsDeleted = true;
-        review.ReviewedGame.NumberOfRatings--;
-        review.ReviewedGame.TotalRating -= review.Rating;
         Db.SaveChanges();
         return true;
     }

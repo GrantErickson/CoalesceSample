@@ -84,8 +84,8 @@ services.AddDbContext<AppDbContext>(options =>
         .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
     ));
 
-services.AddScoped<ILoginService, LoginService>();
 services.AddScoped<GameService>();
+services.AddScoped<ILoginService, LoginService>();
 services.AddScoped<IReviewService, ReviewService>();
 services.AddScoped<IApplicationUserService, ApplicationUserService>();
 

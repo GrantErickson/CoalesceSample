@@ -12,12 +12,6 @@ public class ApplicationUser : IdentityUser
     // Required for coalesce/EF
     public ApplicationUser() { }
 
-    public ApplicationUser(string name, string email)
-    {
-        Name = name;
-        Email = email;
-    }
-
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
 
 #nullable restore

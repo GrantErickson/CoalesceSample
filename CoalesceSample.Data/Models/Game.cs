@@ -15,8 +15,8 @@ public class Game
     public string Description { get; set; } = null!;
     public DateTime? ReleaseDate { get; set; }
     public int Likes { get; set; } = 0;
-    public double TotalRating { get; set; } = 0;
-    public int NumberOfRatings { get; set; } = 0;
+    public double TotalRating => Reviews.Where(r => !r.IsDeleted).Select(r=>r.Rating).Sum();
+    public int NumberOfRatings => Reviews.Where(r=>!r.IsDeleted).Count();
     public double AverageRating => NumberOfRatings == 0 ? 0 : TotalRating / NumberOfRatings;
     public double AverageDurationInHours { get; set; }
     public int MaxPlayers { get; set; }

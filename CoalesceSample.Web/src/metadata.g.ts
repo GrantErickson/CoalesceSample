@@ -53,12 +53,14 @@ export const Game = domain.types.Game = {
       displayName: "Total Rating",
       type: "number",
       role: "value",
+      dontSerialize: true,
     },
     numberOfRatings: {
       name: "numberOfRatings",
       displayName: "Number Of Ratings",
       type: "number",
       role: "value",
+      dontSerialize: true,
     },
     averageRating: {
       name: "averageRating",

@@ -164,7 +164,7 @@ public class GameService
         tagIds.ForEach(id => tagList.Add(new GameTag() { GameId = gameId, TagId = id }));
         Db.AddRange(tagList);
         await Db.SaveChangesAsync();
-        return tagList;
+        return await GetGameTags(gameId);
     }
 
     [Coalesce]
