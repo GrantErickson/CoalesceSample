@@ -91,13 +91,37 @@ services.AddAuthentication(auth =>
     auth.DefaultChallengeScheme = auth.DefaultAuthenticateScheme = null;
 })
 ```
-  5. Just above the middleware, add the JWT configuration as a singleton service:
+  5. In the Identity folder, create the public class `JwtConfiguration` to store data on how the token will be generated:
+```
+namespace CoalesceSample.Data.Identity;
+public class JwtConfiguration
+{
+    public string SigningKey { get; set; } = null!;
+    public string Issuer { get; set; } = null!;
+    public string Audience { get; set; } = null!;
+    public int ExpirationInMinutes { get; set; } = 1440;
+}
+```
+  6. Set the configuration values for this class in `appsettings.json` in a new section called `JwtConfig`:
+```
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=CoalesceSample;Trusted_Connection=True;MultipleActiveResultSets=True;"
+  },
+  "JwtConfig": {
+    "SigningKey": "SecretKeyToChange<-ChangeMe",
+    "Issuer": "https://localhost:5001",
+    "Audience": "https://localhost:5001"
+  }
+}
+```
+  7. Just above the middleware, add the JWT configuration as a singleton service:
 ```
 JwtConfiguration jwtConfiguration = builder.Configuration.GetSection("JwtConfig").Get<JwtConfiguration>();
 services.AddSingleton(jwtConfiguration);
 
 ```
-  6. To this middleware, add the JWT Bearer configuration:
+  8. To this middleware, add the JWT Bearer configuration:
 ```
 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
 {
@@ -112,8 +136,6 @@ services.AddSingleton(jwtConfiguration);
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.SigningKey)),
     };
     options.SaveToken = true;
-    options.SecurityTokenValidators.Clear();
-    options.SecurityTokenValidators.Add(new TokenValidator(jwtConfiguration));
     options.Events = new JwtBearerEvents
     {
 
@@ -130,7 +152,7 @@ services.AddSingleton(jwtConfiguration);
     };
 })
 ```
-  7. Add the cookie configuration:
+  9. Add the cookie configuration:
 ```
 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
 {
@@ -141,7 +163,7 @@ services.AddSingleton(jwtConfiguration);
     };
 })
 ```
-  8. Finally, add a policy to select the proper authentication scheme:
+  10. Finally, add a policy to select the proper authentication scheme:
 ```
 .AddPolicyScheme("JWT_OR_COOKIE", "JWT_OR_COOKIE", options =>
 {
@@ -158,12 +180,12 @@ services.AddSingleton(jwtConfiguration);
     };
 });
 ```
-  9. With the authentication middleware in place, add authentication and authorization to the app in the HTTP pipeline directly after the build:
+  11. With the authentication middleware in place, add authentication and authorization to the app in the HTTP pipeline directly after the build:
 ```
 app.UseAuthentication();
 app.UseAuthorization();
 ```
-  10. Now that there is proper authentication set up, remove the dummy authentication from the HTTP pipeline region in `app.Use`.
+  12. Now that there is proper authentication set up, remove the dummy authentication from the HTTP pipeline region in `app.Use`.
 ```
 app.Use(async (context, next) =>
 {
@@ -172,16 +194,8 @@ app.Use(async (context, next) =>
 ```
 
 ### 4. Set Up User Login and Roles
-  1. In `ApplicationUser.cs` create a simple constructor for easily adding new users:
-```
-public ApplicationUser(string name, string email)
-{
-    Name = name;
-    Email = email;
-}
-```
-  2. In a new folder called `Identity` in the `CoalesceSample.Data` project, create a new static class called `Roles`
-  3. Add static constants for SuperAdmin and User roles and a static array to track all roles
+  1. In a new folder called `Identity` in the `CoalesceSample.Data` project, create a new public static class called `Roles`
+  2. Add static constants for SuperAdmin and User roles and a static array to track all roles
 ```
     public const string SuperAdmin = nameof(SuperAdmin);
     public const string User = nameof(User);
@@ -192,8 +206,8 @@ public ApplicationUser(string name, string email)
         User,
     };
 ```
-  3. In the `CoalesceSample.Data` project create a `Services` folder and inside create a new interface called `ILoginService` annotated with `[Coalesce, Service]`
-  4. Create a new class in the same folder called `LoginService` that implements `ILoginService`
+  3. In the `CoalesceSample.Data` project create a `Services` folder and inside create a new public interface called `ILoginService` annotated with `[Coalesce, Service]`
+  4. Create a new public class in the same folder called `LoginService` that implements `ILoginService`
   5. Register this service in `programs.cs` by adding the following scoped service:
 ```
 services.AddScoped<ILoginService, LoginService>();
@@ -213,7 +227,7 @@ public LoginService(AppDbContext db, SignInManager<ApplicationUser> signInManage
     JwtConfiguration = jwtConfiguration;
 }
 ```
-  7. Add the method `Login` to the interface annotated with `[Execute(SecurityPermissionLevels=SecurityPermissionLevels.AllowAll)]` and the implementation:
+  7. Add the method `Login` to the interface annotated with `[Execute(PermissionLevel=SecurityPermissionLevels.AllowAll)]` and the implementation:
 ```
 public async Task<ItemResult> Login(string email, string password)
 {
