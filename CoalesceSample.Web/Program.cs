@@ -26,6 +26,7 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
     // Explicit declaration prevents ASP.NET Core from erroring if wwwroot doesn't exist at startup:
     WebRootPath = "wwwroot"
 });
+
 builder.Services.AddSwaggerGen(config =>
 {
     config.SwaggerDoc("v1", new OpenApiInfo { Title = "Coalesce Sample", Version = "v1" });
@@ -83,11 +84,10 @@ services.AddDbContext<AppDbContext>(options =>
         .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
     ));
 
-services.AddScoped<GameService>();
 services.AddScoped<ILoginService, LoginService>();
+services.AddScoped<GameService>();
 services.AddScoped<IReviewService, ReviewService>();
 services.AddScoped<IApplicationUserService, ApplicationUserService>();
-services.AddScoped<TokenValidator>();
 
 services.AddCoalesce<AppDbContext>();
 
@@ -103,7 +103,6 @@ services
         options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-
     });
 
 
@@ -113,11 +112,8 @@ services.AddSingleton(jwtConfiguration);
 services.AddAuthentication(auth =>
     {
         auth.DefaultScheme = "JWT_OR_COOKIE";
+        // set to null so the default scheme takes effect (was changed by .AddIdentity)
         auth.DefaultChallengeScheme = auth.DefaultAuthenticateScheme = null;
-
-        //auth.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        //auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        //auth.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     })
     .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
     {
@@ -132,8 +128,6 @@ services.AddAuthentication(auth =>
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.SigningKey)),
         };
         options.SaveToken = true;
-        options.SecurityTokenValidators.Clear();
-        options.SecurityTokenValidators.Add(new TokenValidator(jwtConfiguration));
         options.Events = new JwtBearerEvents
         {
 
@@ -141,14 +135,10 @@ services.AddAuthentication(auth =>
             {
                 var path = context.Request.Path;
                 // Pull the token from the querystring if it is present there.
-                context.Token = context.Request.Headers["Authorization"].ToString().Replace("bearer ", "");
+                context.Token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                 if (context.Request.QueryString.Value?.Contains("token") ?? false)
                     context.Token = context.Request.Query.Where(q => q.Key == "token").First().Value;
 
-                return Task.CompletedTask;
-            },
-            OnTokenValidated = context =>
-            {
                 return Task.CompletedTask;
             },
         };
@@ -166,7 +156,7 @@ services.AddAuthentication(auth =>
         // runs on each request
         options.ForwardDefaultSelector = context =>
         {
-            // filter by auth type
+            // use jwt if there is a token set
             string authorization = context.Request.Headers[HeaderNames.Authorization];
             if (!string.IsNullOrEmpty(authorization) && !authorization.Contains("null"))
                 return JwtBearerDefaults.AuthenticationScheme;
@@ -209,16 +199,6 @@ if (app.Environment.IsDevelopment())
     // This exists only because Coalesce restricts all generated pages and API to only logged in users by default.
     app.Use(async (context, next) =>
     {
-        var test = context;
-        Console.WriteLine(test.User.Identity.Name);
-        Console.WriteLine(test.User.Identity.AuthenticationType);
-        Console.WriteLine(test.User.Identity.IsAuthenticated);
-        if (test.User.Identity.IsAuthenticated)
-        {
-            Console.WriteLine("AUTHENTICATED DATA:");
-            test.User.Claims.ToList().ForEach(x => Console.Write(x.ToString() + ", "));
-            Console.WriteLine(test.User.Identities);
-        }
         await next.Invoke();
     });
 }

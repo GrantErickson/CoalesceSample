@@ -181,13 +181,7 @@ export default class GameDetails extends Vue {
 
   async created() {
     await this.gameService.getGameDetails(this.gameId);
-    console.log("error");
-    try {
-      await this.gameService.getGameImage(this.gameId).catch();
-    } catch (e) {
-      console.log(e);
-    }
-    console.log("error2");
+    await this.gameService.getGameImage(this.gameId);
   }
 
   async userRoles() {

@@ -11,7 +11,7 @@
       >
         <v-card class="mb-4">
           <v-card-title>
-            Welcome {{ userName }}, you are already signed in.
+            Welcome {{ userName }}, you are currently signed in.
           </v-card-title>
         </v-card>
       </c-loader-status>
@@ -124,7 +124,6 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { LoginServiceViewModel } from "@/viewmodels.g";
-import applicationUserService from "@/services/UserService";
 
 @Component({})
 export default class Login extends Vue {
@@ -144,31 +143,23 @@ export default class Login extends Vue {
   async created() {
     await this.loginService.isLoggedIn();
     await this.loginService.getUserInfo();
-    this.isLoggedIn = this.$isLoggedIn; // this.loginService.isLoggedIn.wasSuccessful ?? false;
+    this.isLoggedIn = this.$isLoggedIn;
     this.userName = this.loginService.getUserInfo.result?.name ?? "";
   }
 
   async login() {
-    console.log("logout");
     await this.logout(false);
-    console.log("login");
     if (this.signInType === "jwt") {
       await this.loginService.getToken(this.email, this.password);
       if (this.loginService.getToken.wasSuccessful) {
-        console.log(
-          "login using",
-          (this.loginService.getToken.result as any).token
-        );
         localStorage.setItem(
           "token",
           (this.loginService.getToken.result as any).token
         );
-        console.log("set");
       }
     } else {
       await this.loginService.login(this.email, this.password);
     }
-    //await this.created();
     window.location.reload();
   }
 

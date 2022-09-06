@@ -54,28 +54,7 @@ CoalesceAxiosClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
     if (token) {
-      console.log("intercepting");
-      config.headers!["Authorization"] = `bearer ${token}`;
-
-      console.log(config.headers!["Authorization"]);
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-AxiosClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      if (config.headers!["Authorization"] === undefined) {
-        console.log("AXIOS MISSING AUTH", config);
-      }
-      if (config!.url!.includes("login")) {
-        console.log("Login AXIOS", config);
-      }
-      config.headers!["Authorization"] = `bearer ${token}`;
+      config.headers!["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },

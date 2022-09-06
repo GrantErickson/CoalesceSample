@@ -54,37 +54,4 @@ public class Game
         }
     }
     #endregion
-
-    #region BEHAVIORS
-    [Coalesce]
-    public class GameBehaviors : StandardBehaviors<Game, AppDbContext>
-    {
-        public GameBehaviors(CrudContext<AppDbContext> context) : base(context)
-        {
-        }
-        [Execute(SecurityPermissionLevels.AllowAll)]
-        protected override DbSet<Game> GetDbSet()
-        {
-            Console.WriteLine("Behavior Triggered");
-            Console.WriteLine("Behavior Triggered");
-            Console.WriteLine("Behavior Triggered");
-            Console.WriteLine("Behavior Triggered");
-            Console.WriteLine("Behavior Triggered");
-            Console.WriteLine("Behavior Triggered");
-            Console.WriteLine("Behavior Triggered");
-            Console.WriteLine("Behavior Triggered");
-            Console.WriteLine("Behavior Triggered");
-            Console.WriteLine("Behavior Triggered");
-            Console.WriteLine("Behavior Triggered");
-            Console.WriteLine("Behavior Triggered");
-            Console.WriteLine("Behavior Triggered");
-            Console.WriteLine("Behavior Triggered");
-            Console.WriteLine("Behavior Triggered");
-            Console.WriteLine("Behavior Triggered");
-            Console.WriteLine("Behavior Triggered");
-            Console.WriteLine("Behavior Triggered");
-            return base.GetDbSet();
-        }
-    }
-    #endregion
 }

@@ -69,7 +69,7 @@ public class LoginService : ILoginService
                     signingCredentials: credentials
                     );
                 string jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
-                await SignInManager.SignInAsync(user, true, authenticationMethod: "bearer");
+                await SignInManager.SignInAsync(user, false);
                 return new { token = jwtToken };
             }
         }
@@ -130,7 +130,7 @@ public class LoginService : ILoginService
 
     public async Task<ItemResult> IsLoggedIn(ClaimsPrincipal user)
     {
-        if ((user.Identity?.IsAuthenticated ?? false) && user.IsInRole(Roles.User))
+        if (user.Identity?.IsAuthenticated ?? false)
         {
             return true;
         }
