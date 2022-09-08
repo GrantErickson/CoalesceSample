@@ -46,7 +46,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { Game } from "@/models.g";
+import { Game, Review } from "@/models.g";
 import { ReviewServiceViewModel } from "@/viewmodels.g";
 import StarRating from "@/components/StarRating.vue";
 @Component({

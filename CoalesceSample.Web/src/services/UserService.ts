@@ -19,7 +19,7 @@ const applicationUserService = (Vue.prototype.$userService =
 
 Object.defineProperty(Vue.prototype, "$userReviews", {
   get() {
-    return applicationUserService.getUserReviews.result;
+    return applicationUserService.getUserReviews.result ?? [];
   },
   set(value: string[]) {
     this.$userReviews = value;
@@ -58,7 +58,7 @@ export const isInRole = (Vue.prototype.$isInRole = (role: string) => {
   );
 });
 
-const interval = 1000 * 60 * 0.333; // Refresh every 2 minutes.
+const interval = 1000 * 60 * 2; // Refresh every 2 minutes.
 setInterval(() => {
   applicationUserService.isLoggedIn().catch();
   applicationUserService.getRoles().catch();

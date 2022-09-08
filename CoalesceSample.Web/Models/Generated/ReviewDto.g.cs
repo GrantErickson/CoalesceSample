@@ -19,7 +19,7 @@ namespace CoalesceSample.Web.Models
         private string _ReviewTitle;
         private string _ReviewBody;
         private bool? _IsDeleted;
-        private int? _GameId;
+        private System.Guid? _GameId;
         private CoalesceSample.Web.Models.GameDtoGen _ReviewedGame;
 
         public System.Guid? ReviewId
@@ -57,7 +57,7 @@ namespace CoalesceSample.Web.Models
             get => _IsDeleted;
             set { _IsDeleted = value; Changed(nameof(IsDeleted)); }
         }
-        public int? GameId
+        public System.Guid? GameId
         {
             get => _GameId;
             set { _GameId = value; Changed(nameof(GameId)); }

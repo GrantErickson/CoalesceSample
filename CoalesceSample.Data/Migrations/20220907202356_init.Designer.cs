@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoalesceSample.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220824182436_init")]
+    [Migration("20220907202356_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -101,6 +101,9 @@ namespace CoalesceSample.Data.Migrations
                     b.Property<double>("AverageDurationInHours")
                         .HasColumnType("float");
 
+                    b.Property<double>("AverageRating")
+                        .HasColumnType("float");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -124,14 +127,8 @@ namespace CoalesceSample.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("NumberOfRatings")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("ReleaseDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<double>("TotalRating")
-                        .HasColumnType("float");
 
                     b.HasKey("GameId");
 
@@ -207,8 +204,8 @@ namespace CoalesceSample.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("GameId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("GameId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -227,9 +224,6 @@ namespace CoalesceSample.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("ReviewedGameGameId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("ReviewerId")
                         .HasColumnType("nvarchar(450)");
 
@@ -239,7 +233,7 @@ namespace CoalesceSample.Data.Migrations
 
                     b.HasKey("ReviewId");
 
-                    b.HasIndex("ReviewedGameGameId");
+                    b.HasIndex("GameId");
 
                     b.HasIndex("ReviewerId");
 
@@ -441,7 +435,7 @@ namespace CoalesceSample.Data.Migrations
                 {
                     b.HasOne("CoalesceSample.Data.Models.Game", "ReviewedGame")
                         .WithMany("Reviews")
-                        .HasForeignKey("ReviewedGameGameId")
+                        .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 

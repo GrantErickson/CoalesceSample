@@ -2,7 +2,11 @@
   <v-card>
     <v-card-text>
       <v-list>
-        <v-list-item v-for="game in games.$items" :key="game.gameId" class="py-3">
+        <v-list-item
+          v-for="game in games.$items"
+          :key="game.gameId"
+          class="py-3"
+        >
           <game-card :game="game" />
         </v-list-item>
       </v-list>

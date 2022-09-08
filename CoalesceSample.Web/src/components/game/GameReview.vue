@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Inject, Prop, Vue } from "vue-property-decorator";
 import { Game, Review } from "@/models.g";
 import StarRating from "@/components/StarRating.vue";
 import { ReviewServiceViewModel } from "@/viewmodels.g";
@@ -58,7 +58,8 @@ export default class GameReview extends Vue {
 
   confirmDelete = false;
 
-  reviewService = new ReviewServiceViewModel();
+  @Inject("REVIEW_SERVICE")
+  reviewService!: ReviewServiceViewModel;
 
   get isReviewOwnerOrAdmin() {
     return this.$isAdmin || this.$userReviews.includes(this.review.reviewId!);

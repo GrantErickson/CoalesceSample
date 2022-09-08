@@ -12,17 +12,18 @@ public class ReviewService : IReviewService
     {
         Db = db;
     }
-    public async Task<ItemResult<List<Review>>> GetReviews(Guid gameId)
+    public async Task<ItemResult<List<Review>>> GetReviews(Guid gameId, int page=1, int reviewsPerPage = 10, double minRating = 0, double maxRating=5)
     {
-        Game? game = Db.Games
-            .Where(g => g.GameId == gameId)
-            .Include(g => g.Reviews.Where(r => !r.IsDeleted))
-            .FirstOrDefault();
-        if (game == null)
-        {
-            return "Could not find the requested game";
-        }
-        return game.Reviews.ToList();
+        List<Review> reviews = await Db.Reviews
+            .Where(r =>
+                r.GameId == gameId &&
+                !r.IsDeleted &&
+                r.Rating >= minRating &&
+                r.Rating <= maxRating
+                ).Skip(Math.Max(0,(page-1)) * reviewsPerPage).Take(reviewsPerPage)
+                .ToListAsync();
+
+        return reviews;
     }
     public async Task<ItemResult<Review>> AddReview(ClaimsPrincipal user, Guid gameId, string reviewTitle, string reviewBody, double rating)
     {
@@ -59,6 +60,7 @@ public class ReviewService : IReviewService
             ReviewDate = DateTime.Now,
         };
         game.Reviews.Add(newReview);
+        game.AverageRating = game.TotalRating / game.NumberOfRatings;
         await Db.SaveChangesAsync();
         return newReview;
     }
@@ -84,17 +86,28 @@ public class ReviewService : IReviewService
         {
             return "Unable to find the review.";
         }
-        ItemResult<Guid> userGuid = Guid.Parse(existingUser.Id);
-        ItemResult<Guid> reviewerGuid = Guid.Parse(review.Reviewer.Id);
-        bool guidsValid = userGuid.WasSuccessful && reviewerGuid.WasSuccessful;
-        
-        if (!user.IsInRole(Roles.SuperAdmin) &&
-            guidsValid &
-            reviewerGuid.Object != userGuid.Object)
+        Guid userGuid, reviewerGuid;
+        Guid.TryParse(existingUser.Id, out userGuid);
+        Guid.TryParse(review.Reviewer.Id.ToString(), out reviewerGuid);
+
+        if (!user.IsInRole(Roles.SuperAdmin) ||
+            reviewerGuid != userGuid)
         {
             return "You do not have permission to delete this review.";
         }
         review.IsDeleted = true;
+        Game? game = Db.Games.Where(g => g.GameId == review.GameId).FirstOrDefault();
+        if (game != null)
+        {
+            if (game.NumberOfRatings == 0)
+            {
+                game.AverageRating = 0;
+            }
+            else
+            {
+                game.AverageRating = game.TotalRating / game.NumberOfRatings;
+            }
+        }
         Db.SaveChanges();
         return true;
     }

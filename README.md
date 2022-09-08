@@ -9,7 +9,7 @@ Learn Coalesce by creating a Board Game Management System. (BGMS)
 * Understanding of C#, ASP.NET, EF Core, etc.
 
 > **Notes**:
-> * When referring to the file `project.cs` in the instructions, it is referring to the file in the project `ColesceSample.Web`.
+> * When referring to the file `Program.cs` in the instructions, it is referring to the file in the project `ColesceSample.Web`.
 
 
 ## Steps

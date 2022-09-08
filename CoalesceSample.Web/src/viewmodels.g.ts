@@ -125,7 +125,7 @@ export interface ReviewViewModel extends $models.Review {
   reviewTitle: string | null;
   reviewBody: string | null;
   isDeleted: boolean | null;
-  gameId: number | null;
+  gameId: string | null;
   reviewedGame: GameViewModel | null;
 }
 export class ReviewViewModel extends ViewModel<$models.Review, $apiClients.ReviewApiClient, string> implements $models.Review  {
@@ -435,9 +435,9 @@ export class ReviewServiceViewModel extends ServiceViewModel<typeof $metadata.Re
   public get getReviews() {
     const getReviews = this.$apiClient.$makeCaller(
       this.$metadata.methods.getReviews,
-      (c, gameId: string | null) => c.getReviews(gameId),
-      () => ({gameId: null as string | null, }),
-      (c, args) => c.getReviews(args.gameId))
+      (c, gameId: string | null, page: number | null, reviewsPerPage: number | null, minRating: number | null, maxRating: number | null) => c.getReviews(gameId, page, reviewsPerPage, minRating, maxRating),
+      () => ({gameId: null as string | null, page: null as number | null, reviewsPerPage: null as number | null, minRating: null as number | null, maxRating: null as number | null, }),
+      (c, args) => c.getReviews(args.gameId, args.page, args.reviewsPerPage, args.minRating, args.maxRating))
     
     Object.defineProperty(this, 'getReviews', {value: getReviews});
     return getReviews

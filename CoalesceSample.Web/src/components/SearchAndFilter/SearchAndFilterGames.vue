@@ -3,6 +3,8 @@
     <v-card-text>
       <v-row>
         <v-text-field v-model="localSearchText" placeholder="Search" />
+      </v-row>
+      <v-row dense>
         <v-autocomplete
           v-model="localFilterTags"
           :items="tags.$items"
@@ -25,6 +27,46 @@
             </v-chip>
           </template>
         </v-autocomplete>
+        <v-menu open-on-hover bottom offset-y :close-on-content-click="false">
+          <template #activator="{ on, attrs }">
+            <v-btn
+              v-bind="attrs"
+              color="primary"
+              class="ml-2"
+              outlined
+              text
+              v-on="on"
+            >
+              <v-icon>fa-star</v-icon>
+              Ratings
+            </v-btn>
+          </template>
+          <v-sheet width="400" class="ma-3 pt-4">
+            <v-row dense>
+              <v-btn
+                fab
+                x-small
+                class="mr-3"
+                @click="sliderRangeArray = [0, 5]"
+              >
+                <v-icon>fa-refresh</v-icon>
+              </v-btn>
+              <v-range-slider
+                v-model="sliderRangeArray"
+                :max="5"
+                :min="0"
+                :step="0.5"
+                :ticks="true"
+                :thumb-label="true"
+                :thumb-size="24"
+                thumb-color="primary"
+                track-color="secondary"
+                :tick-size="4"
+                :tick-labels="rangeTickLabels"
+              />
+            </v-row>
+          </v-sheet>
+        </v-menu>
         <span class="pa-0 ma-1 text-h6">Games Per Page:</span>
         <v-text-field
           v-model="localGamesPerPage"
@@ -48,14 +90,17 @@
 <script lang="ts">
 import { Component, Inject, Prop, Vue, Watch } from "vue-property-decorator";
 import { GameListViewModel, TagListViewModel } from "@/viewmodels.g";
-import { Game } from "@/models.g";
 
 @Component({
   components: {},
 })
-export default class SearchAndFilter extends Vue {
+export default class SearchAndFilterGames extends Vue {
   @Prop({ required: true, default: "" })
   filterGameTags!: string;
+  @Prop({ required: true, default: "" })
+  filterRatingUpper!: number;
+  @Prop({ required: true, default: "" })
+  filterRatingLower!: number;
   @Prop({ required: true, default: 10 })
   gamesPerPage!: number;
   @Prop({ required: true, default: "" })
@@ -67,15 +112,24 @@ export default class SearchAndFilter extends Vue {
   @Inject("TAGSLIST")
   tags!: TagListViewModel;
 
+  rangeTickLabels = ["0", "", "1", "", "2", "", "3", "", "4", "", "5"];
+
   filterGameTagsArray: number[] = [];
+  sliderRangeArray: number[] = [0, 5];
 
   @Watch("filterGameTags")
-  updateArray() {
+  updateTagsArray() {
     if (this.filterGameTags?.length > 0) {
       this.filterGameTagsArray = this.filterGameTags
         .split(",")
         .map((x) => parseInt(x));
     }
+  }
+
+  @Watch("sliderRangeArray")
+  updateSliderRangeArray() {
+    this.$emit("update:filterRatingLower", this.sliderRangeArray[0]);
+    this.$emit("update:filterRatingUpper", this.sliderRangeArray[1]);
   }
 
   get localFilterTags() {

@@ -217,10 +217,14 @@ export class LoginServiceApiClient extends ServiceApiClient<typeof $metadata.Log
 
 export class ReviewServiceApiClient extends ServiceApiClient<typeof $metadata.ReviewService> {
   constructor() { super($metadata.ReviewService) }
-  public getReviews(gameId: string | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Review[]>> {
+  public getReviews(gameId: string | null, page: number | null, reviewsPerPage: number | null, minRating: number | null, maxRating: number | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Review[]>> {
     const $method = this.$metadata.methods.getReviews
     const $params =  {
       gameId,
+      page,
+      reviewsPerPage,
+      minRating,
+      maxRating,
     }
     return this.$invoke($method, $params, $config)
   }

@@ -5,9 +5,11 @@
       'no-secondary-progress no-initial-content': [gamesList.$load],
     }"
   >
-    <SearchAndFilter
+    <SearchAndFilterGames
       :search-text.sync="gamesList.$params.search"
       :filter-game-tags.sync="gamesList.$dataSource.filterTags"
+      :filter-rating-upper.sync="gamesList.$dataSource.filterRatingsUpper"
+      :filter-rating-lower.sync="gamesList.$dataSource.filterRatingsLower"
       :games-per-page.sync="gamesList.$pageSize"
     />
     <game-card-list v-if="gamesList.$items?.length > 0" />
@@ -24,11 +26,11 @@
 import { Vue, Component, Prop, Inject } from "vue-property-decorator";
 import { GameListViewModel } from "@/viewmodels.g";
 import GameCardList from "@/components/game/GameCardList.vue";
-import SearchAndFilter from "@/components/SearchAndFilter.vue";
+import SearchAndFilterGames from "@/components/SearchAndFilter/SearchAndFilterGames.vue";
 
 @Component({
   components: {
-    SearchAndFilter,
+    SearchAndFilterGames,
     GameCardList,
   },
 })

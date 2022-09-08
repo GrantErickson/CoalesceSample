@@ -3,7 +3,7 @@
     <v-card-text>
       <v-list>
         <v-list-item
-          v-for="review in game.reviews"
+          v-for="review in reviews"
           :key="review.reviewId"
           class="py-3"
         >
@@ -15,9 +15,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import GameReview from "@/components/game/GameReview.vue";
-import { Game } from "@/models.g";
+import { Game, Review } from "@/models.g";
 
 @Component({
   components: {
@@ -27,5 +27,12 @@ import { Game } from "@/models.g";
 export default class GameReviewList extends Vue {
   @Prop({ required: true })
   game!: Game;
+  @Prop({ required: true })
+  reviews!: Review[];
+  @Watch("reviews")
+  log() {
+    console.log("reviews changed");
+    console.log(this.reviews);
+  }
 }
 </script>

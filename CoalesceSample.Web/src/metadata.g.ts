@@ -67,7 +67,6 @@ export const Game = domain.types.Game = {
       displayName: "Average Rating",
       type: "number",
       role: "value",
-      dontSerialize: true,
     },
     averageDurationInHours: {
       name: "averageDurationInHours",
@@ -187,6 +186,18 @@ export const Game = domain.types.Game = {
           name: "filterTags",
           displayName: "Filter Tags",
           type: "string",
+          role: "value",
+        },
+        filterRatingsUpper: {
+          name: "filterRatingsUpper",
+          displayName: "Filter Ratings Upper",
+          type: "number",
+          role: "value",
+        },
+        filterRatingsLower: {
+          name: "filterRatingsLower",
+          displayName: "Filter Ratings Lower",
+          type: "number",
           role: "value",
         },
       },
@@ -398,7 +409,7 @@ export const Review = domain.types.Review = {
     gameId: {
       name: "gameId",
       displayName: "Game Id",
-      type: "number",
+      type: "string",
       role: "value",
     },
     reviewedGame: {
@@ -1023,6 +1034,30 @@ export const ReviewService = domain.services.ReviewService = {
           name: "gameId",
           displayName: "Game Id",
           type: "string",
+          role: "value",
+        },
+        page: {
+          name: "page",
+          displayName: "Page",
+          type: "number",
+          role: "value",
+        },
+        reviewsPerPage: {
+          name: "reviewsPerPage",
+          displayName: "Reviews Per Page",
+          type: "number",
+          role: "value",
+        },
+        minRating: {
+          name: "minRating",
+          displayName: "Min Rating",
+          type: "number",
+          role: "value",
+        },
+        maxRating: {
+          name: "maxRating",
+          displayName: "Max Rating",
+          type: "number",
           role: "value",
         },
       },

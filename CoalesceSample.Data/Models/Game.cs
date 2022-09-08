@@ -17,7 +17,7 @@ public class Game
     public int Likes { get; set; } = 0;
     public double TotalRating => Reviews.Where(r => !r.IsDeleted).Select(r=>r.Rating).Sum();
     public int NumberOfRatings => Reviews.Where(r=>!r.IsDeleted).Count();
-    public double AverageRating => NumberOfRatings == 0 ? 0 : TotalRating / NumberOfRatings;
+    public double AverageRating { get; set; }
     public double AverageDurationInHours { get; set; }
     public int MaxPlayers { get; set; }
     public int MinPlayers { get; set; } = 1;
@@ -38,6 +38,10 @@ public class Game
 
         [Coalesce]
         public string FilterTags { get; set; }
+        [Coalesce]
+        public double FilterRatingsUpper { get; set; } = 5;
+        [Coalesce]
+        public double FilterRatingsLower { get; set; } = 0;
         public override IQueryable<Game> GetQuery(IDataSourceParameters parameters)
         {
 
@@ -46,8 +50,13 @@ public class Game
             {
                 IEnumerable<int> tags = FilterTags.Split(',').Where(x => int.TryParse(x, out _)).Select(Int32.Parse);
                 query = query
-                    .Include(g=>g.Reviews.Where(r=>!r.IsDeleted))
-                    .Where(g => g.GameTags.Where(gt => tags.Contains(gt.TagId)).Count() == tags.Count());
+                    .Include(g => g.Reviews.Where(r => !r.IsDeleted))
+                    .Where(g =>
+                    g.GameTags.Where(gt => tags.Contains(gt.TagId)).Count() == tags.Count() &&
+                    g.AverageRating >= FilterRatingsLower &&
+                    g.AverageRating <= FilterRatingsUpper
+                    );
+                    
             }
 
             return query;

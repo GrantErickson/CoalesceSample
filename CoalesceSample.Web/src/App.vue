@@ -52,7 +52,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Component, Inject, Provide } from "vue-property-decorator";
+import { Component, Provide } from "vue-property-decorator";
 import { GameListViewModel, TagListViewModel } from "@/viewmodels.g";
 import { Game } from "@/models.g";
 

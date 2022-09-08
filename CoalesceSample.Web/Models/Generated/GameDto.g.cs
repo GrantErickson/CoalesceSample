@@ -185,6 +185,7 @@ namespace CoalesceSample.Web.Models
             if (ShouldMapTo(nameof(Description))) entity.Description = Description;
             if (ShouldMapTo(nameof(ReleaseDate))) entity.ReleaseDate = ReleaseDate;
             if (ShouldMapTo(nameof(Likes))) entity.Likes = (Likes ?? entity.Likes);
+            if (ShouldMapTo(nameof(AverageRating))) entity.AverageRating = (AverageRating ?? entity.AverageRating);
             if (ShouldMapTo(nameof(AverageDurationInHours))) entity.AverageDurationInHours = (AverageDurationInHours ?? entity.AverageDurationInHours);
             if (ShouldMapTo(nameof(MaxPlayers))) entity.MaxPlayers = (MaxPlayers ?? entity.MaxPlayers);
             if (ShouldMapTo(nameof(MinPlayers))) entity.MinPlayers = (MinPlayers ?? entity.MinPlayers);

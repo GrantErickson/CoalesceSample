@@ -43,6 +43,8 @@ export namespace Game {
     export class GameDataSource implements DataSource<typeof metadata.Game.dataSources.gameDataSource> {
       readonly $metadata = metadata.Game.dataSources.gameDataSource
       filterTags: string | null = null
+      filterRatingsUpper: number | null = null
+      filterRatingsLower: number | null = null
     }
   }
 }
@@ -130,7 +132,7 @@ export interface Review extends Model<typeof metadata.Review> {
   reviewTitle: string | null
   reviewBody: string | null
   isDeleted: boolean | null
-  gameId: number | null
+  gameId: string | null
   reviewedGame: Game | null
 }
 export class Review {

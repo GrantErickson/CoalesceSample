@@ -36,11 +36,11 @@ namespace CoalesceSample.Web.Api
         /// </summary>
         [HttpPost("GetReviews")]
         [AllowAnonymous]
-        public virtual async Task<ItemResult<System.Collections.Generic.ICollection<ReviewDtoGen>>> GetReviews(System.Guid gameId)
+        public virtual async Task<ItemResult<System.Collections.Generic.ICollection<ReviewDtoGen>>> GetReviews(System.Guid gameId, int page = 1, int reviewsPerPage = 10, double minRating = 0, double maxRating = 5)
         {
             IncludeTree includeTree = null;
             var _mappingContext = new MappingContext(User);
-            var _methodResult = await Service.GetReviews(gameId);
+            var _methodResult = await Service.GetReviews(gameId, page, reviewsPerPage, minRating, maxRating);
             var _result = new ItemResult<System.Collections.Generic.ICollection<ReviewDtoGen>>(_methodResult);
             _result.Object = _methodResult.Object?.ToList().Select(o => Mapper.MapToDto<CoalesceSample.Data.Models.Review, ReviewDtoGen>(o, _mappingContext, includeTree)).ToList();
             return _result;

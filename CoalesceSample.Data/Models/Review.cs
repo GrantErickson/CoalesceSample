@@ -1,9 +1,5 @@
-﻿using IntelliTect.Coalesce.DataAnnotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using IntelliTect.Coalesce;
+using IntelliTect.Coalesce.DataAnnotations;
 
 namespace CoalesceSample.Data.Models;
 public class Review
@@ -17,7 +13,6 @@ public class Review
     public string ReviewTitle { get; set; } = null!;
     public string ReviewBody { get; set; } = null!;
     public bool IsDeleted { get; set; } = false;
-    public int GameId { get; set; }
+    public Guid GameId { get; set; }
     public Game ReviewedGame { get; set; } = null!;
-
 }

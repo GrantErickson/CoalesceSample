@@ -205,8 +205,7 @@ namespace CoalesceSample.Data.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReleaseDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Likes = table.Column<int>(type: "int", nullable: false),
-                    TotalRating = table.Column<double>(type: "float", nullable: false),
-                    NumberOfRatings = table.Column<int>(type: "int", nullable: false),
+                    AverageRating = table.Column<double>(type: "float", nullable: false),
                     AverageDurationInHours = table.Column<double>(type: "float", nullable: false),
                     MaxPlayers = table.Column<int>(type: "int", nullable: false),
                     MinPlayers = table.Column<int>(type: "int", nullable: false),
@@ -268,8 +267,7 @@ namespace CoalesceSample.Data.Migrations
                     ReviewTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReviewBody = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    GameId = table.Column<int>(type: "int", nullable: false),
-                    ReviewedGameGameId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    GameId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -281,8 +279,8 @@ namespace CoalesceSample.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Reviews_Games_ReviewedGameGameId",
-                        column: x => x.ReviewedGameGameId,
+                        name: "FK_Reviews_Games_GameId",
+                        column: x => x.GameId,
                         principalTable: "Games",
                         principalColumn: "GameId",
                         onDelete: ReferentialAction.Restrict);
@@ -348,9 +346,9 @@ namespace CoalesceSample.Data.Migrations
                 column: "TagId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reviews_ReviewedGameGameId",
+                name: "IX_Reviews_GameId",
                 table: "Reviews",
-                column: "ReviewedGameGameId");
+                column: "GameId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_ReviewerId",

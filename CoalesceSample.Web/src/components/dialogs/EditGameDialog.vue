@@ -17,9 +17,7 @@ export default class EditGameDialog extends Vue {
 
   @Prop({ required: true })
   game!: Game;
-  created() {
-    console.log(this.game);
-  }
+
   close() {
     this.$emit("input", false);
   }
