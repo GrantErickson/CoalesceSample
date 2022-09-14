@@ -57,13 +57,6 @@ export class ApplicationUserServiceApiClient extends ServiceApiClient<typeof $me
     return this.$invoke($method, $params, $config)
   }
   
-  public isLoggedIn($config?: AxiosRequestConfig): AxiosPromise<ItemResult<unknown>> {
-    const $method = this.$metadata.methods.isLoggedIn
-    const $params =  {
-    }
-    return this.$invoke($method, $params, $config)
-  }
-  
 }
 
 
@@ -217,10 +210,12 @@ export class LoginServiceApiClient extends ServiceApiClient<typeof $metadata.Log
 
 export class ReviewServiceApiClient extends ServiceApiClient<typeof $metadata.ReviewService> {
   constructor() { super($metadata.ReviewService) }
-  public getReviews(gameId: string | null, page: number | null, reviewsPerPage: number | null, minRating: number | null, maxRating: number | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Review[]>> {
+  public getReviews(gameId: string | null, firstDate: Date | null, secondDate: Date | null, page: number | null, reviewsPerPage: number | null, minRating: number | null, maxRating: number | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Review[]>> {
     const $method = this.$metadata.methods.getReviews
     const $params =  {
       gameId,
+      firstDate,
+      secondDate,
       page,
       reviewsPerPage,
       minRating,

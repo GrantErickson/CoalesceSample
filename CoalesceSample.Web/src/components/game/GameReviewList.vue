@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card flat>
     <v-card-text>
       <v-list>
         <v-list-item
@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-property-decorator";
 import GameReview from "@/components/game/GameReview.vue";
 import { Game, Review } from "@/models.g";
 
@@ -29,10 +29,5 @@ export default class GameReviewList extends Vue {
   game!: Game;
   @Prop({ required: true })
   reviews!: Review[];
-  @Watch("reviews")
-  log() {
-    console.log("reviews changed");
-    console.log(this.reviews);
-  }
 }
 </script>

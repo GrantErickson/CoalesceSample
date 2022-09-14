@@ -68,18 +68,5 @@ namespace CoalesceSample.Web.Api
             _result.Object = _methodResult.Object?.ToList();
             return _result;
         }
-
-        /// <summary>
-        /// Method: IsLoggedIn
-        /// </summary>
-        [HttpPost("IsLoggedIn")]
-        [Authorize]
-        public virtual async Task<ItemResult<System.Security.Claims.ClaimsPrincipal>> IsLoggedIn()
-        {
-            var _methodResult = await Service.IsLoggedIn(User);
-            var _result = new ItemResult<System.Security.Claims.ClaimsPrincipal>(_methodResult);
-            _result.Object = _methodResult.Object;
-            return _result;
-        }
     }
 }

@@ -93,86 +93,110 @@
           <v-card class="fill-height">
             <v-card-title>
               Reviews
-              <v-tooltip bottom>
-                <template #activator="{ on, attrs }">
-                  <v-btn
-                    v-bind="attrs"
-                    fab
-                    x-small
-                    class="ml-4"
-                    :ripple="$isLoggedIn"
-                    :color="$isLoggedIn ? '' : 'grey'"
-                    v-on="on"
-                    @click="toggleAddReview"
-                  >
-                    <v-icon>fa-plus</v-icon>
-                  </v-btn>
-                </template>
-                <span v-if="!$isLoggedIn">
-                  You must be logged in to add a review.
-                </span>
-                <span v-else> Add a review. </span>
-              </v-tooltip>
-              <v-pagination
-                v-model="page"
-                class="ml-6"
-                :length="pages"
-                prev-icon="fa-chevron-left"
-                next-icon="fa-chevron-right"
-              />
-              <span class="pa-0 ma-1 text-h6">Reviews Per Page:</span>
-              <v-card flat width="50">
-                <v-text-field
-                  v-model="reviewsPerPage"
-                  placeholder=""
-                  :rules="[isNumeric, greaterThanZero]"
-                />
-              </v-card>
-              <v-menu right offset-x :close-on-content-click="false">
-                <template #activator="{ on, attrs }">
-                  <v-btn
-                    v-bind="attrs"
-                    color="primary"
-                    class="ml-2"
-                    x-small
-                    fab
-                    v-on="on"
-                  >
-                    <v-icon>fa-filter</v-icon>
-                  </v-btn>
-                </template>
-                <v-sheet width="400" class="ma-3 pt-4">
-                  <v-row dense>
+              <v-row class="ma-1">
+                <v-tooltip bottom>
+                  <template #activator="{ on, attrs }">
                     <v-btn
+                      v-bind="attrs"
                       fab
                       x-small
-                      class="mr-3"
-                      @click="
-                        sliderRangeArray = [0, 5];
-                        updateReviewList();
-                      "
+                      class="ml-3 mt-1"
+                      :ripple="$isLoggedIn"
+                      :color="$isLoggedIn ? '' : 'grey'"
+                      v-on="on"
+                      @click="toggleAddReview"
                     >
-                      <v-icon>fa-refresh</v-icon>
+                      <v-icon>fa-plus</v-icon>
                     </v-btn>
-                    <v-range-slider
-                      v-model="sliderRangeArray"
-                      :max="5"
-                      :min="0"
-                      :step="0.5"
-                      :ticks="true"
-                      :thumb-label="true"
-                      :thumb-size="24"
-                      thumb-color="primary"
-                      track-color="secondary"
-                      :tick-size="4"
-                      :tick-labels="rangeTickLabels"
-                      @mouseup="updateReviewList"
-                    />
-                  </v-row>
-                </v-sheet>
-              </v-menu>
+                  </template>
+                  <span v-if="!$isLoggedIn">
+                    You must be logged in to add a review.
+                  </span>
+                  <span v-else> Add a review. </span>
+                </v-tooltip>
+                <v-pagination
+                  v-model="page"
+                  class="ml-6"
+                  :length="pages === Infinity ? 10 : Math.ceil(pages)"
+                  prev-icon="fa-chevron-left"
+                  next-icon="fa-chevron-right"
+                />
+                <v-menu offset-x :close-on-content-click="false">
+                  <template #activator="{ on, attrs }">
+                    <v-btn
+                      v-bind="attrs"
+                      color="primary"
+                      class="ml-3 mt-1"
+                      x-small
+                      fab
+                      v-on="on"
+                    >
+                      <v-icon>fa-filter</v-icon>
+                    </v-btn>
+                  </template>
+                  <v-card flat width="400" class="px-3 pt-8 pb-1 mb-2">
+                    <v-card-text class="ma-0 pa-0">
+                      <v-row class="mx-2 mt-0">
+                        <v-range-slider
+                          v-model="sliderRangeArray"
+                          :max="5"
+                          :min="0"
+                          :step="0.5"
+                          :ticks="true"
+                          :thumb-label="true"
+                          :thumb-size="24"
+                          thumb-color="primary"
+                          track-color="secondary"
+                          :tick-size="4"
+                          :tick-labels="rangeTickLabels"
+                          @mouseup="updateReviewList"
+                        />
+                      </v-row>
+                      <v-row>
+                        <v-card flat width="3em" class="ml-3">
+                          <v-text-field
+                            v-model="reviewsPerPage"
+                            placeholder=""
+                            :rules="[isNumeric, greaterThanZero]"
+                          />
+                        </v-card>
+                        <span class="pa-0 ma-1 text-h6">Reviews Per Page</span>
+                      </v-row>
+                      <v-row>
+                        <v-menu
+                          v-model="showingCalendar"
+                          max-width="345"
+                          top
+                          nudge-top="75"
+                          nudge-right="45"
+                          :close-on-content-click="false"
+                        >
+                          <template #activator="{ on, attrs }">
+                            <v-text-field
+                              v-model="dateRangeString"
+                              class="px-3"
+                              label="Date Range"
+                              prepend-icon="fa-calendar"
+                              readonly
+                              v-bind="attrs"
+                              v-on="on"
+                            />
+                          </template>
+                          <v-date-picker v-model="dates" width="345" range />
+                        </v-menu>
+                      </v-row>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer />
+                      <v-btn outlined small class="mx-3" @click="resetFilters">
+                        reset
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-menu>
+              </v-row>
               <v-spacer />
-              <v-sheet>
+              <v-sheet class="ml-3">
                 <v-row class="align-center">
                   <span :key="'noRatings' + game.numberOfRatings">
                     Total Reviews: {{ numberOfRatings }}
@@ -194,6 +218,7 @@
                 ],
               }"
             >
+              <v-divider />
               <game-review-list
                 :key="'revList' + game.numberOfRatings"
                 :game.sync="game"
@@ -213,7 +238,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Provide, Vue, Watch } from "vue-property-decorator";
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { Game, GameTag, Review } from "@/models.g";
 import { GameServiceViewModel, ReviewServiceViewModel } from "@/viewmodels.g";
 import GameReviewList from "@/components/game/GameReviewList.vue";
@@ -240,7 +265,6 @@ export default class GameDetails extends Vue {
   gameId!: string;
 
   gameService: GameServiceViewModel = new GameServiceViewModel();
-  @Provide("REVIEW_SERVICE")
   reviewService: ReviewServiceViewModel = new ReviewServiceViewModel();
 
   showUpdateImage = false;
@@ -255,13 +279,21 @@ export default class GameDetails extends Vue {
   reviewsPerPage = 10;
   page = 1;
   pages = 1;
+
   rangeTickLabels = ["0", "", "1", "", "2", "", "3", "", "4", "", "5"];
   sliderRangeArray: number[] = [0, 5];
+
+  dates: Date[] = [];
+  showingCalendar = false;
+
+  ratings: number[] = [];
 
   async created() {
     await this.gameService.getGameDetails(this.gameId);
     await this.gameService.getGameImage(this.gameId);
     await this.updateReviewList();
+    this.reviewService.getReviews.setConcurrency("cancel");
+    this.ratings = this.game.reviews?.map((r) => r.rating ?? 0) || [];
   }
 
   get game(): Game {
@@ -290,29 +322,78 @@ export default class GameDetails extends Vue {
     }
   }
 
+  get gameImage() {
+    if (this.gameService.getGameImage.wasSuccessful) {
+      this.game.image!.base64Image = this.gameService.getGameImage.result;
+    }
+    return this.gameService.getGameImage.result ?? "";
+  }
+
   @Watch("reviewsPerPage")
   @Watch("page")
   @Watch("game.reviews")
+  @Watch("dates")
   async updateReviewList() {
     if (this.reviewsPerPage > 0) {
-      if (this.reviewsPerPage) {
+      if (
+        (this.dates[0] && this.dates[1]) ||
+        (!this.dates[0] && !this.dates[1])
+      ) {
         await this.reviewService.getReviews(
           this.gameId,
+          this.dates[0],
+          this.dates[1],
           this.page,
-          this.reviewsPerPage,
+          Math.ceil(this.reviewsPerPage),
           this.sliderRangeArray[0],
           this.sliderRangeArray[1]
         );
+        this.reviewsList = this.reviewService.getReviews.result ?? [];
         this.pages = Math.max(
           1,
-          Math.ceil((this.game?.numberOfRatings ?? 1) / this.reviewsPerPage)
+          Math.ceil(
+            this.game.reviews!.filter(
+              (r) =>
+                (r.rating ?? 5) >= this.sliderRangeArray[0] &&
+                (r.rating ?? 0) <= this.sliderRangeArray[1]
+            ).length / Math.ceil(this.reviewsPerPage)
+          )
         );
 
         this.page = Math.max(1, this.page);
         this.page = Math.min(this.page, this.pages);
-        this.reviewsList = this.reviewService.getReviews.result ?? [];
       }
     }
+  }
+
+  get dateRangeString() {
+    if (this.dates[0] && !this.dates[1]) {
+      if (!this.showingCalendar) {
+        this.dates[1] = this.dates[0];
+        return `${this.dates[0]}`;
+      }
+      return `${this.dates[0]} to `;
+    }
+    if (!this.dates[0] || !this.dates[1]) {
+      return "Any Day";
+    }
+    if (this.dates[0] && this.dates[1]) {
+      if (this.dates[0] === this.dates[1]) {
+        return `${this.dates[0]}`;
+      }
+      if (this.dates[0] > this.dates[1]) {
+        this.dates.reverse();
+      }
+    }
+    return `${this.dates[0]} to ${this.dates[1]}`;
+  }
+
+  resetFilters() {
+    this.dates = [];
+    this.sliderRangeArray = [0, 5];
+    this.page = 1;
+    this.reviewsPerPage = 10;
+    this.updateReviewList();
   }
 
   toggleShowEditTags() {
@@ -343,16 +424,10 @@ export default class GameDetails extends Vue {
     return this.showEditGame;
   }
 
-  get gameImage() {
-    if (this.gameService.getGameImage.wasSuccessful) {
-      this.game.image!.base64Image = this.gameService.getGameImage.result;
-    }
-    return this.gameService.getGameImage.result ?? "";
-  }
-
   isNumeric(value: string) {
     return /^\d+$/.test(value);
   }
+
   greaterThanZero(value: string) {
     return parseInt(value) > 0;
   }

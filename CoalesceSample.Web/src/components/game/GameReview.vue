@@ -9,9 +9,12 @@
       <v-col cols="2" sm="3">
         <v-card-text>
           <v-row>
-            <v-card-title>
+            <v-card-title class="pb-0">
               {{ review.reviewerName }}
             </v-card-title>
+            <v-card-text>
+              {{ formattedDate }}
+            </v-card-text>
           </v-row>
           <v-row>
             <v-card-title>
@@ -41,7 +44,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Inject, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-property-decorator";
 import { Game, Review } from "@/models.g";
 import StarRating from "@/components/StarRating.vue";
 import { ReviewServiceViewModel } from "@/viewmodels.g";
@@ -58,11 +61,16 @@ export default class GameReview extends Vue {
 
   confirmDelete = false;
 
-  @Inject("REVIEW_SERVICE")
-  reviewService!: ReviewServiceViewModel;
+  reviewService = new ReviewServiceViewModel();
 
   get isReviewOwnerOrAdmin() {
     return this.$isAdmin || this.$userReviews.includes(this.review.reviewId!);
+  }
+
+  get formattedDate() {
+    const date = new Date(this.review.reviewDate!);
+    const time = date.toLocaleTimeString();
+    return this.review.reviewDate?.toLocaleDateString() + "\n" + time;
   }
 
   async deleteReview() {

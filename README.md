@@ -24,7 +24,7 @@ These commands are what you need to set up a Coalesce development environment
   2. `cd CoalesceSample`
   3. `dotnet new --install IntelliTect.Coalesce.Vue.Template`
   4. `dotnet new coalescevue`
-  5. `cd \*.data`
+  5. `cd *.data`
   6. If EF tooling is not installed run: `dotnet tool install --global dotnet-ef`
   7. `dotnet ef migrations add Initial`
   8. `cd ..\*.web`
@@ -73,16 +73,17 @@ app.UseSwaggerUI();
   4. Visit the Swagger endpoint at [https://localhost:5001/swagger](https://localhost:5001/swagger)
 
 ### 3. Set Up Identity and Authentication Middleware
-  1. In the `ApplicationUser` class found in the Models folder, extend `IdentityUser` and remove the `ApplicationUserId` property.
-  2. In `AppDbContext.cs`, extend `IdentityDbContext<ApplicationUser>` instead of `DbContext`
-  3. Add the identity service to `program.cs`
+  1. Add the `Microsoft.AspNetCore.Identity.EntityFrameworkCore` package to the project.
+  2. In the `ApplicationUser` class found in the Models folder, extend `IdentityUser` and remove the `ApplicationUserId` property since `IdentityUser` provides an id property.
+  3. In `AppDbContext.cs`, extend `IdentityDbContext<ApplicationUser>` instead of `DbContext`
+  4. Add the identity service to `program.cs`
 ```
 services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<AppDbContext>()
     .AddTokenProvider<DataProtectorTokenProvider<ApplicationUser>>(TokenOptions.DefaultProvider)
     .AddClaimsPrincipalFactory<UserClaimsPrincipalFactory<ApplicationUser, IdentityRole>>();
 ```
-  4. Between `services.AddIdentity` and `services.AddControllersWithViews` add our authentication middleware:
+  5. Between `services.AddIdentity` and `services.AddControllersWithViews` add our authentication middleware:
 ```
 services.AddAuthentication(auth =>
 {
@@ -91,7 +92,7 @@ services.AddAuthentication(auth =>
     auth.DefaultChallengeScheme = auth.DefaultAuthenticateScheme = null;
 })
 ```
-  5. In the Identity folder, create the public class `JwtConfiguration` to store data on how the token will be generated:
+  6. In the Identity folder, create the public class `JwtConfiguration` to store data on how the token will be generated:
 ```
 namespace CoalesceSample.Data.Identity;
 public class JwtConfiguration
@@ -102,7 +103,7 @@ public class JwtConfiguration
     public int ExpirationInMinutes { get; set; } = 1440;
 }
 ```
-  6. Set the configuration values for this class in `appsettings.json` in a new section called `JwtConfig`:
+  7. Set the configuration values for this class in `appsettings.json` in a new section called `JwtConfig`:
 ```
 {
   "ConnectionStrings": {
@@ -115,13 +116,13 @@ public class JwtConfiguration
   }
 }
 ```
-  7. Just above the middleware, add the JWT configuration as a singleton service:
+  8. Just above the middleware, add the JWT configuration as a singleton service:
 ```
 JwtConfiguration jwtConfiguration = builder.Configuration.GetSection("JwtConfig").Get<JwtConfiguration>();
 services.AddSingleton(jwtConfiguration);
 
 ```
-  8. To this middleware, add the JWT Bearer configuration:
+  9. To this middleware, add the JWT Bearer configuration:
 ```
 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
 {
@@ -152,7 +153,7 @@ services.AddSingleton(jwtConfiguration);
     };
 })
 ```
-  9. Add the cookie configuration:
+  10. Add the cookie configuration:
 ```
 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
 {
@@ -163,7 +164,7 @@ services.AddSingleton(jwtConfiguration);
     };
 })
 ```
-  10. Finally, add a policy to select the proper authentication scheme:
+  11. Finally, add a policy to select the proper authentication scheme:
 ```
 .AddPolicyScheme("JWT_OR_COOKIE", "JWT_OR_COOKIE", options =>
 {
@@ -180,12 +181,12 @@ services.AddSingleton(jwtConfiguration);
     };
 });
 ```
-  11. With the authentication middleware in place, add authentication and authorization to the app in the HTTP pipeline directly after the build:
+  12. With the authentication middleware in place, add authentication and authorization to the app in the HTTP pipeline directly after the build:
 ```
 app.UseAuthentication();
 app.UseAuthorization();
 ```
-  12. Now that there is proper authentication set up, remove the dummy authentication from the HTTP pipeline region in `app.Use`.
+  13. Now that there is proper authentication set up, remove the dummy authentication from the HTTP pipeline region in `app.Use`.
 ```
 app.Use(async (context, next) =>
 {

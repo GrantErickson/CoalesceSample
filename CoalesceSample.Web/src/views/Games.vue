@@ -26,7 +26,7 @@
 import { Vue, Component, Prop, Inject } from "vue-property-decorator";
 import { GameListViewModel } from "@/viewmodels.g";
 import GameCardList from "@/components/game/GameCardList.vue";
-import SearchAndFilterGames from "@/components/SearchAndFilter/SearchAndFilterGames.vue";
+import SearchAndFilterGames from "@/components/game/SearchAndFilterGames.vue";
 
 @Component({
   components: {

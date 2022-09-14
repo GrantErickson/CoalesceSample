@@ -210,17 +210,6 @@ export class ApplicationUserServiceViewModel extends ServiceViewModel<typeof $me
     return getUserReviews
   }
   
-  public get isLoggedIn() {
-    const isLoggedIn = this.$apiClient.$makeCaller(
-      this.$metadata.methods.isLoggedIn,
-      (c) => c.isLoggedIn(),
-      () => ({}),
-      (c, args) => c.isLoggedIn())
-    
-    Object.defineProperty(this, 'isLoggedIn', {value: isLoggedIn});
-    return isLoggedIn
-  }
-  
   constructor() {
     super($metadata.ApplicationUserService, new $apiClients.ApplicationUserServiceApiClient())
   }
@@ -435,9 +424,9 @@ export class ReviewServiceViewModel extends ServiceViewModel<typeof $metadata.Re
   public get getReviews() {
     const getReviews = this.$apiClient.$makeCaller(
       this.$metadata.methods.getReviews,
-      (c, gameId: string | null, page: number | null, reviewsPerPage: number | null, minRating: number | null, maxRating: number | null) => c.getReviews(gameId, page, reviewsPerPage, minRating, maxRating),
-      () => ({gameId: null as string | null, page: null as number | null, reviewsPerPage: null as number | null, minRating: null as number | null, maxRating: null as number | null, }),
-      (c, args) => c.getReviews(args.gameId, args.page, args.reviewsPerPage, args.minRating, args.maxRating))
+      (c, gameId: string | null, firstDate: Date | null, secondDate: Date | null, page: number | null, reviewsPerPage: number | null, minRating: number | null, maxRating: number | null) => c.getReviews(gameId, firstDate, secondDate, page, reviewsPerPage, minRating, maxRating),
+      () => ({gameId: null as string | null, firstDate: null as Date | null, secondDate: null as Date | null, page: null as number | null, reviewsPerPage: null as number | null, minRating: null as number | null, maxRating: null as number | null, }),
+      (c, args) => c.getReviews(args.gameId, args.firstDate, args.secondDate, args.page, args.reviewsPerPage, args.minRating, args.maxRating))
     
     Object.defineProperty(this, 'getReviews', {value: getReviews});
     return getReviews

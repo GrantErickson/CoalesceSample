@@ -20,9 +20,4 @@ public interface IApplicationUserService
 
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
     public Task<ItemResult<List<Guid>>> GetUserReviews(ClaimsPrincipal user);
-    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAuthorized)]
-    public async Task<ItemResult<ClaimsPrincipal>> IsLoggedIn(ClaimsPrincipal user)
-    {
-        return user;
-    }
 }

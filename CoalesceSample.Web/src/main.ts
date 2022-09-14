@@ -18,7 +18,6 @@ import $metadata from "@/metadata.g";
 // This global lookup allows the admin page components to function.
 import "@/viewmodels.g";
 import applicationUserService from "@/services/UserService";
-import { AxiosClient } from "coalesce-vue/lib/api-client";
 
 // SETUP: vuetify
 Vue.use(Vuetify);

@@ -583,21 +583,6 @@ export const ApplicationUserService = domain.services.ApplicationUserService = {
         role: "value",
       },
     },
-    isLoggedIn: {
-      name: "isLoggedIn",
-      displayName: "Is Logged In",
-      transportType: "item",
-      httpMethod: "POST",
-      params: {
-      },
-      return: {
-        name: "$return",
-        displayName: "Result",
-        // Type not supported natively by Coalesce - falling back to unknown.
-        type: "unknown",
-        role: "value",
-      },
-    },
   },
 }
 export const GameService = domain.services.GameService = {
@@ -1034,6 +1019,22 @@ export const ReviewService = domain.services.ReviewService = {
           name: "gameId",
           displayName: "Game Id",
           type: "string",
+          role: "value",
+        },
+        firstDate: {
+          name: "firstDate",
+          displayName: "First Date",
+          type: "date",
+          dateKind: "datetime",
+          noOffset: true,
+          role: "value",
+        },
+        secondDate: {
+          name: "secondDate",
+          displayName: "Second Date",
+          type: "date",
+          dateKind: "datetime",
+          noOffset: true,
           role: "value",
         },
         page: {

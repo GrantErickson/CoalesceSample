@@ -60,7 +60,6 @@ export const isInRole = (Vue.prototype.$isInRole = (role: string) => {
 
 const interval = 1000 * 60 * 2; // Refresh every 2 minutes.
 setInterval(() => {
-  applicationUserService.isLoggedIn().catch();
   applicationUserService.getRoles().catch();
   applicationUserService.getUserReviews().catch();
 }, interval);

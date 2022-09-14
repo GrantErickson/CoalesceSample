@@ -12,15 +12,24 @@ public class ReviewService : IReviewService
     {
         Db = db;
     }
-    public async Task<ItemResult<List<Review>>> GetReviews(Guid gameId, int page=1, int reviewsPerPage = 10, double minRating = 0, double maxRating=5)
+    public async Task<ItemResult<List<Review>>> GetReviews(Guid gameId, DateTime? firstDate, DateTime? secondDate, int page=1, int reviewsPerPage = 10, double minRating = 0, double maxRating = 5)
     {
+        if(firstDate == null || secondDate == null)
+        {
+            firstDate = DateTime.MinValue;
+            secondDate = DateTime.MaxValue;
+        }
         List<Review> reviews = await Db.Reviews
             .Where(r =>
                 r.GameId == gameId &&
                 !r.IsDeleted &&
                 r.Rating >= minRating &&
-                r.Rating <= maxRating
-                ).Skip(Math.Max(0,(page-1)) * reviewsPerPage).Take(reviewsPerPage)
+                r.Rating <= maxRating &&
+                r.ReviewDate.Date >= firstDate.Value.Date &&
+                r.ReviewDate.Date <= secondDate.Value.Date
+                )
+            .OrderByDescending(r=>r.ReviewDate)
+            .Skip(Math.Max(0,(page-1)) * reviewsPerPage).Take(reviewsPerPage)
                 .ToListAsync();
 
         return reviews;
@@ -40,7 +49,7 @@ public class ReviewService : IReviewService
             return "Unable to find your account.";
         }
 
-        Game? game = await Db.Games.FirstOrDefaultAsync(g => g.GameId == gameId);
+        Game? game = await Db.Games.Include(g=>g.Reviews).FirstOrDefaultAsync(g => g.GameId == gameId);
         if (game == null)
         {
             return "Unable to find the game.";
@@ -90,24 +99,13 @@ public class ReviewService : IReviewService
         Guid.TryParse(existingUser.Id, out userGuid);
         Guid.TryParse(review.Reviewer.Id.ToString(), out reviewerGuid);
 
-        if (!user.IsInRole(Roles.SuperAdmin) ||
+        if (!user.IsInRole(Roles.SuperAdmin) &&
             reviewerGuid != userGuid)
         {
             return "You do not have permission to delete this review.";
         }
         review.IsDeleted = true;
-        Game? game = Db.Games.Where(g => g.GameId == review.GameId).FirstOrDefault();
-        if (game != null)
-        {
-            if (game.NumberOfRatings == 0)
-            {
-                game.AverageRating = 0;
-            }
-            else
-            {
-                game.AverageRating = game.TotalRating / game.NumberOfRatings;
-            }
-        }
+
         Db.SaveChanges();
         return true;
     }
