@@ -80,7 +80,6 @@ export interface Genre extends Model<typeof metadata.Genre> {
   genreId: number | null
   name: string | null
   description: string | null
-  games: Game[] | null
 }
 export class Genre {
   
@@ -103,7 +102,7 @@ export class Genre {
 
 export interface Image extends Model<typeof metadata.Image> {
   imageId: number | null
-  base64Image: string | null
+  content: string | null
 }
 export class Image {
   

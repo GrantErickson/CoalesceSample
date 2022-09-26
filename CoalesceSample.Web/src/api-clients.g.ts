@@ -62,21 +62,6 @@ export class ApplicationUserServiceApiClient extends ServiceApiClient<typeof $me
 
 export class GameServiceApiClient extends ServiceApiClient<typeof $metadata.GameService> {
   constructor() { super($metadata.GameService) }
-  public getGames($config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Game[]>> {
-    const $method = this.$metadata.methods.getGames
-    const $params =  {
-    }
-    return this.$invoke($method, $params, $config)
-  }
-  
-  public getGamesFromIds(gameIds: string[] | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Game[]>> {
-    const $method = this.$metadata.methods.getGamesFromIds
-    const $params =  {
-      gameIds,
-    }
-    return this.$invoke($method, $params, $config)
-  }
-  
   public getGameDetails(gameId: string | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Game>> {
     const $method = this.$metadata.methods.getGameDetails
     const $params =  {
@@ -85,7 +70,7 @@ export class GameServiceApiClient extends ServiceApiClient<typeof $metadata.Game
     return this.$invoke($method, $params, $config)
   }
   
-  public getGameImage(gameId: string | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<string>> {
+  public getGameImage(gameId: string | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Image>> {
     const $method = this.$metadata.methods.getGameImage
     const $params =  {
       gameId,
@@ -93,18 +78,11 @@ export class GameServiceApiClient extends ServiceApiClient<typeof $metadata.Game
     return this.$invoke($method, $params, $config)
   }
   
-  public uploadGameImage(gameId: string | null, image: File | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<File>> {
+  public uploadGameImage(gameId: string | null, image: File | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Image>> {
     const $method = this.$metadata.methods.uploadGameImage
     const $params =  {
       gameId,
       image,
-    }
-    return this.$invoke($method, $params, $config)
-  }
-  
-  public getAllTags($config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Tag[]>> {
-    const $method = this.$metadata.methods.getAllTags
-    const $params =  {
     }
     return this.$invoke($method, $params, $config)
   }

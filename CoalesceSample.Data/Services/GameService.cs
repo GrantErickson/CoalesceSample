@@ -4,6 +4,7 @@ using IntelliTect.Coalesce.DataAnnotations;
 using IntelliTect.Coalesce.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using File = IntelliTect.Coalesce.Models.File;
 
 namespace CoalesceSample.Data.Services;
 [Coalesce, Service]
@@ -18,128 +19,65 @@ public class GameService
 
     [Coalesce]
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
-    public async Task<ItemResult<List<Game>>> GetGames()
+    public ItemResult<Game> GetGameDetails(Guid gameId, out IncludeTree tree)
     {
-        List<Game> games = await Db.Games
-            .Include(g => g.GameTags)
-                .ThenInclude(gt => gt.Tag)
-            .Include(g => g.Genre)
-            .ToListAsync();
-        if (!games.Any())
-        {
-            return "No games currently exist.";
-        }
-        return games;
-    }
 
-    [Coalesce]
-    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
-    public async Task<ItemResult<List<Game>>> GetGamesFromIds(List<Guid> gameIds)
-    {
-        List<Game> games = await Db.Games
-            .Where(g => gameIds.Contains(g.GameId))
-            .Include(g => g.GameTags)
-                .ThenInclude(gt => gt.Tag)
-            .Include(g => g.Genre)
-            .ToListAsync();
-        if (!games.Any())
-        {
-            return new List<Game>();
-        }
-        return games;
-    }
-
-    [Coalesce]
-    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
-    public async Task<ItemResult<Game>> GetGameDetails(Guid gameId)
-    {
-        Game? game = Db.Games
+        var gameQuery = Db.Games
             .Where(g => g.GameId == gameId)
             .Include(g => g.GameTags)
                 .ThenInclude(gt => gt.Tag)
             .Include(g => g.Genre)
-            .Include(g => g.Reviews.Where(r=>!r.IsDeleted))
-            .FirstOrDefault();
+            .Include(g => g.Reviews.Where(r => !r.IsDeleted));
+
+        tree = gameQuery.GetIncludeTree();
+        Game? game = gameQuery.FirstOrDefault();
 
         if (game == null)
         {
             return "Could not find the requested game";
-        }
-        if (game.Name == null)
-        {
-            return "Game name was null";
         }
         return game;
     }
 
     [Coalesce]
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
-    public async Task<ItemResult<string>> GetGameImage(Guid gameId)
+    public async Task<ItemResult<Image>> GetGameImage(Guid gameId)
     {
-        Game? game = await Db.Games.Include(g => g.Image).FirstOrDefaultAsync(g => g.GameId == gameId);
+        Game? game = Db.Games.Include(g => g.Image).FirstOrDefault(g => g.GameId == gameId);
         if (game == null)
         {
-            return new ItemResult<string>
-            {
-                Message = "Unable to find the game.",
-                WasSuccessful = false
-            };
+            return "Unable to find the game.";
         }
-        if (game.Image.Base64Image == null)
+        if (game.Image.Content == null || game.Image.Content.Length==0)
         {
-            return new ItemResult<string>
-            {
-                Message = "There is no image uploaded for this game.",
-                WasSuccessful = false
-            };
+            return "There is no image uploaded for this game.";
+
         }
-        return new ItemResult<string>
-        {
-            Object = game.Image.Base64Image,
-            WasSuccessful = true
-        };
+        return game.Image;
     }
 
     [Coalesce]
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAuthorized, Roles = Roles.SuperAdmin)]
-    public async Task<ItemResult<IFile>> UploadGameImage(ClaimsPrincipal claim, Guid gameId, IFile image)
+    public async Task<ItemResult<Image>> UploadGameImage(ClaimsPrincipal claim, Guid gameId, IFile image)
     {
         Game? game = await Db.Games.FirstOrDefaultAsync(g => g.GameId == gameId);
         if (game == null)
         {
             return "Unable to find the game";
         }
-        if (image == null | image!.Content == null)
+        if (image == null || image.Content == null)
         {
             return "Unable to upload this image";
         }
         Image dbImage = Db.Images.First(i => i.ImageId == game.ImageId);
 
-        IntelliTect.Coalesce.Models.File file;
-        using (MemoryStream imageContents = new())
-        {
-            image.Content!.CopyTo(imageContents);
-            string? imageBase64 = "data:image/jpeg;base64," + Convert.ToBase64String(imageContents.ToArray());
-            if (imageBase64 == null || imageBase64 == "data:image/jpeg;base64,")
-            {
-                return "Unable to upload image";
-            }
-            dbImage.Base64Image = imageBase64;
-            file = new IntelliTect.Coalesce.Models.File(imageContents.ToArray());
-        }
-        await Db.SaveChangesAsync();
-        return file;
-    }
+        byte[] content = new byte[image.Length];
+        await image.Content.ReadAsync(content.AsMemory());
 
-    [Coalesce]
-    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAuthorized, Roles = Roles.User)]
-    public async Task<ItemResult<List<Tag>>> GetAllTags()
-    {
-        if (!Db.Tags.Any())
-        {
-            return "There are no tags in the database";
-        }
-        return await Db.Tags.ToListAsync();
+        dbImage.Content = content;
+
+        await Db.SaveChangesAsync();
+        return dbImage;
     }
 
     [Coalesce]

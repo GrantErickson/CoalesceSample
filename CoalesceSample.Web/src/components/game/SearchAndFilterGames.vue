@@ -1,33 +1,40 @@
 <template>
   <v-card>
     <v-card-text>
-      <v-row>
-        <v-text-field v-model="localSearchText" placeholder="Search" />
-      </v-row>
       <v-row dense>
-        <v-autocomplete
-          v-model="localFilterTags"
-          :items="tags.$items"
-          item-text="name"
-          item-value="tagId"
-          label="Tags"
+        <v-text-field
+          v-model="localSearchText"
+          class="pb-3"
           hide-details
-          multiple
-          chips
-        >
-          <template slot="item" slot-scope="{ item }">
-            <v-chip
-              :key="item.tagId"
-              :value="item.tagId"
-              color="primary"
-              dark
-              small
-            >
-              {{ item.name }}
-            </v-chip>
-          </template>
-        </v-autocomplete>
-        <v-menu open-on-hover bottom offset-y :close-on-content-click="false">
+          placeholder="Search"
+        />
+      </v-row>
+      <v-row dense class="text-center" align="center">
+        <v-sheet width="500">
+          <v-autocomplete
+            v-model="localFilterTags"
+            :items="tags.$items"
+            item-text="name"
+            item-value="tagId"
+            label="Tags"
+            hide-details
+            multiple
+            chips
+          >
+            <template slot="item" slot-scope="{ item }">
+              <v-chip
+                :key="item.tagId"
+                :value="item.tagId"
+                color="primary"
+                dark
+                small
+              >
+                {{ item.name }}
+              </v-chip>
+            </template>
+          </v-autocomplete>
+        </v-sheet>
+        <v-menu bottom offset-y :close-on-content-click="false">
           <template #activator="{ on, attrs }">
             <v-btn
               v-bind="attrs"
@@ -41,8 +48,8 @@
               Ratings
             </v-btn>
           </template>
-          <v-sheet width="400" class="ma-3 pt-4">
-            <v-row dense>
+          <v-sheet width="400" class="overflow-hidden">
+            <v-row dense class="px-3 pt-8">
               <v-btn
                 fab
                 x-small
@@ -70,7 +77,9 @@
         <span class="pa-0 ma-1 text-h6">Games Per Page:</span>
         <v-text-field
           v-model="localGamesPerPage"
+          hide-details
           placeholder="Games Per Page"
+          :rules="[isNumeric, greaterThanZero]"
         />
       </v-row>
     </v-card-text>
@@ -78,6 +87,7 @@
       <v-row class="justify-center">
         <v-pagination
           v-model="games.$page"
+          class="pa-2"
           :length="games.$pageCount"
           prev-icon="fa-chevron-left"
           next-icon="fa-chevron-right"
@@ -161,6 +171,14 @@ export default class SearchAndFilterGames extends Vue {
   }
   set localSearchText(value: string) {
     this.$emit("update:searchText", value);
+  }
+
+  isNumeric(value: string) {
+    return /^\d+$/.test(value);
+  }
+
+  greaterThanZero(value: string) {
+    return parseInt(value) > 0;
   }
 }
 </script>

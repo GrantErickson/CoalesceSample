@@ -107,7 +107,6 @@ export const Game = domain.types.Game = {
       role: "referenceNavigation",
       get foreignKey() { return (domain.types.Game as ModelType).props.genreId as ForeignKeyProperty },
       get principalKey() { return (domain.types.Genre as ModelType).props.genreId as PrimaryKeyProperty },
-      get inverseNavigation() { return (domain.types.Genre as ModelType).props.games as ModelCollectionNavigationProperty },
       dontSerialize: true,
     },
     imageId: {
@@ -302,22 +301,6 @@ export const Genre = domain.types.Genre = {
       type: "string",
       role: "value",
     },
-    games: {
-      name: "games",
-      displayName: "Games",
-      type: "collection",
-      itemType: {
-        name: "$collectionItem",
-        displayName: "",
-        role: "value",
-        type: "model",
-        get typeDef() { return (domain.types.Game as ModelType) },
-      },
-      role: "collectionNavigation",
-      get foreignKey() { return (domain.types.Game as ModelType).props.genreId as ForeignKeyProperty },
-      get inverseNavigation() { return (domain.types.Game as ModelType).props.genre as ModelReferenceNavigationProperty },
-      dontSerialize: true,
-    },
   },
   methods: {
   },
@@ -340,10 +323,11 @@ export const Image = domain.types.Image = {
       role: "primaryKey",
       hidden: 3,
     },
-    base64Image: {
-      name: "base64Image",
-      displayName: "Base64 Image",
-      type: "string",
+    content: {
+      name: "content",
+      displayName: "Content",
+      type: "binary",
+      base64: true,
       role: "value",
     },
   },
@@ -591,60 +575,6 @@ export const GameService = domain.services.GameService = {
   type: "service",
   controllerRoute: "GameService",
   methods: {
-    getGames: {
-      name: "getGames",
-      displayName: "Get Games",
-      transportType: "item",
-      httpMethod: "POST",
-      params: {
-      },
-      return: {
-        name: "$return",
-        displayName: "Result",
-        type: "collection",
-        itemType: {
-          name: "$collectionItem",
-          displayName: "",
-          role: "value",
-          type: "model",
-          get typeDef() { return (domain.types.Game as ModelType) },
-        },
-        role: "value",
-      },
-    },
-    getGamesFromIds: {
-      name: "getGamesFromIds",
-      displayName: "Get Games From Ids",
-      transportType: "item",
-      httpMethod: "POST",
-      params: {
-        gameIds: {
-          name: "gameIds",
-          displayName: "Game Ids",
-          type: "collection",
-          itemType: {
-            name: "$collectionItem",
-            displayName: "",
-            role: "value",
-            type: "string",
-          },
-          role: "value",
-        },
-      },
-      return: {
-        name: "$return",
-        displayName: "Result",
-        type: "collection",
-        itemType: {
-          name: "$collectionItem",
-          displayName: "",
-          role: "value",
-          type: "model",
-          get typeDef() { return (domain.types.Game as ModelType) },
-        },
-        role: "value",
-      },
-    },
     getGameDetails: {
       name: "getGameDetails",
       displayName: "Get Game Details",
@@ -682,7 +612,8 @@ export const GameService = domain.services.GameService = {
       return: {
         name: "$return",
         displayName: "Result",
-        type: "string",
+        type: "model",
+        get typeDef() { return (domain.types.Image as ModelType) },
         role: "value",
       },
     },
@@ -708,28 +639,8 @@ export const GameService = domain.services.GameService = {
       return: {
         name: "$return",
         displayName: "Result",
-        type: "file",
-        role: "value",
-      },
-    },
-    getAllTags: {
-      name: "getAllTags",
-      displayName: "Get All Tags",
-      transportType: "item",
-      httpMethod: "POST",
-      params: {
-      },
-      return: {
-        name: "$return",
-        displayName: "Result",
-        type: "collection",
-        itemType: {
-          name: "$collectionItem",
-          displayName: "",
-          role: "value",
-          type: "model",
-          get typeDef() { return (domain.types.Tag as ModelType) },
-        },
+        type: "model",
+        get typeDef() { return (domain.types.Image as ModelType) },
         role: "value",
       },
     },

@@ -15,7 +15,6 @@ namespace CoalesceSample.Web.Models
         private int? _GenreId;
         private string _Name;
         private string _Description;
-        private System.Collections.Generic.ICollection<CoalesceSample.Web.Models.GameDtoGen> _Games;
 
         public int? GenreId
         {
@@ -32,11 +31,6 @@ namespace CoalesceSample.Web.Models
             get => _Description;
             set { _Description = value; Changed(nameof(Description)); }
         }
-        public System.Collections.Generic.ICollection<CoalesceSample.Web.Models.GameDtoGen> Games
-        {
-            get => _Games;
-            set { _Games = value; Changed(nameof(Games)); }
-        }
 
         /// <summary>
         /// Map from the domain object to the properties of the current DTO instance.
@@ -51,18 +45,6 @@ namespace CoalesceSample.Web.Models
             this.GenreId = obj.GenreId;
             this.Name = obj.Name;
             this.Description = obj.Description;
-            var propValGames = obj.Games;
-            if (propValGames != null && (tree == null || tree[nameof(this.Games)] != null))
-            {
-                this.Games = propValGames
-                    .OrderBy(f => f.Name)
-                    .Select(f => f.MapToDto<CoalesceSample.Data.Models.Game, GameDtoGen>(context, tree?[nameof(this.Games)])).ToList();
-            }
-            else if (propValGames == null && tree?[nameof(this.Games)] != null)
-            {
-                this.Games = new GameDtoGen[0];
-            }
-
         }
 
         /// <summary>

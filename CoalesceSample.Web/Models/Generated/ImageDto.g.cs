@@ -13,17 +13,17 @@ namespace CoalesceSample.Web.Models
         public ImageDtoGen() { }
 
         private int? _ImageId;
-        private string _Base64Image;
+        private byte[] _Content;
 
         public int? ImageId
         {
             get => _ImageId;
             set { _ImageId = value; Changed(nameof(ImageId)); }
         }
-        public string Base64Image
+        public byte[] Content
         {
-            get => _Base64Image;
-            set { _Base64Image = value; Changed(nameof(Base64Image)); }
+            get => _Content;
+            set { _Content = value; Changed(nameof(Content)); }
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace CoalesceSample.Web.Models
             // Fill the properties of the object.
 
             this.ImageId = obj.ImageId;
-            this.Base64Image = obj.Base64Image;
+            this.Content = obj.Content;
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace CoalesceSample.Web.Models
             if (OnUpdate(entity, context)) return;
 
             if (ShouldMapTo(nameof(ImageId))) entity.ImageId = (ImageId ?? entity.ImageId);
-            if (ShouldMapTo(nameof(Base64Image))) entity.Base64Image = Base64Image;
+            if (ShouldMapTo(nameof(Content))) entity.Content = Content;
         }
     }
 }

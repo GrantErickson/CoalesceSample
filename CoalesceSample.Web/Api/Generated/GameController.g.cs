@@ -32,7 +32,7 @@ namespace CoalesceSample.Web.Api
         }
 
         [HttpGet("get/{id}")]
-        [AllowAnonymous]
+        [Authorize]
         public virtual Task<ItemResult<GameDtoGen>> Get(
             System.Guid id,
             DataSourceParameters parameters,
@@ -40,14 +40,14 @@ namespace CoalesceSample.Web.Api
             => GetImplementation(id, parameters, dataSource);
 
         [HttpGet("list")]
-        [AllowAnonymous]
+        [Authorize]
         public virtual Task<ListResult<GameDtoGen>> List(
             ListParameters parameters,
             IDataSource<CoalesceSample.Data.Models.Game> dataSource)
             => ListImplementation(parameters, dataSource);
 
         [HttpGet("count")]
-        [AllowAnonymous]
+        [Authorize]
         public virtual Task<ItemResult<int>> Count(
             FilterParameters parameters,
             IDataSource<CoalesceSample.Data.Models.Game> dataSource)

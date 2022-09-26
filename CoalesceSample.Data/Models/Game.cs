@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace CoalesceSample.Data.Models;
-[Read(SecurityPermissionLevels.AllowAll)]
 public class Game
 {
     public Guid GameId { get; set; }
@@ -15,8 +14,8 @@ public class Game
     public string Description { get; set; } = null!;
     public DateTime? ReleaseDate { get; set; }
     public int Likes { get; set; } = 0;
-    public double TotalRating => Reviews.Where(r => !r.IsDeleted).Select(r=>r.Rating).Sum();
-    public int NumberOfRatings => Reviews.Where(r=>!r.IsDeleted).Count();
+    public double TotalRating => Reviews.Where(r => !r.IsDeleted).Select(r => r.Rating).Sum();
+    public int NumberOfRatings => Reviews.Where(r => !r.IsDeleted).Count();
     public double AverageRating { get; set; }
     public double AverageDurationInHours { get; set; }
     public int MaxPlayers { get; set; }
@@ -32,6 +31,7 @@ public class Game
     #region DATASOURCE
     [DefaultDataSource]
     [Coalesce]
+[Read(SecurityPermissionLevels.AllowAll)]
     public class GameDataSource : StandardDataSource<Game, AppDbContext>
     {
         public GameDataSource(CrudContext<AppDbContext> context) : base(context) { FilterTags = ""; }
@@ -45,18 +45,22 @@ public class Game
         public override IQueryable<Game> GetQuery(IDataSourceParameters parameters)
         {
 
-            IQueryable<Game> query = base.GetQuery(parameters);
+            IQueryable<Game> query = Db.Games;
             if (FilterTags != null)
             {
                 IEnumerable<int> tags = FilterTags.Split(',').Where(x => int.TryParse(x, out _)).Select(Int32.Parse);
                 query = query
+                    .AsNoTracking()
+                    .Include(g => g.Genre)
+                    .Include(g => g.GameTags)
+                        .ThenInclude(gt=>gt.Tag)
                     .Include(g => g.Reviews.Where(r => !r.IsDeleted))
                     .Where(g =>
                     g.GameTags.Where(gt => tags.Contains(gt.TagId)).Count() == tags.Count() &&
                     g.AverageRating >= FilterRatingsLower &&
                     g.AverageRating <= FilterRatingsUpper
                     );
-                    
+
             }
 
             return query;

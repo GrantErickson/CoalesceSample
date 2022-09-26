@@ -1,6 +1,7 @@
 <template>
   <c-loader-status
     v-slot
+    class="ma-4"
     :loaders="{
       'no-secondary-progress no-initial-content': [gamesList.$load],
     }"
@@ -42,7 +43,7 @@ export default class GameList extends Vue {
   gamesList!: GameListViewModel;
 
   async created() {
-    this.gamesList.$startAutoLoad(this);
+    this.gamesList.$startAutoLoad(this, { wait: 200 });
     await this.gamesList.$load();
   }
 }

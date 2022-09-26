@@ -1,7 +1,7 @@
 <template>
-  <v-card-title>
+  <v-card-title class="ma-0 pa-0">
     <span :key="'likes' + game.likes">Likes: {{ game.likes }}</span>
-    <v-btn class="mx-3" fab x-small @click.native.stop="toggleLike">
+    <v-btn class="ml-3" fab x-small @click.native.stop="toggleLike">
       <v-icon
         :color="hasLiked ? 'primary' : 'secondary'"
         class="fa fa-thumbs-up"

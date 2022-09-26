@@ -9,5 +9,4 @@ public class Genre
     public string Name { get; set; } = null!;
     [Search(SearchMethod = SearchAttribute.SearchMethods.Contains)]
     public string? Description { get; set; }
-    public ICollection<Game> Games { get; set; } = new List<Game>();
 }

@@ -1,70 +1,51 @@
 <template>
-  <v-card
-    height="175"
-    class="ma-2 pa-2 flex-fill"
-    @click="gameDetails(game.gameId)"
+  <card-base
+    :right-slots-list="rightSlots"
+    @click.native.stop="gameDetails(game.gameId)"
   >
-    <v-row>
-      <v-col cols="2">
+    <span slot="left">
+      <v-card class="fill-height">
         <c-loader-status
           v-slot
           :loaders="{
-            'no-secondary-progress': [gameService.getGameImage],
+            'no-secondary-progress no-error-content': [
+              gameService.getGameImage,
+            ],
           }"
         >
-          <v-card v-if="gameService.getGameImage.wasSuccessful">
-            <v-img aspect-ratio="1" max-height="150" :src="image" />
-          </v-card>
+          <game-image :game="game" />
         </c-loader-status>
-      </v-col>
-      <v-col cols="10">
-        <v-sheet flat class="float-right">
-          <like-button :game="game" />
-          <star-rating :game="game" :rating="game.averageRating" />
-          <v-sheet flat class="float-right mt-8">
-            <v-btn
-              v-if="$isAdmin"
-              fab
-              x-small
-              @click.native.stop="toggleShowEditGame"
-            >
-              <v-icon color="red"> fa-pencil </v-icon>
-            </v-btn>
-          </v-sheet>
-        </v-sheet>
-        <v-card-title>
-          {{ game.name }}
-        </v-card-title>
-        <v-card-subtitle>
-          {{ game.genre.name }}
-        </v-card-subtitle>
-        <v-card-text class="black--text">
-          {{ game.description }}
-
-          <v-row dense class="pt-4">
-            <v-chip-group v-for="tag in tags" :key="tag.tag.name">
-              <v-tooltip bottom>
-                <template #activator="{ on, attrs }">
-                  <v-chip
-                    class="pa-2 ma-0"
-                    color="primary"
-                    small
-                    dark
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    {{ tag.tag.name }}
-                  </v-chip>
-                </template>
-                <span>{{ tag.tag.description }}</span>
-              </v-tooltip>
-            </v-chip-group>
-          </v-row>
-        </v-card-text>
-      </v-col>
-    </v-row>
-    <edit-game-dialog v-model="showEditGame" :game="game" />
-  </v-card>
+      </v-card>
+    </span>
+    <span slot="main">
+      <v-card-title>
+        {{ game.name }}
+      </v-card-title>
+      <v-card-subtitle> {{ game.genre.name }} </v-card-subtitle>
+      <v-card-text class="black--text">
+        {{ game.description }}
+        <v-row dense class="pt-4">
+          <v-chip-group v-for="tag in tags" :key="tag.tag.name">
+            <v-tooltip bottom>
+              <template #activator="{ on, attrs }">
+                <v-chip
+                  class="pa-2 mr-1 my-0"
+                  color="primary"
+                  small
+                  dark
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  {{ tag.tag.name }}
+                </v-chip>
+              </template>
+              <span>{{ tag.tag.description }}</span>
+            </v-tooltip>
+          </v-chip-group>
+        </v-row>
+      </v-card-text>
+    </span>
+  </card-base>
 </template>
 
 <script lang="ts">
@@ -74,9 +55,12 @@ import { GameServiceViewModel } from "@/viewmodels.g";
 import LikeButton from "@/components/LikeButton.vue";
 import StarRating from "@/components/StarRating.vue";
 import EditGameDialog from "@/components/dialogs/EditGameDialog.vue";
+import GameImage from "@/components/game/GameImage.vue";
+import CardBase from "@/components/templates/CardBase.vue";
+import IComponent from "@/services/i-component";
 
 @Component({
-  components: { EditGameDialog, StarRating, LikeButton },
+  components: { CardBase, GameImage, EditGameDialog, StarRating, LikeButton },
 })
 export default class GameCard extends Vue {
   @Prop({ required: true })
@@ -84,10 +68,9 @@ export default class GameCard extends Vue {
 
   gameService: GameServiceViewModel = new GameServiceViewModel();
 
-  showEditGame = false;
-
-  created() {
-    this.gameService.getGameImage(this.game.gameId);
+  async created() {
+    await this.gameService.getGameImage(this.game.gameId);
+    this.game.image = this.gameService.getGameImage.result;
   }
 
   get image() {
@@ -102,11 +85,21 @@ export default class GameCard extends Vue {
     return this.game.gameTags;
   }
 
-  toggleShowEditGame() {
-    if (this.$isAdmin) {
-      this.showEditGame = !this.showEditGame;
-    }
-    return this.showEditGame;
+  get rightSlots(): IComponent[] {
+    return [
+      {
+        component: LikeButton,
+        props: { game: this.game },
+      },
+      {
+        component: StarRating,
+        props: { game: this.game, rating: this.game.averageRating },
+      },
+      {
+        component: EditGameDialog,
+        props: { game: this.game },
+      },
+    ];
   }
 
   async gameDetails(gameId: string) {
