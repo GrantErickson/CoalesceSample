@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace CoalesceSample.Data.Models;
+[Read(SecurityPermissionLevels.AllowAll)]
 public class Game
 {
     public Guid GameId { get; set; }
