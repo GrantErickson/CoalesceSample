@@ -32,7 +32,6 @@ public class Game
     #region DATASOURCE
     [DefaultDataSource]
     [Coalesce]
-[Read(SecurityPermissionLevels.AllowAll)]
     public class GameDataSource : StandardDataSource<Game, AppDbContext>
     {
         public GameDataSource(CrudContext<AppDbContext> context) : base(context) { FilterTags = ""; }

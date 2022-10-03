@@ -469,6 +469,28 @@ export const Tag = domain.types.Tag = {
   dataSources: {
   },
 }
+export const UserDetails = domain.types.UserDetails = {
+  name: "UserDetails",
+  displayName: "User Details",
+  get displayProp() { return this.props.id }, 
+  type: "model",
+  controllerRoute: "UserDetails",
+  get keyProp() { return this.props.id }, 
+  behaviorFlags: 7,
+  props: {
+    id: {
+      name: "id",
+      displayName: "Id",
+      type: "string",
+      role: "primaryKey",
+      hidden: 3,
+    },
+  },
+  methods: {
+  },
+  dataSources: {
+  },
+}
 export const UserInfoDto = domain.types.UserInfoDto = {
   name: "UserInfoDto",
   displayName: "User Info Dto",
@@ -564,6 +586,79 @@ export const ApplicationUserService = domain.services.ApplicationUserService = {
           role: "value",
           type: "string",
         },
+        role: "value",
+      },
+    },
+    getAllUsersInfo: {
+      name: "getAllUsersInfo",
+      displayName: "Get All Users Info",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        type: "collection",
+        itemType: {
+          name: "$collectionItem",
+          displayName: "",
+          role: "value",
+          type: "object",
+          get typeDef() { return (domain.types.UserInfoDto as ObjectType) },
+        },
+        role: "value",
+      },
+    },
+    getRoleList: {
+      name: "getRoleList",
+      displayName: "Get Role List",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        type: "collection",
+        itemType: {
+          name: "$collectionItem",
+          displayName: "",
+          role: "value",
+          type: "string",
+        },
+        role: "value",
+      },
+    },
+    toggleUserRole: {
+      name: "toggleUserRole",
+      displayName: "Toggle User Role",
+      transportType: "item",
+      httpMethod: "POST",
+      params: {
+        userEmail: {
+          name: "userEmail",
+          displayName: "User Email",
+          type: "string",
+          role: "value",
+        },
+        role: {
+          name: "role",
+          displayName: "Role",
+          type: "string",
+          role: "value",
+        },
+        currentState: {
+          name: "currentState",
+          displayName: "Current State",
+          type: "boolean",
+          role: "value",
+        },
+      },
+      return: {
+        name: "$return",
+        displayName: "Result",
+        type: "void",
         role: "value",
       },
     },
@@ -1059,6 +1154,7 @@ interface AppDomain extends Domain {
     Image: typeof Image
     Review: typeof Review
     Tag: typeof Tag
+    UserDetails: typeof UserDetails
     UserInfoDto: typeof UserInfoDto
   }
   services: {

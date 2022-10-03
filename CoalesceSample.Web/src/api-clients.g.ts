@@ -33,6 +33,11 @@ export class TagApiClient extends ModelApiClient<$models.Tag> {
 }
 
 
+export class UserDetailsApiClient extends ModelApiClient<$models.UserDetails> {
+  constructor() { super($metadata.UserDetails) }
+}
+
+
 export class ApplicationUserServiceApiClient extends ServiceApiClient<typeof $metadata.ApplicationUserService> {
   constructor() { super($metadata.ApplicationUserService) }
   public getRoles($config?: AxiosRequestConfig): AxiosPromise<ItemResult<string[]>> {
@@ -53,6 +58,30 @@ export class ApplicationUserServiceApiClient extends ServiceApiClient<typeof $me
   public getUserReviews($config?: AxiosRequestConfig): AxiosPromise<ItemResult<string[]>> {
     const $method = this.$metadata.methods.getUserReviews
     const $params =  {
+    }
+    return this.$invoke($method, $params, $config)
+  }
+  
+  public getAllUsersInfo($config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.UserInfoDto[]>> {
+    const $method = this.$metadata.methods.getAllUsersInfo
+    const $params =  {
+    }
+    return this.$invoke($method, $params, $config)
+  }
+  
+  public getRoleList($config?: AxiosRequestConfig): AxiosPromise<ItemResult<string[]>> {
+    const $method = this.$metadata.methods.getRoleList
+    const $params =  {
+    }
+    return this.$invoke($method, $params, $config)
+  }
+  
+  public toggleUserRole(userEmail: string | null, role: string | null, currentState: boolean | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<void>> {
+    const $method = this.$metadata.methods.toggleUserRole
+    const $params =  {
+      userEmail,
+      role,
+      currentState,
     }
     return this.$invoke($method, $params, $config)
   }

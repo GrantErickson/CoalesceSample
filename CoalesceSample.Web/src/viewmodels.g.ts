@@ -169,6 +169,25 @@ export class TagListViewModel extends ListViewModel<$models.Tag, $apiClients.Tag
 }
 
 
+export interface UserDetailsViewModel extends $models.UserDetails {
+  id: string | null;
+}
+export class UserDetailsViewModel extends ViewModel<$models.UserDetails, $apiClients.UserDetailsApiClient, string> implements $models.UserDetails  {
+  
+  constructor(initialData?: DeepPartial<$models.UserDetails> | null) {
+    super($metadata.UserDetails, new $apiClients.UserDetailsApiClient(), initialData)
+  }
+}
+defineProps(UserDetailsViewModel, $metadata.UserDetails)
+
+export class UserDetailsListViewModel extends ListViewModel<$models.UserDetails, $apiClients.UserDetailsApiClient, UserDetailsViewModel> {
+  
+  constructor() {
+    super($metadata.UserDetails, new $apiClients.UserDetailsApiClient())
+  }
+}
+
+
 export class ApplicationUserServiceViewModel extends ServiceViewModel<typeof $metadata.ApplicationUserService, $apiClients.ApplicationUserServiceApiClient> {
   
   public get getRoles() {
@@ -202,6 +221,39 @@ export class ApplicationUserServiceViewModel extends ServiceViewModel<typeof $me
     
     Object.defineProperty(this, 'getUserReviews', {value: getUserReviews});
     return getUserReviews
+  }
+  
+  public get getAllUsersInfo() {
+    const getAllUsersInfo = this.$apiClient.$makeCaller(
+      this.$metadata.methods.getAllUsersInfo,
+      (c) => c.getAllUsersInfo(),
+      () => ({}),
+      (c, args) => c.getAllUsersInfo())
+    
+    Object.defineProperty(this, 'getAllUsersInfo', {value: getAllUsersInfo});
+    return getAllUsersInfo
+  }
+  
+  public get getRoleList() {
+    const getRoleList = this.$apiClient.$makeCaller(
+      this.$metadata.methods.getRoleList,
+      (c) => c.getRoleList(),
+      () => ({}),
+      (c, args) => c.getRoleList())
+    
+    Object.defineProperty(this, 'getRoleList', {value: getRoleList});
+    return getRoleList
+  }
+  
+  public get toggleUserRole() {
+    const toggleUserRole = this.$apiClient.$makeCaller(
+      this.$metadata.methods.toggleUserRole,
+      (c, userEmail: string | null, role: string | null, currentState: boolean | null) => c.toggleUserRole(userEmail, role, currentState),
+      () => ({userEmail: null as string | null, role: null as string | null, currentState: null as boolean | null, }),
+      (c, args) => c.toggleUserRole(args.userEmail, args.role, args.currentState))
+    
+    Object.defineProperty(this, 'toggleUserRole', {value: toggleUserRole});
+    return toggleUserRole
   }
   
   constructor() {
@@ -428,6 +480,7 @@ const viewModelTypeLookup = ViewModel.typeLookup = {
   Image: ImageViewModel,
   Review: ReviewViewModel,
   Tag: TagViewModel,
+  UserDetails: UserDetailsViewModel,
 }
 const listViewModelTypeLookup = ListViewModel.typeLookup = {
   Game: GameListViewModel,
@@ -436,6 +489,7 @@ const listViewModelTypeLookup = ListViewModel.typeLookup = {
   Image: ImageListViewModel,
   Review: ReviewListViewModel,
   Tag: TagListViewModel,
+  UserDetails: UserDetailsListViewModel,
 }
 const serviceViewModelTypeLookup = ServiceViewModel.typeLookup = {
   ApplicationUserService: ApplicationUserServiceViewModel,

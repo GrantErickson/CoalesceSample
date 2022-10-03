@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-card
-      :flat="noCard"
+      :flat="noCard || flat"
       :color="!noCard ? '' : '#FAFAFA'"
       :class="!noCard ? 'ma-2 pa-2 flex-fill' : 'ma-2 flex-fill'"
     >
@@ -49,5 +49,7 @@ export default class CardBase extends Vue {
   @Prop({ required: false, default: false })
   noCard!: boolean;
 
+  @Prop({ required: false, default: false })
+  flat!: boolean;
 }
 </script>

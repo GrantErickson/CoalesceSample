@@ -178,6 +178,28 @@ export class Tag {
 }
 
 
+export interface UserDetails extends Model<typeof metadata.UserDetails> {
+  id: string | null
+}
+export class UserDetails {
+  
+  /** Mutates the input object and its descendents into a valid UserDetails implementation. */
+  static convert(data?: Partial<UserDetails>): UserDetails {
+    return convertToModel(data || {}, metadata.UserDetails) 
+  }
+  
+  /** Maps the input object and its descendents to a new, valid UserDetails implementation. */
+  static map(data?: Partial<UserDetails>): UserDetails {
+    return mapToModel(data || {}, metadata.UserDetails) 
+  }
+  
+  /** Instantiate a new UserDetails, optionally basing it on the given data. */
+  constructor(data?: Partial<UserDetails> | {[k: string]: any}) {
+      Object.assign(this, UserDetails.map(data || {}));
+  }
+}
+
+
 export interface UserInfoDto extends Model<typeof metadata.UserInfoDto> {
   name: string | null
   email: string | null

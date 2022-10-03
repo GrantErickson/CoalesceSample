@@ -17,7 +17,7 @@ namespace CoalesceSample.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.8")
+                .HasAnnotation("ProductVersion", "6.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -258,6 +258,16 @@ namespace CoalesceSample.Data.Migrations
                     b.ToTable("Tags");
                 });
 
+            modelBuilder.Entity("CoalesceSample.Data.Models.UserDetails", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserDetails");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -394,7 +404,7 @@ namespace CoalesceSample.Data.Migrations
             modelBuilder.Entity("CoalesceSample.Data.Models.Game", b =>
                 {
                     b.HasOne("CoalesceSample.Data.Models.Genre", "Genre")
-                        .WithMany("Games")
+                        .WithMany()
                         .HasForeignKey("GenreId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -508,11 +518,6 @@ namespace CoalesceSample.Data.Migrations
                     b.Navigation("GameTags");
 
                     b.Navigation("Reviews");
-                });
-
-            modelBuilder.Entity("CoalesceSample.Data.Models.Genre", b =>
-                {
-                    b.Navigation("Games");
                 });
 
             modelBuilder.Entity("CoalesceSample.Data.Models.Tag", b =>

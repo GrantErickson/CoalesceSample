@@ -4,13 +4,9 @@ using CoalesceSample.Data.Models;
 using IntelliTect.Coalesce.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace CoalesceSample.Data.Services;
 public class LoginService : ILoginService
@@ -154,10 +150,13 @@ public class LoginService : ILoginService
         {
             return new UserInfoDto("", "", new List<string>().ToArray());
         }
-        string[] userRoles = (from userRole in Db.UserRoles
+        string[] userRoles = (from userRoleId in 
+                                  from u in Db.UserRoles
+                                  where u.UserId == existingUser.Id
+                                  select u.RoleId
                               join role in Db.Roles
-                              on userRole.UserId equals role.Id
-                              select role.Name.ToString())
+                              on userRoleId equals role.Id
+                              select role.Name)
                               .ToArray();
         return new UserInfoDto(existingUser.Name, existingUser.Email, userRoles);
     }

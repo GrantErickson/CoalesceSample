@@ -7,6 +7,7 @@
     }"
   >
     <SearchAndFilterGames
+      class="mb-2"
       :search-text.sync="gamesList.$params.search"
       :filter-game-tags.sync="gamesList.$dataSource.filterTags"
       :filter-rating-upper.sync="gamesList.$dataSource.filterRatingsUpper"

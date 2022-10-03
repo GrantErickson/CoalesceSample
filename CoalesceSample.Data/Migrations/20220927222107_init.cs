@@ -69,7 +69,7 @@ namespace CoalesceSample.Data.Migrations
                 {
                     ImageId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Base64Image = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Content = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -88,6 +88,17 @@ namespace CoalesceSample.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tags", x => x.TagId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserDetails",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserDetails", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -378,6 +389,9 @@ namespace CoalesceSample.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Reviews");
+
+            migrationBuilder.DropTable(
+                name: "UserDetails");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

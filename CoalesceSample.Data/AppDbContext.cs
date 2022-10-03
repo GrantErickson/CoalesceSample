@@ -16,6 +16,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<GameTag> GameTags => Set<GameTag>();
     public DbSet<Review> Reviews => Set<Review>();
     public DbSet<Image> Images => Set<Image>();
+    public DbSet<UserDetails> UserDetails => Set<UserDetails>();
 
     public AppDbContext()
     {

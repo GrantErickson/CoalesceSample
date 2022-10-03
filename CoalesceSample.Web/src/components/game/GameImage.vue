@@ -14,7 +14,6 @@
       color="white"
       padless
     >
-      <!--      <v-spacer />-->
       <v-btn class="ma-1" color="primary" @click="showEdit = true">
         Change Image
       </v-btn>

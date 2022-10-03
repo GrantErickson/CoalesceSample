@@ -24,6 +24,15 @@
             <v-list-item-title>Game List</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+
+        <v-list-item v-if="$isAdmin" link to="/usermanagement">
+          <v-list-item-action>
+            <v-icon>fas fa-person</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Users</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
@@ -66,8 +75,7 @@ export default class App extends Vue {
   @Provide("GAMESLIST")
   gamesList = new GameListViewModel();
 
-  dataSource = (this.gamesList.$dataSource =
-    new Game.DataSources.GameDataSource());
+  dataSource = new Game.DataSources.GameDataSource();
 
   @Provide("TAGSLIST")
   tags = new TagListViewModel();

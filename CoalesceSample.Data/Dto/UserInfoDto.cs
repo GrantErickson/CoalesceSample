@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CoalesceSample.Data.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,6 @@ public class UserInfoDto
     public string Name { get; set; }
     public string Email { get; set; }
     public string[] UserRoles { get; set; }
-
 
     public UserInfoDto(string name, string email, string[] roles)
     {

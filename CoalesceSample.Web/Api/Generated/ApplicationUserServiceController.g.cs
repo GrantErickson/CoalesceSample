@@ -68,5 +68,45 @@ namespace CoalesceSample.Web.Api
             _result.Object = _methodResult.Object?.ToList();
             return _result;
         }
+
+        /// <summary>
+        /// Method: GetAllUsersInfo
+        /// </summary>
+        [HttpPost("GetAllUsersInfo")]
+        [Authorize(Roles = "SuperAdmin")]
+        public virtual async Task<ItemResult<System.Collections.Generic.ICollection<UserInfoDtoDtoGen>>> GetAllUsersInfo()
+        {
+            IncludeTree includeTree = null;
+            var _mappingContext = new MappingContext(User);
+            var _methodResult = await Service.GetAllUsersInfo(User);
+            var _result = new ItemResult<System.Collections.Generic.ICollection<UserInfoDtoDtoGen>>(_methodResult);
+            _result.Object = _methodResult.Object?.ToList().Select(o => Mapper.MapToDto<CoalesceSample.Data.Dto.UserInfoDto, UserInfoDtoDtoGen>(o, _mappingContext, includeTree)).ToList();
+            return _result;
+        }
+
+        /// <summary>
+        /// Method: GetRoleList
+        /// </summary>
+        [HttpPost("GetRoleList")]
+        [Authorize(Roles = "SuperAdmin")]
+        public virtual async Task<ItemResult<string[]>> GetRoleList()
+        {
+            var _methodResult = await Service.GetRoleList(User);
+            var _result = new ItemResult<string[]>(_methodResult);
+            _result.Object = _methodResult.Object?.ToArray();
+            return _result;
+        }
+
+        /// <summary>
+        /// Method: ToggleUserRole
+        /// </summary>
+        [HttpPost("ToggleUserRole")]
+        [Authorize(Roles = "SuperAdmin")]
+        public virtual async Task<ItemResult> ToggleUserRole(string userEmail, string role, bool currentState)
+        {
+            var _methodResult = await Service.ToggleUserRole(User, userEmail, role, currentState);
+            var _result = new ItemResult(_methodResult);
+            return _result;
+        }
     }
 }

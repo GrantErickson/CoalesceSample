@@ -15,6 +15,4 @@ public class ApplicationUser : IdentityUser
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
 
 #nullable restore
-
-
 }

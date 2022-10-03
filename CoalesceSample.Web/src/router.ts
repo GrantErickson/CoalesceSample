@@ -15,7 +15,7 @@ export default new Router({
     {
       path: "/gamelist",
       name: "game-list",
-      component: () => import("./views/Games.vue"),
+      component: () => import("./views/GameList.vue"),
       props: { title: "Example Games List" },
     },
     {
@@ -28,6 +28,11 @@ export default new Router({
       path: "/login",
       name: "login",
       component: () => import("./views/Login.vue"),
+    },
+    {
+      path: "/usermanagement",
+      name: "usermanagement",
+      component: () => import("./views/UserManagement.vue"),
     },
 
     // Coalesce admin routes
