@@ -206,10 +206,12 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import { Component, Inject, Prop, Vue, Watch } from "vue-property-decorator";
 import { Game, GameTag, Review } from "@/models.g";
 import {
+  GameListViewModel,
   GameServiceViewModel,
+  GameTagViewModel,
   GameViewModel,
   ImageViewModel,
   ReviewServiceViewModel,
@@ -242,6 +244,9 @@ export default class GameDetails extends Vue {
   @Prop({ required: true })
   gameId!: string;
 
+  @Inject("GAMESLIST")
+  gameList!: GameListViewModel;
+
   gameService: GameServiceViewModel = new GameServiceViewModel();
   reviewService: ReviewServiceViewModel = new ReviewServiceViewModel();
 
@@ -250,7 +255,7 @@ export default class GameDetails extends Vue {
   showAddReview = false;
   showEditTags = false;
 
-  gameViewModel: GameViewModel | null = null;
+  game: GameViewModel = new GameViewModel();
 
   reviewsList: Review[] = [];
   reviewsPerPage = 10;
@@ -267,24 +272,14 @@ export default class GameDetails extends Vue {
 
   async created() {
     this.reviewService.getReviews.setConcurrency("cancel");
-
+    await this.game.$load(this.gameId);
+    let image = new ImageViewModel(this.gameService.getGameImage.result);
+    this.game = new GameViewModel(this.gameService.getGameDetails.result!);
+    this.game.image = image;
     await this.gameService.getGameDetails(this.gameId);
     await this.gameService.getGameImage(this.gameId);
     await this.updateReviewList();
     this.ratings = this.game?.reviews?.map((r) => r.rating ?? 0) || [];
-  }
-
-  get game() {
-    let image = new ImageViewModel(this.gameService.getGameImage.result);
-    this.gameViewModel = new GameViewModel(
-      this.gameService.getGameDetails.result!
-    );
-    this.gameViewModel.image = image;
-    return this.gameViewModel;
-  }
-
-  set game(game: Game) {
-    this.gameService.getGameDetails.result = game;
   }
 
   get numberOfRatings() {
@@ -295,7 +290,7 @@ export default class GameDetails extends Vue {
     return this.game?.gameTags ?? [];
   }
 
-  set gameTags(value: GameTag[]) {
+  set gameTags(value: GameTagViewModel[]) {
     if (this.game) {
       this.game.gameTags = value;
     }
