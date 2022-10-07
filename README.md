@@ -1,22 +1,22 @@
-# 1. Coalesce Tutorial
+# Coalesce Tutorial
 
-- [1. Coalesce Tutorial](#1-coalesce-tutorial)
-  - [1.1. Prerequisites](#11-prerequisites)
-  - [1.2. Steps](#12-steps)
-    - [1.2.1. Create the Template Project](#121-create-the-template-project)
-    - [1.2.2. Add Swagger](#122-add-swagger)
-    - [1.2.3. Set Up Identity and Authentication Middleware](#123-set-up-identity-and-authentication-middleware)
-    - [1.2.4. Set Up User Login and Roles](#124-set-up-user-login-and-roles)
-    - [1.2.5. Add a simple class called Game](#125-add-a-simple-class-called-game)
-    - [1.2.6. Add a class with a parent: Genre](#126-add-a-class-with-a-parent-genre)
-    - [1.2.7. Add many-to-many with Tags](#127-add-many-to-many-with-tags)
-    - [1.2.8. Create a public game list page](#128-create-a-public-game-list-page)
-    - [1.2.9. Make the read-only page public](#129-make-the-read-only-page-public)
-    - [1.2.10. Anonymous Game viewing and liking](#1210-anonymous-game-viewing-and-liking)
+- [Coalesce Tutorial](#coalesce-tutorial)
+  - [1. Prerequisites](#1-prerequisites)
+  - [2. Steps](#2-steps)
+    - [2.1. Create the Template Project](#21-create-the-template-project)
+    - [2.2. Add Swagger](#22-add-swagger)
+    - [2.3. Set Up Identity and Authentication Middleware](#23-set-up-identity-and-authentication-middleware)
+    - [2.4. Set Up User Login and Roles](#24-set-up-user-login-and-roles)
+    - [2.5. Add a simple class called Game](#25-add-a-simple-class-called-game)
+    - [2.6. Add a class with a parent: Genre](#26-add-a-class-with-a-parent-genre)
+    - [2.7. Add many-to-many with Tags](#27-add-many-to-many-with-tags)
+    - [2.8. Create a public game list page](#28-create-a-public-game-list-page)
+    - [2.9. Make the read-only page public](#29-make-the-read-only-page-public)
+    - [2.10. Anonymous Game viewing and liking](#210-anonymous-game-viewing-and-liking)
 
 Learn Coalesce by creating a Board Game Management System. (BGMS)
 
-## 1.1. Prerequisites
+## 1. Prerequisites
 
 - Visual Studio 2022 or later (is it possible with VS Code as well, but the instructions are for Visual Studio)
 - SQL Server Local DB (it is possible to use another database by modifying the connection string and NuGet packages)
@@ -27,9 +27,9 @@ Learn Coalesce by creating a Board Game Management System. (BGMS)
 >
 > - When referring to the file `Program.cs` in the instructions, always referes to the file in the project `ColesceSample.Web`.
 
-## 1.2. Steps
+## 2. Steps
 
-### 1.2.1. Create the Template Project
+### 2.1. Create the Template Project
 
 These commands are designed for the Windows Console or Windows PowerShell. Substitute appropriate commands for Linux.
 
@@ -49,7 +49,7 @@ These commands are what you need to set up a Coalesce development environment
   12. `dotnet run`
   13. Browse to: [https://localhost:5001](https://localhost:5001/)
 
-### 1.2.2. Add Swagger
+### 2.2. Add Swagger
 
   1. Add the `Swashbuckle.AspNetCore` package to the project.
   2. In `program.cs`, add the SwaggerGen service to the builder with bearer token authorization options:
@@ -91,7 +91,7 @@ These commands are what you need to set up a Coalesce development environment
 
   4. Visit the Swagger endpoint at [https://localhost:5001/swagger](https://localhost:5001/swagger)
 
-### 1.2.3. Set Up Identity and Authentication Middleware
+### 2.3. Set Up Identity and Authentication Middleware
 
   1. Add the `Microsoft.AspNetCore.Identity.EntityFrameworkCore` package to the project.
   2. In the `ApplicationUser` class found in the Models folder, extend `IdentityUser` and remove the `ApplicationUserId` property since `IdentityUser` provides an id property.
@@ -244,7 +244,7 @@ These commands are what you need to set up a Coalesce development environment
         });
         ```
 
-### 1.2.4. Set Up User Login and Roles
+### 2.4. Set Up User Login and Roles
 
   1. In a new folder called `Identity` in the `CoalesceSample.Data` project, create a new public static class called `Roles`
   2. Add static constants for SuperAdmin and User roles and a static array to track all roles
@@ -349,7 +349,7 @@ These commands are what you need to set up a Coalesce development environment
 
   10. Some other useful methods are included in the `LoginService` for user management and may or may not be needed depending on the needed/wanted login features.
 
-### 1.2.5. Add a simple class called Game
+### 2.5. Add a simple class called Game
 
   1. In the `\CoalesceSample.Data` project in the `Models` folder add a new class file called `Game.cs`
   2. Make the class `public`
@@ -394,7 +394,7 @@ These commands are what you need to set up a Coalesce development environment
   10. Note that there is now an editor for the Game class in the Application User Admin Table.
   11. Manually create your first game in the database. Notice the autosave will produce an error until the nullable fields have data.
 
-### 1.2.6. Add a class with a parent: Genre
+### 2.6. Add a class with a parent: Genre
 
   1. Create a new public class in the `Models` folder called `Genre`
   2. Add a primary key property `GenreId` as an int
@@ -429,7 +429,7 @@ These commands are what you need to set up a Coalesce development environment
      3. `dotnet coalesce`
   7. After restarting the application, there will now be a `Genre` table in the Admin Page Links.
 
-### 1.2.7. Add many-to-many with Tags
+### 2.7. Add many-to-many with Tags
 
   1. Add a primary key property `TagId` as an int
 
@@ -475,7 +475,7 @@ These commands are what you need to set up a Coalesce development environment
      2. `cd ..\*.web`
      3. `dotnet coalesce`
 
-### 1.2.8. Create a public game list page
+### 2.8. Create a public game list page
 
   1. Create a new folder in `\CoalesceSameple.Data` called `services`
   2. Create a new public class called `GameService` in the `services` folder annotated with `[Coalesce, Service]`
@@ -593,6 +593,6 @@ These commands are what you need to set up a Coalesce development environment
         }
         ```
 
-### 1.2.9. Make the read-only page public
+### 2.9. Make the read-only page public
 
-### 1.2.10. Anonymous Game viewing and liking
+### 2.10. Anonymous Game viewing and liking
