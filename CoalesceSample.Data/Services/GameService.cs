@@ -19,28 +19,6 @@ public class GameService
 
     [Coalesce]
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
-    public ItemResult<Game> GetGameDetails(Guid gameId, out IncludeTree tree)
-    {
-
-        var gameQuery = Db.Games
-            .Where(g => g.GameId == gameId)
-            .Include(g => g.GameTags)
-                .ThenInclude(gt => gt.Tag)
-            .Include(g => g.Genre)
-            .Include(g => g.Reviews.Where(r => !r.IsDeleted));
-
-        tree = gameQuery.GetIncludeTree();
-        Game? game = gameQuery.FirstOrDefault();
-
-        if (game == null)
-        {
-            return "Could not find the requested game";
-        }
-        return game;
-    }
-
-    [Coalesce]
-    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
     public async Task<ItemResult<Image>> GetGameImage(Guid gameId)
     {
         Game? game = Db.Games.Include(g => g.Image).FirstOrDefault(g => g.GameId == gameId);
@@ -81,28 +59,16 @@ public class GameService
     }
 
     [Coalesce]
-    [Execute(PermissionLevel = SecurityPermissionLevels.AllowAll)]
-    public async Task<List<GameTag>> GetGameTags(Guid gameId)
-    {
-        Game? game = Db.Games.Include(g => g.GameTags).ThenInclude(gt => gt.Tag).FirstOrDefault(i => i.GameId == gameId);
-        if (game == null)
-        {
-            return new List<GameTag>();
-        }
-        return game.GameTags.ToList();
-    }
-
-    [Coalesce]
     [Execute(PermissionLevel = SecurityPermissionLevels.AllowAuthorized, Roles = Roles.User)]
     public async Task<ItemResult<List<GameTag>>> SetGameTags(Guid gameId, List<int> tagIds)
     {
-        IQueryable<GameTag>? tags = Db.GameTags.Where(gt => gt.GameId == gameId);
+        IQueryable<GameTag>? tags = Db.GameTags.Include(gt=>gt.Tag).Where(gt => gt.GameId == gameId);
         Db.GameTags.RemoveRange(tags);
         var tagList = new List<GameTag>();
         tagIds.ForEach(id => tagList.Add(new GameTag() { GameId = gameId, TagId = id }));
         Db.AddRange(tagList);
         await Db.SaveChangesAsync();
-        return await GetGameTags(gameId);
+        return await tags.ToListAsync();
     }
 
     [Coalesce]

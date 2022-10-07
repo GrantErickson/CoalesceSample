@@ -3,9 +3,7 @@
     v-slot
     class="ma-4"
     :loaders="{
-      'no-secondary-progress no-initial-content no-error-content': [
-        gameService.getGameDetails,
-      ],
+      'no-secondary-progress no-initial-content no-error-content': [game.$load],
     }"
   >
     <card-base :no-card="true" :right-slots-list="rightSlots">
@@ -18,7 +16,7 @@
             ],
           }"
         >
-          <v-card>
+          <v-card :flat="!$isAdmin || !game.image">
             <game-image :game.sync="game" :read-only="false" />
           </v-card>
         </c-loader-status>
@@ -206,10 +204,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Inject, Prop, Vue, Watch } from "vue-property-decorator";
-import { Game, GameTag, Review } from "@/models.g";
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import { Review } from "@/models.g";
 import {
-  GameListViewModel,
   GameServiceViewModel,
   GameTagViewModel,
   GameViewModel,
@@ -244,9 +241,6 @@ export default class GameDetails extends Vue {
   @Prop({ required: true })
   gameId!: string;
 
-  @Inject("GAMESLIST")
-  gameList!: GameListViewModel;
-
   gameService: GameServiceViewModel = new GameServiceViewModel();
   reviewService: ReviewServiceViewModel = new ReviewServiceViewModel();
 
@@ -273,21 +267,19 @@ export default class GameDetails extends Vue {
   async created() {
     this.reviewService.getReviews.setConcurrency("cancel");
     await this.game.$load(this.gameId);
-    let image = new ImageViewModel(this.gameService.getGameImage.result);
-    this.game = new GameViewModel(this.gameService.getGameDetails.result!);
-    this.game.image = image;
-    await this.gameService.getGameDetails(this.gameId);
     await this.gameService.getGameImage(this.gameId);
+    let image = new ImageViewModel(this.gameService.getGameImage.result);
+    this.game.image = image;
     await this.updateReviewList();
-    this.ratings = this.game?.reviews?.map((r) => r.rating ?? 0) || [];
+    this.ratings = this.game.reviews?.map((r) => r.rating ?? 0) || [];
   }
 
   get numberOfRatings() {
-    return this.game?.numberOfRatings;
+    return this.game.numberOfRatings;
   }
 
   get gameTags() {
-    return this.game?.gameTags ?? [];
+    return this.game.gameTags ?? [];
   }
 
   set gameTags(value: GameTagViewModel[]) {
@@ -335,7 +327,8 @@ export default class GameDetails extends Vue {
 
   @Watch("game.image")
   imageUpdated() {
-    if (this.game?.image?.content) {
+    //Remove error message if image is updated from empty
+    if (this.game.image?.content) {
       this.gameService.getGameImage.wasSuccessful = true;
     }
   }

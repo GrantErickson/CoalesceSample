@@ -6,7 +6,7 @@
       :class="!noCard ? 'ma-2 pa-2 flex-fill' : 'ma-2 flex-fill'"
     >
       <v-row>
-        <v-card flat class="ma-4 mr-2" width="20%">
+        <v-card class="ma-4 mr-2" width="20%">
           <slot name="left" />
         </v-card>
         <v-card flat class="ma-4 flex-fill">

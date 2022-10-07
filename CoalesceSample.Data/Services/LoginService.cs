@@ -39,35 +39,32 @@ public class LoginService : ILoginService
     public async Task<ItemResult<dynamic>> GetToken(string email, string password)
     {
         ApplicationUser? user = Db.Users.FirstOrDefault(u => u.Email == email);
-        if (user != null)
+        if (user != null && await UserManager.CheckPasswordAsync(user, password))
         {
-            if (await UserManager.CheckPasswordAsync(user, password))
-            {
-                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtConfiguration.SigningKey));
-                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtConfiguration.SigningKey));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-                var claims = new List<Claim>
+            var claims = new List<Claim>
                 {
                     new Claim(JwtRegisteredClaimNames.Sub, user.Id)
                 };
 
-                var userRoles = await UserManager.GetRolesAsync(user);
-                foreach (var role in userRoles)
-                {
-                    claims.Add(new Claim(ClaimTypes.Role, role));
-                }
-
-                var token = new JwtSecurityToken(
-                    issuer: JwtConfiguration.Issuer,
-                    audience: JwtConfiguration.Audience,
-                    claims: claims,
-                    expires: DateTime.Now.AddMinutes(JwtConfiguration.ExpirationInMinutes),
-                    signingCredentials: credentials
-                    );
-                string jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
-                await SignInManager.SignInAsync(user, false);
-                return new { token = jwtToken };
+            var userRoles = await UserManager.GetRolesAsync(user);
+            foreach (var role in userRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
             }
+
+            var token = new JwtSecurityToken(
+                issuer: JwtConfiguration.Issuer,
+                audience: JwtConfiguration.Audience,
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(JwtConfiguration.ExpirationInMinutes),
+                signingCredentials: credentials
+                );
+            string jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
+            await SignInManager.SignInAsync(user, false);
+            return new { token = jwtToken };
         }
         return "Unable to log in, please check your credentials.";
     }
@@ -86,7 +83,7 @@ public class LoginService : ILoginService
         }
         else
         {
-            ApplicationUser newUser = new(){ Name=name, Email=email, UserName = email };
+            ApplicationUser newUser = new() { Name = name, Email = email, UserName = email };
             IdentityResult? createUserResult = await UserManager.CreateAsync(newUser, password);
             if (createUserResult.Succeeded)
             {
@@ -136,7 +133,6 @@ public class LoginService : ILoginService
         }
     }
 
-
     public async Task<ItemResult<UserInfoDto>> GetUserInfo(ClaimsPrincipal user)
     {
 
@@ -150,7 +146,7 @@ public class LoginService : ILoginService
         {
             return new UserInfoDto("", "", new List<string>().ToArray());
         }
-        string[] userRoles = (from userRoleId in 
+        string[] userRoles = (from userRoleId in
                                   from u in Db.UserRoles
                                   where u.UserId == existingUser.Id
                                   select u.RoleId

@@ -1,7 +1,7 @@
 <template>
   <v-dialog :value="value" width="800" @input="close">
     <v-card>
-      <v-card-title> Write a review for: {{ game.name }}</v-card-title>
+      <v-card-title> Write a review for: {{ syncedGame.name }}</v-card-title>
 
       <v-card-text class="align-center justify-center pb-4">
         <v-text-field
@@ -45,8 +45,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { Game, Review } from "@/models.g";
+import { Component, Prop, PropSync, Vue} from "vue-property-decorator";
+import { Game } from "@/models.g";
 import { ReviewServiceViewModel } from "@/viewmodels.g";
 import StarRating from "@/components/StarRating.vue";
 @Component({
@@ -58,8 +58,8 @@ export default class AddReviewDialog extends Vue {
   @Prop({ required: true })
   value!: boolean;
 
-  @Prop({ required: true })
-  game!: Game;
+  @PropSync("game",{ required: true })
+  syncedGame!: Game;
 
   reviewService = new ReviewServiceViewModel();
 
@@ -80,20 +80,19 @@ export default class AddReviewDialog extends Vue {
 
   async addReview() {
     await this.reviewService.addReview(
-      this.game.gameId,
+      this.syncedGame.gameId,
       this.reviewTitle,
       this.reviewBody,
       this.reviewRating
     );
     if (this.reviewService.addReview.wasSuccessful) {
-      this.game.reviews!.push(this.reviewService.addReview.result!);
-      this.game.numberOfRatings!++;
-      this.game.totalRating! += this.reviewRating;
-      this.game.averageRating =
-        this.game.totalRating! / this.game.numberOfRatings!;
+      this.syncedGame.reviews!.push(this.reviewService.addReview.result!);
+      this.syncedGame.numberOfRatings!++;
+      this.syncedGame.totalRating! += this.reviewRating;
+      this.syncedGame.averageRating =
+        this.syncedGame.totalRating! / this.syncedGame.numberOfRatings!;
       this.clearReview();
       this.$userReviews.push(this.reviewService.addReview.result!.reviewId!);
-      this.$emit("update:game", this.game);
     }
   }
 }

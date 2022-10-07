@@ -264,17 +264,6 @@ export class ApplicationUserServiceViewModel extends ServiceViewModel<typeof $me
 
 export class GameServiceViewModel extends ServiceViewModel<typeof $metadata.GameService, $apiClients.GameServiceApiClient> {
   
-  public get getGameDetails() {
-    const getGameDetails = this.$apiClient.$makeCaller(
-      this.$metadata.methods.getGameDetails,
-      (c, gameId: string | null) => c.getGameDetails(gameId),
-      () => ({gameId: null as string | null, }),
-      (c, args) => c.getGameDetails(args.gameId))
-    
-    Object.defineProperty(this, 'getGameDetails', {value: getGameDetails});
-    return getGameDetails
-  }
-  
   public get getGameImage() {
     const getGameImage = this.$apiClient.$makeCaller(
       this.$metadata.methods.getGameImage,
@@ -295,17 +284,6 @@ export class GameServiceViewModel extends ServiceViewModel<typeof $metadata.Game
     
     Object.defineProperty(this, 'uploadGameImage', {value: uploadGameImage});
     return uploadGameImage
-  }
-  
-  public get getGameTags() {
-    const getGameTags = this.$apiClient.$makeCaller(
-      this.$metadata.methods.getGameTags,
-      (c, gameId: string | null) => c.getGameTags(gameId),
-      () => ({gameId: null as string | null, }),
-      (c, args) => c.getGameTags(args.gameId))
-    
-    Object.defineProperty(this, 'getGameTags', {value: getGameTags});
-    return getGameTags
   }
   
   public get setGameTags() {

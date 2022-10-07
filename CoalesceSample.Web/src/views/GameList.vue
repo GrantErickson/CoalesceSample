@@ -14,9 +14,21 @@
       :filter-rating-lower.sync="gamesList.$dataSource.filterRatingsLower"
       :games-per-page.sync="gamesList.$pageSize"
     />
-    <game-card-list v-if="gamesList.$items?.length > 0" />
+    <v-card v-if="gamesList.$items?.length > 0">
+      <v-card-text>
+        <v-list>
+          <v-list-item
+            v-for="game in gamesList.$items"
+            :key="game.gameId"
+            class="py-3"
+          >
+            <game-card :game="game" />
+          </v-list-item>
+        </v-list>
+      </v-card-text>
+    </v-card>
     <v-card v-else>
-      <v-card-title> {{ title }}</v-card-title>
+      <v-card-title> Game List </v-card-title>
       <v-card-text>
         There are currently no games matching your search parameters.
       </v-card-text>
@@ -25,21 +37,18 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Inject } from "vue-property-decorator";
+import { Vue, Component, Inject } from "vue-property-decorator";
+import GameCard from "@/components/game/GameCard.vue";
 import { GameListViewModel } from "@/viewmodels.g";
-import GameCardList from "@/components/game/GameCardList.vue";
 import SearchAndFilterGames from "@/components/game/SearchAndFilterGames.vue";
 
 @Component({
   components: {
     SearchAndFilterGames,
-    GameCardList,
+    GameCard,
   },
 })
 export default class GameList extends Vue {
-  @Prop({ required: true })
-  title!: string;
-
   @Inject("GAMESLIST")
   gamesList!: GameListViewModel;
 

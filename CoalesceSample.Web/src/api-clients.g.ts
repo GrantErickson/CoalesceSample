@@ -91,14 +91,6 @@ export class ApplicationUserServiceApiClient extends ServiceApiClient<typeof $me
 
 export class GameServiceApiClient extends ServiceApiClient<typeof $metadata.GameService> {
   constructor() { super($metadata.GameService) }
-  public getGameDetails(gameId: string | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Game>> {
-    const $method = this.$metadata.methods.getGameDetails
-    const $params =  {
-      gameId,
-    }
-    return this.$invoke($method, $params, $config)
-  }
-  
   public getGameImage(gameId: string | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.Image>> {
     const $method = this.$metadata.methods.getGameImage
     const $params =  {
@@ -112,14 +104,6 @@ export class GameServiceApiClient extends ServiceApiClient<typeof $metadata.Game
     const $params =  {
       gameId,
       image,
-    }
-    return this.$invoke($method, $params, $config)
-  }
-  
-  public getGameTags(gameId: string | null, $config?: AxiosRequestConfig): AxiosPromise<ItemResult<$models.GameTag[]>> {
-    const $method = this.$metadata.methods.getGameTags
-    const $params =  {
-      gameId,
     }
     return this.$invoke($method, $params, $config)
   }

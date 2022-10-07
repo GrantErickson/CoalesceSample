@@ -670,27 +670,6 @@ export const GameService = domain.services.GameService = {
   type: "service",
   controllerRoute: "GameService",
   methods: {
-    getGameDetails: {
-      name: "getGameDetails",
-      displayName: "Get Game Details",
-      transportType: "item",
-      httpMethod: "POST",
-      params: {
-        gameId: {
-          name: "gameId",
-          displayName: "Game Id",
-          type: "string",
-          role: "value",
-        },
-      },
-      return: {
-        name: "$return",
-        displayName: "Result",
-        type: "model",
-        get typeDef() { return (domain.types.Game as ModelType) },
-        role: "value",
-      },
-    },
     getGameImage: {
       name: "getGameImage",
       displayName: "Get Game Image",
@@ -736,33 +715,6 @@ export const GameService = domain.services.GameService = {
         displayName: "Result",
         type: "model",
         get typeDef() { return (domain.types.Image as ModelType) },
-        role: "value",
-      },
-    },
-    getGameTags: {
-      name: "getGameTags",
-      displayName: "Get Game Tags",
-      transportType: "item",
-      httpMethod: "POST",
-      params: {
-        gameId: {
-          name: "gameId",
-          displayName: "Game Id",
-          type: "string",
-          role: "value",
-        },
-      },
-      return: {
-        name: "$return",
-        displayName: "Result",
-        type: "collection",
-        itemType: {
-          name: "$collectionItem",
-          displayName: "",
-          role: "value",
-          type: "model",
-          get typeDef() { return (domain.types.GameTag as ModelType) },
-        },
         role: "value",
       },
     },

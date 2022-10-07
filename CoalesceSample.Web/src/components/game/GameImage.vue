@@ -2,7 +2,7 @@
   <v-container>
     <v-card-text class="pa-0 ma-0">
       <v-img
-        v-if="syncedGame.image?.content?.length > 0"
+        v-if="(syncedGame.image?.content?.length ?? -1) > 0"
         :key="imageUrl"
         :src="imageUrl"
         aspect-ratio="1"

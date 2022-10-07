@@ -32,21 +32,6 @@ namespace CoalesceSample.Web.Api
         }
 
         /// <summary>
-        /// Method: GetGameDetails
-        /// </summary>
-        [HttpPost("GetGameDetails")]
-        [AllowAnonymous]
-        public virtual ItemResult<GameDtoGen> GetGameDetails(System.Guid gameId)
-        {
-            IncludeTree includeTree = null;
-            var _mappingContext = new MappingContext(User);
-            var _methodResult = Service.GetGameDetails(gameId, out includeTree);
-            var _result = new ItemResult<GameDtoGen>(_methodResult);
-            _result.Object = Mapper.MapToDto<CoalesceSample.Data.Models.Game, GameDtoGen>(_methodResult.Object, _mappingContext, includeTree);
-            return _result;
-        }
-
-        /// <summary>
         /// Method: GetGameImage
         /// </summary>
         [HttpPost("GetGameImage")]
@@ -73,21 +58,6 @@ namespace CoalesceSample.Web.Api
             var _methodResult = await Service.UploadGameImage(User, gameId, image == null ? null : new IntelliTect.Coalesce.Models.File { Name = image.FileName, ContentType = image.ContentType, Length = image.Length, Content = image.OpenReadStream() });
             var _result = new ItemResult<ImageDtoGen>(_methodResult);
             _result.Object = Mapper.MapToDto<CoalesceSample.Data.Models.Image, ImageDtoGen>(_methodResult.Object, _mappingContext, includeTree);
-            return _result;
-        }
-
-        /// <summary>
-        /// Method: GetGameTags
-        /// </summary>
-        [HttpPost("GetGameTags")]
-        [AllowAnonymous]
-        public virtual async Task<ItemResult<System.Collections.Generic.ICollection<GameTagDtoGen>>> GetGameTags(System.Guid gameId)
-        {
-            IncludeTree includeTree = null;
-            var _mappingContext = new MappingContext(User);
-            var _methodResult = await Service.GetGameTags(gameId);
-            var _result = new ItemResult<System.Collections.Generic.ICollection<GameTagDtoGen>>();
-            _result.Object = _methodResult?.ToList().Select(o => Mapper.MapToDto<CoalesceSample.Data.Models.GameTag, GameTagDtoGen>(o, _mappingContext, includeTree)).ToList();
             return _result;
         }
 
