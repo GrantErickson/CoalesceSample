@@ -20,11 +20,11 @@ jobs:
         with:
           node-version: 16
           cache: 'npm'
-          cache-dependency-path: ./CyberForceWeb.Web/package-lock.json
+          cache-dependency-path: ./CoalesceSample.Web/package-lock.json
 
       - name: Restore and Install npm Packages
         run: |
-          cd ./CyberForceWeb.Web
+          cd ./CoalesceSample.Web
           npm ci
           npm run build
         shell: pwsh
@@ -34,14 +34,14 @@ jobs:
 
       - name: dotnet publish
         if: github.event_name != 'pull_request'
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/CyberForceWeb
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/CoalesceSample
 
       - name: Upload artifact for deployment job
         if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v3
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/CyberForceWeb
+          path: ${{env.DOTNET_ROOT}}/CoalesceSample
   
   deploy-for-testing:
     runs-on: self-hosted
@@ -60,7 +60,7 @@ jobs:
         id: deploy-to-testing-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'CyberForceWeb'
+          app-name: 'CoalesceSample'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZURE_PULL_REQUEST_PUBLISH_PROFILE }}
           package: .
