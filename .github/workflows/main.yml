@@ -1,0 +1,66 @@
+name: Deploy Pull Requests for Testing
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.x'
+          include-prerelease: false
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'npm'
+          cache-dependency-path: ./CyberForceWeb.Web/package-lock.json
+
+      - name: Restore and Install npm Packages
+        run: |
+          cd ./CyberForceWeb.Web
+          npm ci
+          npm run build
+        shell: pwsh
+          
+      - name: Build and Restore with dotnet
+        run: dotnet build --configuration Release
+
+      - name: dotnet publish
+        if: github.event_name != 'pull_request'
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/CyberForceWeb
+
+      - name: Upload artifact for deployment job
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v3
+        with:
+          name: .net-app
+          path: ${{env.DOTNET_ROOT}}/CyberForceWeb
+  
+  deploy-for-testing:
+    runs-on: self-hosted
+    needs: build
+    environment:
+      name: 'Pull Request'
+      url: ${{ steps.deploy-to-testing-webapp.outputs.webapp-url }}
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: .net-app
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-testing-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'CyberForceWeb'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZURE_PULL_REQUEST_PUBLISH_PROFILE }}
+          package: .
