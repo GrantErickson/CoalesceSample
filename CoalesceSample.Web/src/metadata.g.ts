@@ -396,18 +396,51 @@ export const Review = domain.types.Review = {
       type: "string",
       role: "value",
     },
-    reviewedGame: {
-      name: "reviewedGame",
-      displayName: "Reviewed Game",
-      type: "model",
-      get typeDef() { return (domain.types.Game as ModelType) },
-      role: "value",
-      dontSerialize: true,
-    },
   },
   methods: {
   },
   dataSources: {
+    reviewDataSource: {
+      type: "dataSource",
+      name: "ReviewDataSource",
+      displayName: "Review Data Source",
+      props: {
+        filterGameId: {
+          name: "filterGameId",
+          displayName: "Filter Game Id",
+          type: "string",
+          role: "value",
+        },
+        firstDate: {
+          name: "firstDate",
+          displayName: "First Date",
+          type: "date",
+          dateKind: "datetime",
+          noOffset: true,
+          role: "value",
+        },
+        secondDate: {
+          name: "secondDate",
+          displayName: "Second Date",
+          type: "date",
+          dateKind: "datetime",
+          noOffset: true,
+          role: "value",
+        },
+        minRating: {
+          name: "minRating",
+          displayName: "Min Rating",
+          type: "number",
+          role: "value",
+        },
+        maxRating: {
+          name: "maxRating",
+          displayName: "Max Rating",
+          type: "number",
+          role: "value",
+        },
+      },
+    },
   },
 }
 export const Tag = domain.types.Tag = {

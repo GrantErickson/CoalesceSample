@@ -20,7 +20,6 @@ namespace CoalesceSample.Web.Models
         private string _ReviewBody;
         private bool? _IsDeleted;
         private System.Guid? _GameId;
-        private CoalesceSample.Web.Models.GameDtoGen _ReviewedGame;
 
         public System.Guid? ReviewId
         {
@@ -62,11 +61,6 @@ namespace CoalesceSample.Web.Models
             get => _GameId;
             set { _GameId = value; Changed(nameof(GameId)); }
         }
-        public CoalesceSample.Web.Models.GameDtoGen ReviewedGame
-        {
-            get => _ReviewedGame;
-            set { _ReviewedGame = value; Changed(nameof(ReviewedGame)); }
-        }
 
         /// <summary>
         /// Map from the domain object to the properties of the current DTO instance.
@@ -86,9 +80,6 @@ namespace CoalesceSample.Web.Models
             this.ReviewBody = obj.ReviewBody;
             this.IsDeleted = obj.IsDeleted;
             this.GameId = obj.GameId;
-            if (tree == null || tree[nameof(this.ReviewedGame)] != null)
-                this.ReviewedGame = obj.ReviewedGame.MapToDto<CoalesceSample.Data.Models.Game, GameDtoGen>(context, tree?[nameof(this.ReviewedGame)]);
-
         }
 
         /// <summary>

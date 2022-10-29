@@ -45,7 +45,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, PropSync, Vue} from "vue-property-decorator";
+import { Component, Prop, PropSync, Vue } from "vue-property-decorator";
 import { Game } from "@/models.g";
 import { ReviewServiceViewModel } from "@/viewmodels.g";
 import StarRating from "@/components/StarRating.vue";
@@ -58,7 +58,7 @@ export default class AddReviewDialog extends Vue {
   @Prop({ required: true })
   value!: boolean;
 
-  @PropSync("game",{ required: true })
+  @PropSync("game", { required: true })
   syncedGame!: Game;
 
   reviewService = new ReviewServiceViewModel();

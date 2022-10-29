@@ -247,7 +247,7 @@ These commands are what you need to set up a Coalesce development environment
 ### 2.4. Set Up User Login and Roles
 
   1. In a new folder called `Identity` in the `CoalesceSample.Data` project, create a new public static class called `Roles`
-  2. Add static constants for SuperAdmin and User roles and a static array to track all roles
+  2. Add static constants for SuperAdmin and User roles and a static array to track all roles. These roles can be used in attributes to restrict who has access to [fields](https://intellitect.github.io/Coalesce/modeling/model-components/attributes/security-attribute.html) and [functions](https://intellitect.github.io/Coalesce/modeling/model-components/attributes/execute.html).
 
         ```cs
         public const string SuperAdmin = nameof(SuperAdmin);
@@ -257,7 +257,7 @@ These commands are what you need to set up a Coalesce development environment
         public static string[] AllRoles => typeof(Roles).GetFields().Select(role =>role.Name).ToArray();
         ```
 
-  3. In the `CoalesceSample.Data` project create a `Services` folder and inside create a new public interface called `ILoginService` annotated with `[Coalesce, Service]`
+  3. In the `CoalesceSample.Data` project create a `Services` folder and inside create a new public interface called `ILoginService` annotated with `[Service]`
   4. Create a new public class in the same folder called `LoginService` that implements `ILoginService`
   5. Register this service in `programs.cs` by adding the following scoped service:
 
@@ -478,7 +478,7 @@ These commands are what you need to set up a Coalesce development environment
 ### 2.8. Create a public game list page
 
   1. Create a new folder in `\CoalesceSameple.Data` called `services`
-  2. Create a new public class called `GameService` in the `services` folder annotated with `[Coalesce, Service]`
+  2. Create a new public class called `GameService` in the `services` folder annotated with `[Service]`
   3. Add an AppDbContext property to the class and assign it in the constructor
 
         ```cs

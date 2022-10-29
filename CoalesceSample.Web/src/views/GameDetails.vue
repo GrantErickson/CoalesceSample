@@ -86,9 +86,9 @@
             <span v-else> Add a review. </span>
           </v-tooltip>
           <v-pagination
-            v-model="page"
+            v-model="reviewsListVM.$page"
             class="ml-6"
-            :length="pages === Infinity ? 10 : Math.ceil(pages)"
+            :length="reviewsListVM.$pageCount"
             prev-icon="fa-chevron-left"
             next-icon="fa-chevron-right"
           />
@@ -184,16 +184,14 @@
       <c-loader-status
         v-slot
         :loaders="{
-          'no-secondary-progress no-initial-content': [
-            reviewService.getReviews,
-          ],
+          'no-secondary-progress no-initial-content': [reviewsListVM.$load],
         }"
       >
         <v-divider />
         <game-review-list
           :key="'revList' + game.numberOfRatings"
           :game.sync="game"
-          :reviews.sync="reviewsList"
+          :reviews.sync="reviewsListVM.$items"
         />
       </c-loader-status>
     </v-card>
@@ -211,7 +209,7 @@ import {
   GameTagViewModel,
   GameViewModel,
   ImageViewModel,
-  ReviewServiceViewModel,
+  ReviewListViewModel,
 } from "@/viewmodels.g";
 import GameReviewList from "@/components/game/GameReviewList.vue";
 import StarRating from "@/components/StarRating.vue";
@@ -242,7 +240,6 @@ export default class GameDetails extends Vue {
   gameId!: string;
 
   gameService: GameServiceViewModel = new GameServiceViewModel();
-  reviewService: ReviewServiceViewModel = new ReviewServiceViewModel();
 
   showUpdateImage = false;
 
@@ -251,10 +248,9 @@ export default class GameDetails extends Vue {
 
   game: GameViewModel = new GameViewModel();
 
-  reviewsList: Review[] = [];
+  reviewsListVM: ReviewListViewModel = new ReviewListViewModel();
+  reviewsDataSource = new Review.DataSources.ReviewDataSource();
   reviewsPerPage = 10;
-  page = 1;
-  pages = 1;
 
   rangeTickLabels = ["0", "", "1", "", "2", "", "3", "", "4", "", "5"];
   sliderRangeArray: number[] = [0, 5];
@@ -265,12 +261,18 @@ export default class GameDetails extends Vue {
   ratings: number[] = [];
 
   async created() {
-    this.reviewService.getReviews.setConcurrency("cancel");
+    this.reviewsListVM.$dataSource = this.reviewsDataSource;
+    this.reviewsDataSource.filterGameId = this.gameId;
+    this.reviewsDataSource.minRating = this.sliderRangeArray[0];
+    this.reviewsDataSource.maxRating = this.sliderRangeArray[1];
+    this.reviewsDataSource.firstDate = this.dates[0];
+    this.reviewsDataSource.secondDate = this.dates[1];
+    await this.reviewsListVM.$load();
+    this.reviewsListVM.$startAutoLoad(this, { wait: 50 });
+
     await this.game.$load(this.gameId);
     await this.gameService.getGameImage(this.gameId);
-    let image = new ImageViewModel(this.gameService.getGameImage.result);
-    this.game.image = image;
-    await this.updateReviewList();
+    this.game.image = new ImageViewModel(this.gameService.getGameImage.result);
     this.ratings = this.game.reviews?.map((r) => r.rating ?? 0) || [];
   }
 
@@ -285,51 +287,6 @@ export default class GameDetails extends Vue {
   set gameTags(value: GameTagViewModel[]) {
     if (this.game) {
       this.game.gameTags = value;
-    }
-  }
-
-  @Watch("reviewsPerPage")
-  @Watch("page")
-  @Watch("game.reviews")
-  @Watch("dates")
-  async updateReviewList() {
-    if (this.reviewsPerPage > 0 && this.game) {
-      if (
-        (this.dates[0] && this.dates[1]) ||
-        (!this.dates[0] && !this.dates[1])
-      ) {
-        await this.reviewService.getReviews(
-          this.gameId,
-          this.dates[0],
-          this.dates[1],
-          this.page,
-          Math.ceil(this.reviewsPerPage),
-          this.sliderRangeArray[0],
-          this.sliderRangeArray[1]
-        );
-        this.reviewsList = this.reviewService.getReviews.result ?? [];
-        this.pages = Math.max(
-          1,
-          Math.ceil(
-            this.game.reviews!.filter(
-              (r) =>
-                (r.rating ?? 5) >= this.sliderRangeArray[0] &&
-                (r.rating ?? 0) <= this.sliderRangeArray[1]
-            ).length / Math.ceil(this.reviewsPerPage)
-          )
-        );
-
-        this.page = Math.max(1, this.page);
-        this.page = Math.min(this.page, this.pages);
-      }
-    }
-  }
-
-  @Watch("game.image")
-  imageUpdated() {
-    //Remove error message if image is updated from empty
-    if (this.game.image?.content) {
-      this.gameService.getGameImage.wasSuccessful = true;
     }
   }
 
@@ -367,10 +324,44 @@ export default class GameDetails extends Vue {
     return [likeButton, editButton];
   }
 
+  @Watch("game.reviews")
+  updateReviewList() {
+    this.reviewsListVM.$load();
+  }
+
+  @Watch("reviewsPerPage")
+  @Watch("dates")
+  async updateReviewFilters() {
+    this.reviewsListVM.$pageSize = this.reviewsPerPage;
+    this.reviewsDataSource.minRating = this.sliderRangeArray[0];
+    this.reviewsDataSource.maxRating = this.sliderRangeArray[1];
+    this.reviewsDataSource.firstDate = this.dates[0];
+    this.reviewsDataSource.secondDate = this.dates[1];
+    if (this.reviewsPerPage > 0 && this.game) {
+      if (
+        (this.dates[0] && this.dates[1]) ||
+        (!this.dates[0] && !this.dates[1])
+      ) {
+        this.reviewsListVM.$pageSize = this.reviewsPerPage;
+        this.reviewsDataSource.minRating = this.sliderRangeArray[0];
+        this.reviewsDataSource.maxRating = this.sliderRangeArray[1];
+        this.reviewsDataSource.firstDate = this.dates[0];
+        this.reviewsDataSource.secondDate = this.dates[1];
+      }
+    }
+  }
+
+  @Watch("game.image")
+  imageUpdated() {
+    //Remove error message if image is updated from empty
+    if (this.game.image?.content) {
+      this.gameService.getGameImage.wasSuccessful = true;
+    }
+  }
+
   resetFilters() {
     this.dates = [];
     this.sliderRangeArray = [0, 5];
-    this.page = 1;
     this.reviewsPerPage = 10;
     this.updateReviewList();
   }

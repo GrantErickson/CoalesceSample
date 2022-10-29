@@ -120,7 +120,6 @@ export interface ReviewViewModel extends $models.Review {
   reviewBody: string | null;
   isDeleted: boolean | null;
   gameId: string | null;
-  reviewedGame: GameViewModel | null;
 }
 export class ReviewViewModel extends ViewModel<$models.Review, $apiClients.ReviewApiClient, string> implements $models.Review  {
   

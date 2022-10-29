@@ -25,10 +25,6 @@ export default class EditGameDialog extends Vue {
 
   showEditGame = false;
 
-  created() {
-    console.log("edit game", this.syncedGame);
-  }
-
   toggleShowEditGame() {
     this.showEditGame = !this.showEditGame;
   }

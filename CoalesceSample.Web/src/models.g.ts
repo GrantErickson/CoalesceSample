@@ -132,7 +132,6 @@ export interface Review extends Model<typeof metadata.Review> {
   reviewBody: string | null
   isDeleted: boolean | null
   gameId: string | null
-  reviewedGame: Game | null
 }
 export class Review {
   
@@ -149,6 +148,19 @@ export class Review {
   /** Instantiate a new Review, optionally basing it on the given data. */
   constructor(data?: Partial<Review> | {[k: string]: any}) {
       Object.assign(this, Review.map(data || {}));
+  }
+}
+export namespace Review {
+  export namespace DataSources {
+    
+    export class ReviewDataSource implements DataSource<typeof metadata.Review.dataSources.reviewDataSource> {
+      readonly $metadata = metadata.Review.dataSources.reviewDataSource
+      filterGameId: string | null = null
+      firstDate: Date | null = null
+      secondDate: Date | null = null
+      minRating: number | null = null
+      maxRating: number | null = null
+    }
   }
 }
 
