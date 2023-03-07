@@ -12,14 +12,25 @@ namespace CoalesceSample.Web.Models
     {
         public GameDtoGen() { }
 
-        private int? _GameId;
+        private System.Guid? _GameId;
         private string _Name;
         private string _Description;
+        private System.DateTime? _ReleaseDate;
+        private int? _Likes;
+        private double? _TotalRating;
+        private int? _NumberOfRatings;
+        private double? _AverageRating;
         private double? _AverageDurationInHours;
         private int? _MaxPlayers;
         private int? _MinPlayers;
+        private int? _GenreId;
+        private CoalesceSample.Web.Models.GenreDtoGen _Genre;
+        private int? _ImageId;
+        private CoalesceSample.Web.Models.ImageDtoGen _Image;
+        private System.Collections.Generic.ICollection<CoalesceSample.Web.Models.GameTagDtoGen> _GameTags;
+        private System.Collections.Generic.ICollection<CoalesceSample.Web.Models.ReviewDtoGen> _Reviews;
 
-        public int? GameId
+        public System.Guid? GameId
         {
             get => _GameId;
             set { _GameId = value; Changed(nameof(GameId)); }
@@ -33,6 +44,31 @@ namespace CoalesceSample.Web.Models
         {
             get => _Description;
             set { _Description = value; Changed(nameof(Description)); }
+        }
+        public System.DateTime? ReleaseDate
+        {
+            get => _ReleaseDate;
+            set { _ReleaseDate = value; Changed(nameof(ReleaseDate)); }
+        }
+        public int? Likes
+        {
+            get => _Likes;
+            set { _Likes = value; Changed(nameof(Likes)); }
+        }
+        public double? TotalRating
+        {
+            get => _TotalRating;
+            set { _TotalRating = value; Changed(nameof(TotalRating)); }
+        }
+        public int? NumberOfRatings
+        {
+            get => _NumberOfRatings;
+            set { _NumberOfRatings = value; Changed(nameof(NumberOfRatings)); }
+        }
+        public double? AverageRating
+        {
+            get => _AverageRating;
+            set { _AverageRating = value; Changed(nameof(AverageRating)); }
         }
         public double? AverageDurationInHours
         {
@@ -49,6 +85,36 @@ namespace CoalesceSample.Web.Models
             get => _MinPlayers;
             set { _MinPlayers = value; Changed(nameof(MinPlayers)); }
         }
+        public int? GenreId
+        {
+            get => _GenreId;
+            set { _GenreId = value; Changed(nameof(GenreId)); }
+        }
+        public CoalesceSample.Web.Models.GenreDtoGen Genre
+        {
+            get => _Genre;
+            set { _Genre = value; Changed(nameof(Genre)); }
+        }
+        public int? ImageId
+        {
+            get => _ImageId;
+            set { _ImageId = value; Changed(nameof(ImageId)); }
+        }
+        public CoalesceSample.Web.Models.ImageDtoGen Image
+        {
+            get => _Image;
+            set { _Image = value; Changed(nameof(Image)); }
+        }
+        public System.Collections.Generic.ICollection<CoalesceSample.Web.Models.GameTagDtoGen> GameTags
+        {
+            get => _GameTags;
+            set { _GameTags = value; Changed(nameof(GameTags)); }
+        }
+        public System.Collections.Generic.ICollection<CoalesceSample.Web.Models.ReviewDtoGen> Reviews
+        {
+            get => _Reviews;
+            set { _Reviews = value; Changed(nameof(Reviews)); }
+        }
 
         /// <summary>
         /// Map from the domain object to the properties of the current DTO instance.
@@ -63,9 +129,46 @@ namespace CoalesceSample.Web.Models
             this.GameId = obj.GameId;
             this.Name = obj.Name;
             this.Description = obj.Description;
+            this.ReleaseDate = obj.ReleaseDate;
+            this.Likes = obj.Likes;
+            this.TotalRating = obj.TotalRating;
+            this.NumberOfRatings = obj.NumberOfRatings;
+            this.AverageRating = obj.AverageRating;
             this.AverageDurationInHours = obj.AverageDurationInHours;
             this.MaxPlayers = obj.MaxPlayers;
             this.MinPlayers = obj.MinPlayers;
+            this.GenreId = obj.GenreId;
+            this.ImageId = obj.ImageId;
+            if (tree == null || tree[nameof(this.Genre)] != null)
+                this.Genre = obj.Genre.MapToDto<CoalesceSample.Data.Models.Genre, GenreDtoGen>(context, tree?[nameof(this.Genre)]);
+
+            if (tree == null || tree[nameof(this.Image)] != null)
+                this.Image = obj.Image.MapToDto<CoalesceSample.Data.Models.Image, ImageDtoGen>(context, tree?[nameof(this.Image)]);
+
+            var propValGameTags = obj.GameTags;
+            if (propValGameTags != null && (tree == null || tree[nameof(this.GameTags)] != null))
+            {
+                this.GameTags = propValGameTags
+                    .OrderBy(f => f.GameTagId)
+                    .Select(f => f.MapToDto<CoalesceSample.Data.Models.GameTag, GameTagDtoGen>(context, tree?[nameof(this.GameTags)])).ToList();
+            }
+            else if (propValGameTags == null && tree?[nameof(this.GameTags)] != null)
+            {
+                this.GameTags = new GameTagDtoGen[0];
+            }
+
+            var propValReviews = obj.Reviews;
+            if (propValReviews != null && (tree == null || tree[nameof(this.Reviews)] != null))
+            {
+                this.Reviews = propValReviews
+                    .OrderBy(f => f.ReviewId)
+                    .Select(f => f.MapToDto<CoalesceSample.Data.Models.Review, ReviewDtoGen>(context, tree?[nameof(this.Reviews)])).ToList();
+            }
+            else if (propValReviews == null && tree?[nameof(this.Reviews)] != null)
+            {
+                this.Reviews = new ReviewDtoGen[0];
+            }
+
         }
 
         /// <summary>
@@ -80,9 +183,14 @@ namespace CoalesceSample.Web.Models
             if (ShouldMapTo(nameof(GameId))) entity.GameId = (GameId ?? entity.GameId);
             if (ShouldMapTo(nameof(Name))) entity.Name = Name;
             if (ShouldMapTo(nameof(Description))) entity.Description = Description;
+            if (ShouldMapTo(nameof(ReleaseDate))) entity.ReleaseDate = ReleaseDate;
+            if (ShouldMapTo(nameof(Likes))) entity.Likes = (Likes ?? entity.Likes);
+            if (ShouldMapTo(nameof(AverageRating))) entity.AverageRating = (AverageRating ?? entity.AverageRating);
             if (ShouldMapTo(nameof(AverageDurationInHours))) entity.AverageDurationInHours = (AverageDurationInHours ?? entity.AverageDurationInHours);
             if (ShouldMapTo(nameof(MaxPlayers))) entity.MaxPlayers = (MaxPlayers ?? entity.MaxPlayers);
             if (ShouldMapTo(nameof(MinPlayers))) entity.MinPlayers = (MinPlayers ?? entity.MinPlayers);
+            if (ShouldMapTo(nameof(GenreId))) entity.GenreId = (GenreId ?? entity.GenreId);
+            if (ShouldMapTo(nameof(ImageId))) entity.ImageId = (ImageId ?? entity.ImageId);
         }
     }
 }

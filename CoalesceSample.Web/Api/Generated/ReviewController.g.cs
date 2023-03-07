@@ -20,54 +20,54 @@ using System.Threading.Tasks;
 
 namespace CoalesceSample.Web.Api
 {
-    [Route("api/ApplicationUser")]
+    [Route("api/Review")]
     [Authorize]
     [ServiceFilter(typeof(IApiActionFilter))]
-    public partial class ApplicationUserController
-        : BaseApiController<CoalesceSample.Data.Models.ApplicationUser, ApplicationUserDtoGen, CoalesceSample.Data.AppDbContext>
+    public partial class ReviewController
+        : BaseApiController<CoalesceSample.Data.Models.Review, ReviewDtoGen, CoalesceSample.Data.AppDbContext>
     {
-        public ApplicationUserController(CoalesceSample.Data.AppDbContext db) : base(db)
+        public ReviewController(CoalesceSample.Data.AppDbContext db) : base(db)
         {
-            GeneratedForClassViewModel = ReflectionRepository.Global.GetClassViewModel<CoalesceSample.Data.Models.ApplicationUser>();
+            GeneratedForClassViewModel = ReflectionRepository.Global.GetClassViewModel<CoalesceSample.Data.Models.Review>();
         }
 
         [HttpGet("get/{id}")]
-        [Authorize]
-        public virtual Task<ItemResult<ApplicationUserDtoGen>> Get(
-            int id,
+        [AllowAnonymous]
+        public virtual Task<ItemResult<ReviewDtoGen>> Get(
+            System.Guid id,
             DataSourceParameters parameters,
-            IDataSource<CoalesceSample.Data.Models.ApplicationUser> dataSource)
+            IDataSource<CoalesceSample.Data.Models.Review> dataSource)
             => GetImplementation(id, parameters, dataSource);
 
         [HttpGet("list")]
-        [Authorize]
-        public virtual Task<ListResult<ApplicationUserDtoGen>> List(
+        [AllowAnonymous]
+        public virtual Task<ListResult<ReviewDtoGen>> List(
             ListParameters parameters,
-            IDataSource<CoalesceSample.Data.Models.ApplicationUser> dataSource)
+            IDataSource<CoalesceSample.Data.Models.Review> dataSource)
             => ListImplementation(parameters, dataSource);
 
         [HttpGet("count")]
-        [Authorize]
+        [AllowAnonymous]
         public virtual Task<ItemResult<int>> Count(
             FilterParameters parameters,
-            IDataSource<CoalesceSample.Data.Models.ApplicationUser> dataSource)
+            IDataSource<CoalesceSample.Data.Models.Review> dataSource)
             => CountImplementation(parameters, dataSource);
 
         [HttpPost("save")]
         [Authorize]
-        public virtual Task<ItemResult<ApplicationUserDtoGen>> Save(
-            ApplicationUserDtoGen dto,
+        public virtual Task<ItemResult<ReviewDtoGen>> Save(
+            ReviewDtoGen dto,
             [FromQuery] DataSourceParameters parameters,
-            IDataSource<CoalesceSample.Data.Models.ApplicationUser> dataSource,
-            IBehaviors<CoalesceSample.Data.Models.ApplicationUser> behaviors)
+            IDataSource<CoalesceSample.Data.Models.Review> dataSource,
+            IBehaviors<CoalesceSample.Data.Models.Review> behaviors)
             => SaveImplementation(dto, parameters, dataSource, behaviors);
 
         [HttpPost("delete/{id}")]
         [Authorize]
-        public virtual Task<ItemResult<ApplicationUserDtoGen>> Delete(
-            int id,
-            IBehaviors<CoalesceSample.Data.Models.ApplicationUser> behaviors,
-            IDataSource<CoalesceSample.Data.Models.ApplicationUser> dataSource)
+        public virtual Task<ItemResult<ReviewDtoGen>> Delete(
+            System.Guid id,
+            IBehaviors<CoalesceSample.Data.Models.Review> behaviors,
+            IDataSource<CoalesceSample.Data.Models.Review> dataSource)
             => DeleteImplementation(id, new DataSourceParameters(), dataSource, behaviors);
     }
 }

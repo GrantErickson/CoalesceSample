@@ -1,6 +1,11 @@
 <template>
   <v-app id="vue-app">
     <v-navigation-drawer v-model="drawer" app clipped>
+      <v-row class="py-5 justify-center">
+        <v-card class="">
+          <v-btn outlined to="/login" exact> Account </v-btn>
+        </v-card>
+      </v-row>
       <v-list>
         <v-list-item link to="/">
           <v-list-item-action>
@@ -11,12 +16,21 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item link to="/coalesce-example">
+        <v-list-item link to="/gamelist">
           <v-list-item-action>
-            <v-icon>fas fa-palette</v-icon>
+            <v-icon>fas fa-dice</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Coalesce Example</v-list-item-title>
+            <v-list-item-title>Game List</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item v-if="$isAdmin" link to="/usermanagement">
+          <v-list-item-action>
+            <v-icon>fas fa-person</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Users</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -47,7 +61,9 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Component } from "vue-property-decorator";
+import { Component, Provide } from "vue-property-decorator";
+import { GameListViewModel, TagListViewModel } from "@/viewmodels.g";
+import { Game } from "@/models.g";
 
 @Component({
   components: {},
@@ -55,6 +71,14 @@ import { Component } from "vue-property-decorator";
 export default class App extends Vue {
   drawer: boolean | null = null;
   routeComponent: Vue | null = null;
+
+  @Provide("GAMESLIST")
+  gamesList = new GameListViewModel();
+
+  dataSource = new Game.DataSources.GameDataSource();
+
+  @Provide("TAGSLIST")
+  tags = new TagListViewModel();
 
   get routeMeta() {
     if (!this.$route || this.$route.name === null) return null;
@@ -66,7 +90,11 @@ export default class App extends Vue {
     this.routeComponent = this.$refs.routerView as Vue;
   }
 
-  created() {
+  async created() {
+    this.gamesList.$dataSource = this.dataSource;
+    this.tags.$pageSize = 1000;
+    await this.tags.$load();
+
     const baseTitle = document.title;
     this.$watch(
       () => (this.routeComponent as any)?.pageTitle,

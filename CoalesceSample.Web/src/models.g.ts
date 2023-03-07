@@ -1,36 +1,24 @@
 import * as metadata from './metadata.g'
 import { Model, DataSource, convertToModel, mapToModel } from 'coalesce-vue/lib/model'
 
-export interface ApplicationUser extends Model<typeof metadata.ApplicationUser> {
-  applicationUserId: number | null
-  name: string | null
-}
-export class ApplicationUser {
-  
-  /** Mutates the input object and its descendents into a valid ApplicationUser implementation. */
-  static convert(data?: Partial<ApplicationUser>): ApplicationUser {
-    return convertToModel(data || {}, metadata.ApplicationUser) 
-  }
-  
-  /** Maps the input object and its descendents to a new, valid ApplicationUser implementation. */
-  static map(data?: Partial<ApplicationUser>): ApplicationUser {
-    return mapToModel(data || {}, metadata.ApplicationUser) 
-  }
-  
-  /** Instantiate a new ApplicationUser, optionally basing it on the given data. */
-  constructor(data?: Partial<ApplicationUser> | {[k: string]: any}) {
-      Object.assign(this, ApplicationUser.map(data || {}));
-  }
-}
-
-
 export interface Game extends Model<typeof metadata.Game> {
-  gameId: number | null
+  gameId: string | null
   name: string | null
   description: string | null
+  releaseDate: Date | null
+  likes: number | null
+  totalRating: number | null
+  numberOfRatings: number | null
+  averageRating: number | null
   averageDurationInHours: number | null
   maxPlayers: number | null
   minPlayers: number | null
+  genreId: number | null
+  genre: Genre | null
+  imageId: number | null
+  image: Image | null
+  gameTags: GameTag[] | null
+  reviews: Review[] | null
 }
 export class Game {
   
@@ -47,6 +35,203 @@ export class Game {
   /** Instantiate a new Game, optionally basing it on the given data. */
   constructor(data?: Partial<Game> | {[k: string]: any}) {
       Object.assign(this, Game.map(data || {}));
+  }
+}
+export namespace Game {
+  export namespace DataSources {
+    
+    export class GameDataSource implements DataSource<typeof metadata.Game.dataSources.gameDataSource> {
+      readonly $metadata = metadata.Game.dataSources.gameDataSource
+      filterTags: string | null = null
+      filterRatingsUpper: number | null = null
+      filterRatingsLower: number | null = null
+    }
+  }
+}
+
+
+export interface GameTag extends Model<typeof metadata.GameTag> {
+  gameTagId: number | null
+  tagId: number | null
+  tag: Tag | null
+  gameId: string | null
+  game: Game | null
+}
+export class GameTag {
+  
+  /** Mutates the input object and its descendents into a valid GameTag implementation. */
+  static convert(data?: Partial<GameTag>): GameTag {
+    return convertToModel(data || {}, metadata.GameTag) 
+  }
+  
+  /** Maps the input object and its descendents to a new, valid GameTag implementation. */
+  static map(data?: Partial<GameTag>): GameTag {
+    return mapToModel(data || {}, metadata.GameTag) 
+  }
+  
+  /** Instantiate a new GameTag, optionally basing it on the given data. */
+  constructor(data?: Partial<GameTag> | {[k: string]: any}) {
+      Object.assign(this, GameTag.map(data || {}));
+  }
+}
+
+
+export interface Genre extends Model<typeof metadata.Genre> {
+  genreId: number | null
+  name: string | null
+  description: string | null
+}
+export class Genre {
+  
+  /** Mutates the input object and its descendents into a valid Genre implementation. */
+  static convert(data?: Partial<Genre>): Genre {
+    return convertToModel(data || {}, metadata.Genre) 
+  }
+  
+  /** Maps the input object and its descendents to a new, valid Genre implementation. */
+  static map(data?: Partial<Genre>): Genre {
+    return mapToModel(data || {}, metadata.Genre) 
+  }
+  
+  /** Instantiate a new Genre, optionally basing it on the given data. */
+  constructor(data?: Partial<Genre> | {[k: string]: any}) {
+      Object.assign(this, Genre.map(data || {}));
+  }
+}
+
+
+export interface Image extends Model<typeof metadata.Image> {
+  imageId: number | null
+  content: string | null
+}
+export class Image {
+  
+  /** Mutates the input object and its descendents into a valid Image implementation. */
+  static convert(data?: Partial<Image>): Image {
+    return convertToModel(data || {}, metadata.Image) 
+  }
+  
+  /** Maps the input object and its descendents to a new, valid Image implementation. */
+  static map(data?: Partial<Image>): Image {
+    return mapToModel(data || {}, metadata.Image) 
+  }
+  
+  /** Instantiate a new Image, optionally basing it on the given data. */
+  constructor(data?: Partial<Image> | {[k: string]: any}) {
+      Object.assign(this, Image.map(data || {}));
+  }
+}
+
+
+export interface Review extends Model<typeof metadata.Review> {
+  reviewId: string | null
+  rating: number | null
+  reviewDate: Date | null
+  reviewerName: string | null
+  reviewTitle: string | null
+  reviewBody: string | null
+  isDeleted: boolean | null
+  gameId: string | null
+}
+export class Review {
+  
+  /** Mutates the input object and its descendents into a valid Review implementation. */
+  static convert(data?: Partial<Review>): Review {
+    return convertToModel(data || {}, metadata.Review) 
+  }
+  
+  /** Maps the input object and its descendents to a new, valid Review implementation. */
+  static map(data?: Partial<Review>): Review {
+    return mapToModel(data || {}, metadata.Review) 
+  }
+  
+  /** Instantiate a new Review, optionally basing it on the given data. */
+  constructor(data?: Partial<Review> | {[k: string]: any}) {
+      Object.assign(this, Review.map(data || {}));
+  }
+}
+export namespace Review {
+  export namespace DataSources {
+    
+    export class ReviewDataSource implements DataSource<typeof metadata.Review.dataSources.reviewDataSource> {
+      readonly $metadata = metadata.Review.dataSources.reviewDataSource
+      filterGameId: string | null = null
+      firstDate: Date | null = null
+      secondDate: Date | null = null
+      minRating: number | null = null
+      maxRating: number | null = null
+    }
+  }
+}
+
+
+export interface Tag extends Model<typeof metadata.Tag> {
+  tagId: number | null
+  name: string | null
+  description: string | null
+  gameTags: GameTag[] | null
+}
+export class Tag {
+  
+  /** Mutates the input object and its descendents into a valid Tag implementation. */
+  static convert(data?: Partial<Tag>): Tag {
+    return convertToModel(data || {}, metadata.Tag) 
+  }
+  
+  /** Maps the input object and its descendents to a new, valid Tag implementation. */
+  static map(data?: Partial<Tag>): Tag {
+    return mapToModel(data || {}, metadata.Tag) 
+  }
+  
+  /** Instantiate a new Tag, optionally basing it on the given data. */
+  constructor(data?: Partial<Tag> | {[k: string]: any}) {
+      Object.assign(this, Tag.map(data || {}));
+  }
+}
+
+
+export interface UserDetails extends Model<typeof metadata.UserDetails> {
+  id: string | null
+}
+export class UserDetails {
+  
+  /** Mutates the input object and its descendents into a valid UserDetails implementation. */
+  static convert(data?: Partial<UserDetails>): UserDetails {
+    return convertToModel(data || {}, metadata.UserDetails) 
+  }
+  
+  /** Maps the input object and its descendents to a new, valid UserDetails implementation. */
+  static map(data?: Partial<UserDetails>): UserDetails {
+    return mapToModel(data || {}, metadata.UserDetails) 
+  }
+  
+  /** Instantiate a new UserDetails, optionally basing it on the given data. */
+  constructor(data?: Partial<UserDetails> | {[k: string]: any}) {
+      Object.assign(this, UserDetails.map(data || {}));
+  }
+}
+
+
+export interface UserInfoDto extends Model<typeof metadata.UserInfoDto> {
+  name: string | null
+  email: string | null
+  userRoles: string[] | null
+}
+export class UserInfoDto {
+  
+  /** Mutates the input object and its descendents into a valid UserInfoDto implementation. */
+  static convert(data?: Partial<UserInfoDto>): UserInfoDto {
+    return convertToModel(data || {}, metadata.UserInfoDto) 
+  }
+  
+  /** Maps the input object and its descendents to a new, valid UserInfoDto implementation. */
+  static map(data?: Partial<UserInfoDto>): UserInfoDto {
+    return mapToModel(data || {}, metadata.UserInfoDto) 
+  }
+  
+  /** Instantiate a new UserInfoDto, optionally basing it on the given data. */
+  constructor(data?: Partial<UserInfoDto> | {[k: string]: any}) {
+      Object.assign(this, UserInfoDto.map(data || {}));
   }
 }
 

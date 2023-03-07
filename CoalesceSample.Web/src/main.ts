@@ -17,6 +17,7 @@ import $metadata from "@/metadata.g";
 // viewmodels.g has side effects - it populates the global lookup on ViewModel and ListViewModel.
 // This global lookup allows the admin page components to function.
 import "@/viewmodels.g";
+import applicationUserService from "@/services/UserService";
 
 // SETUP: vuetify
 Vue.use(Vuetify);
@@ -48,6 +49,18 @@ const vuetify = new Vuetify({
 // SETUP: coalesce-vue
 CoalesceAxiosClient.defaults.baseURL = "/api";
 CoalesceAxiosClient.defaults.withCredentials = true;
+CoalesceAxiosClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers!["Authorization"] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 // SETUP: coalesce-vue-vuetify
 Vue.use(CoalesceVuetify, {
@@ -55,9 +68,16 @@ Vue.use(CoalesceVuetify, {
 });
 
 Vue.config.productionTip = false;
+router.beforeEach(async (to, from, next) => {
+  await applicationUserService.getRoles();
+  await applicationUserService.getUserReviews();
+  next();
+});
 
-new Vue({
-  router,
-  vuetify,
-  render: (h) => h(App),
-}).$mount("#app");
+applicationUserService.getRoles().then(() => {
+  new Vue({
+    router,
+    vuetify,
+    render: (h) => h(App),
+  }).$mount("#app");
+});
